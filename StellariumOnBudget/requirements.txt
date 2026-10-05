@@ -1,0 +1,1 @@
+##Függőségek:pyside6,moderngl etc
