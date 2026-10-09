@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Csillagnéző",
+    "slug": "csillagnezo",
+    "scheme": "csillagnezo",
+    "version": "0.1.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#060a18",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "hu.csillagnezo.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "A helyed alapján mutatjuk meg, milyen csillagok látszanak most az égen."
+      }
+    },
+    "android": {
+      "package": "hu.csillagnezo.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#060a18",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "A helyed alapján mutatjuk meg, milyen csillagok látszanak most az égen."
+        }
+      ]
+    ]
+  }
+}
