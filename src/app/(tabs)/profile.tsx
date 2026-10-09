@@ -2,10 +2,16 @@ import Constants from 'expo-constants';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { isUsingEmulator } from '@/services/firebase/config';
+import { authMode } from '@/services/firebase/config';
 import { useAuthStore } from '@/state/useAuthStore';
 import { Button } from '@/ui/Button';
 import { colors, font, radius, spacing } from '@/ui/theme';
+
+const AUTH_LABELS = {
+  local: 'helyi mód (Firebase nélkül)',
+  emulator: 'Firebase emulátor',
+  firebase: 'Firebase',
+} as const;
 
 export default function ProfileScreen() {
   const user = useAuthStore((s) => s.user);
@@ -27,8 +33,7 @@ export default function ProfileScreen() {
         testID="profile-signout"
       />
       <Text style={styles.meta}>
-        Verzió {Constants.expoConfig?.version} ·{' '}
-        {isUsingEmulator ? 'Firebase emulátor' : 'Firebase'}
+        Verzió {Constants.expoConfig?.version} · {AUTH_LABELS[authMode]}
       </Text>
     </SafeAreaView>
   );

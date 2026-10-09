@@ -6,29 +6,39 @@ import type { FirebaseOptions } from 'firebase/app';
  * Az EXPO_PUBLIC_ változókat a Metro fordításkor beégeti, ezért mindig
  * „process.env.EXPO_PUBLIC_…” alakban kell hivatkozni rájuk.
  *
- * Ha nincs megadva API-kulcs, az app a helyi Firebase emulátorhoz csatlakozik
- * egy „demo-” projekttel — így valódi Firebase-projekt nélkül is fejleszthető.
+ * Három üzemmód van (authMode):
+ *  - 'local'    : alapértelmezett. Nincs hálózat, nincs Firebase: a fiókok a készüléken
+ *                 (AsyncStorage / localStorage) tárolódnak. Fejlesztéshez és bemutatáshoz.
+ *  - 'emulator' : helyi Firebase Auth emulátor (EXPO_PUBLIC_USE_FIREBASE_EMULATOR=true).
+ *  - 'firebase' : valódi Firebase-projekt (EXPO_PUBLIC_FIREBASE_API_KEY megadva).
  */
 
 const apiKey = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 
 export const DEMO_PROJECT_ID = 'demo-csillagnezo';
 
-export const isUsingEmulator = process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true' || !apiKey;
+export type AuthMode = 'local' | 'emulator' | 'firebase';
 
-export const firebaseConfig: FirebaseOptions = isUsingEmulator
-  ? {
-      apiKey: apiKey || 'demo-api-key',
-      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || DEMO_PROJECT_ID,
-    }
-  : {
-      apiKey,
-      authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
-    };
+const forceEmulator = process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
+
+export const authMode: AuthMode = forceEmulator ? 'emulator' : apiKey ? 'firebase' : 'local';
+
+export const isUsingEmulator = authMode === 'emulator';
+
+export const firebaseConfig: FirebaseOptions =
+  authMode !== 'firebase'
+    ? {
+        apiKey: apiKey || 'demo-api-key',
+        projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID || DEMO_PROJECT_ID,
+      }
+    : {
+        apiKey,
+        authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+      };
 
 export const AUTH_EMULATOR_PORT = 9099;
 
