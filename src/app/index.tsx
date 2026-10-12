@@ -1,23 +1,23 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Redirect } from 'expo-router';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-/** Ideiglenes kezdőképernyő: a #7 issue cseréli le a valódi belépési ponttal. */
+import { useAuthStore } from '@/state/useAuthStore';
+import { colors } from '@/ui/theme';
+
+/** Belépési pont: amíg a Firebase visszaállítja a munkamenetet, töltőképernyőt mutat. */
 export default function Index() {
-  return (
-    <View style={styles.center}>
-      <Text style={styles.title}>Csillagnéző</Text>
-      <Text style={styles.text}>A projektváz működik. Hamarosan: bejelentkezés és égbolt.</Text>
-    </View>
-  );
+  const status = useAuthStore((s) => s.status);
+
+  if (status === 'loading') {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator color={colors.accent} size="large" />
+      </View>
+    );
+  }
+  return <Redirect href={status === 'signedIn' ? '/live' : '/welcome'} />;
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0b1026',
-    padding: 24,
-  },
-  title: { color: '#ffffff', fontSize: 28, fontWeight: '700', marginBottom: 8 },
-  text: { color: '#a8b3d6', fontSize: 16, textAlign: 'center' },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg },
 });
