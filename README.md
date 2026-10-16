@@ -1,3 +1,3 @@
 # SzoftverTervezesProjekt
 
-Stellarium tíipusú Alkalmazás fejlesztés kiegészítésekkel
+Stellarium típusú alkalmazás fejlesztés kiegészítésekkel
