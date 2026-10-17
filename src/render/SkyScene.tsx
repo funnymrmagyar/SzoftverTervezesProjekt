@@ -1,3 +1,4 @@
+import './polyfills'; // a three.js előtt kell betölteni, ld. polyfills.ts
 import { Canvas, useThree } from '@react-three/fiber';
 import { useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react';
 import type { Group, PerspectiveCamera } from 'three';
