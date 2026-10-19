@@ -33,7 +33,7 @@ function RoundButton({
   );
 }
 
-/** Nézési irány kijelzése, nagyítás, nézet alaphelyzetbe, csillagképvonalak ki/be. */
+/** Nézési irány kijelzése, nagyítás, nézet alaphelyzetbe, csillagképvonalak és -nevek ki/be. */
 export function ViewControls() {
   const azimuth = useViewStore((s) => Math.round(s.azimuth));
   const altitude = useViewStore((s) => Math.round(s.altitude));
@@ -41,6 +41,8 @@ export function ViewControls() {
   const { zoom, reset } = useViewStore.getState();
   const showLines = useSkyStore((s) => s.showLines);
   const toggleLines = useSkyStore((s) => s.toggleLines);
+  const showLabels = useSkyStore((s) => s.showLabels);
+  const toggleLabels = useSkyStore((s) => s.toggleLabels);
 
   return (
     <View style={styles.row}>
@@ -54,6 +56,13 @@ export function ViewControls() {
           active={showLines}
           onPress={toggleLines}
           testID="toggle-lines"
+        />
+        <RoundButton
+          icon="text-outline"
+          label="Csillagképnevek"
+          active={showLabels}
+          onPress={toggleLabels}
+          testID="toggle-labels"
         />
         <RoundButton icon="remove" label="Távolítás" onPress={() => zoom(1.25)} testID="zoom-out" />
         <RoundButton icon="add" label="Nagyítás" onPress={() => zoom(0.8)} testID="zoom-in" />

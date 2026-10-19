@@ -12,6 +12,8 @@ export const colors = {
   info: '#6aa9ff',
   danger: '#ff7a7a',
   overlay: 'rgba(6, 10, 24, 0.78)',
+  /** A csillagképvonalak egységes színe — minden égi kultúra ugyanezt használja. */
+  constellationLine: '#6aa9ff',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;

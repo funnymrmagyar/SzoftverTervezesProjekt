@@ -27,12 +27,9 @@ export function CulturePicker() {
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
               testID={`culture-${c.id}`}
-              style={[
-                styles.chip,
-                active && { borderColor: c.lineColor, backgroundColor: colors.surfaceRaised },
-              ]}
+              style={[styles.chip, active && styles.chipActive]}
             >
-              <View style={[styles.dot, { backgroundColor: c.lineColor }]} />
+              <View style={styles.dot} />
               <Text style={[styles.chipText, active && styles.chipTextActive]}>{c.name}</Text>
             </Pressable>
           );
@@ -61,7 +58,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.overlay,
   },
-  dot: { width: 8, height: 8, borderRadius: 4 },
+  chipActive: { borderColor: colors.constellationLine, backgroundColor: colors.surfaceRaised },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.constellationLine },
   chipText: { color: colors.textMuted, fontSize: 14, fontWeight: '500' },
   chipTextActive: { color: colors.text },
   summary: { color: colors.textMuted, fontSize: 12, maxWidth: 520 },
