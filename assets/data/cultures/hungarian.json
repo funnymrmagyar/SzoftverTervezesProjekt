@@ -1,1 +1,116 @@
-{"id":"hungarian","name":"Magyar népi égbolt","summary":"A magyar néphagyomány csillagnevei és alakzatai. Minta-adatkészlet: a következő hetekben néprajzi forrásokból bővítjük.","source":"A csapat saját összeállítása (minta, forrásokkal pontosítandó)","license":"CC BY-SA 4.0","lineColor":"#f2b84b","constellations":[{"id":"gonc","name":"Göncölszekér","nativeName":"Nagy Medve (Ursa Major) része","lines":[[67301,65378,62956,59774,58001,53910,54061,59774]],"description":"A Nagy Medve hét legfényesebb csillaga. A néphagyomány szekérnek látta: négy csillag a kocsiszekrény, három a rúd. A monda szerint Göncöl táltos szekere, amely a csillagok közé került.\n\nTájékozódási tipp: a szekér végén álló két csillag (Merak és Dubhe) távolságát kb. ötször meghosszabbítva a Sarkcsillaghoz jutsz."},{"id":"kisgonc","name":"Kis Göncöl","nativeName":"Kis Medve (Ursa Minor)","lines":[[11767,85822,82080,77055,79822,75097,72607,77055]],"description":"A Göncölszekér kisebb, halványabb párja. Rúdjának végén áll a Sarkcsillag, amely körül az egész égbolt forogni látszik, ezért évszázadokon át az éjszakai tájékozódás fix pontja volt."},{"id":"fiastyuk","name":"Fiastyúk","nativeName":"Plejádok (M45)","lines":[[17847,17702,17608,17499,17531,17573,17702],[17847,17851],[17499,17489]],"description":"A Bika csillagképben látható nyílthalmaz. A népi képzelet kotlós tyúknak látta a csibéivel. Szabad szemmel általában hat-hét csillaga látszik; késő ősztől kora tavaszig az esti égen keressük."},{"id":"kaszas","name":"Kaszáscsillag","nativeName":"Orion öve","lines":[[26727,26311,25930]],"description":"Az Orion övének három, szinte egy egyenesbe eső csillaga. A néphagyomány egymás mellett haladó kaszásokat látott bennük. Téli estéken a déli égen könnyű megtalálni."}]}
+{
+  "id": "hungarian",
+  "name": "Magyar népi égbolt",
+  "summary": "A magyar néphagyomány csillagnevei és alakzatai néprajzi gyűjtések alapján: Göncölszekér, Fiastyúk, Kaszások, Kereszt és társaik.",
+  "source": "Várhegyi Péter: Népi csillagneveink csillagászati objektumok szerint (csillagaszat.hu, 2004); Kozma Judit: Magyar és német népi csillagnevek és csillagképnevek jelentései (Névtani Értesítő 31, 2009); Magyar Néprajzi Lexikon: Göncölszekér; Ember, táj, csillagok (hortobágyi kiállítási anyag). A vonalrajzok és a leírások a csapat saját munkái.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#f2b84b",
+  "constellations": [
+    {
+      "id": "gonc",
+      "name": "Göncölszekér",
+      "nativeName": "Nagy Medve (Ursa Major) része",
+      "lines": [[67301, 65378, 62956, 59774, 58001, 53910, 54061, 59774]],
+      "description": "A Nagy Medve hét legfényesebb csillaga, a magyar népi égbolt legismertebb alakzata. Négy csillag a kocsiszekrény, három a rúd. Már egy 1405 körüli szójegyzékben is szerepel, és tájanként sok neve van: Göncöl szekere, Döncöl, Nagyszekér, Illés szekere, Szent Péter szekere, Szent László szekere.\n\nA rúd középső csillaga (Mizar) mellett jó szemmel egy halvány kis csillag is látszik (Alcor). A hagyomány szerint ez a kocsis gyerek.\n\nA pásztorok órának is használták: a szekér egy nap alatt egyszer körbejár a Sarkcsillag körül (egy éjszaka alatt nagyjából félig), így a rúd állásából látszott, mennyi telt el az éjszakából.\n\nTájékozódási tipp: a szekér végén álló két csillag (Merak és Dubhe) távolságát kb. ötször meghosszabbítva a Sarkcsillaghoz jutsz."
+    },
+    {
+      "id": "kisgonc",
+      "name": "Kis Göncöl",
+      "nativeName": "Kis Medve (Ursa Minor)",
+      "lines": [[11767, 85822, 82080, 77055, 79822, 75097, 72607, 77055]],
+      "description": "A Göncölszekér kisebb, halványabb párja. Népi nevei: Kicsiszekér, Göncöl mása, Nagyasszony társzekere.\n\nRúdjának végén áll a Sarkcsillag, amelyet Északi csillagnak, Fúrúcsillagnak vagy az Ég köldökének is neveztek. Körülötte forog az egész égbolt, ezért évszázadokon át az éjszakai tájékozódás fix pontja volt.\n\nVárosi fényben a Sarkcsillagon és a „kerék” két fényesebb csillagán kívül alig látszik belőle valami."
+    },
+    {
+      "id": "szentkut",
+      "name": "Szentkút",
+      "nativeName": "Kassziopeia (Cassiopeia)",
+      "lines": [[746, 3179, 4427, 6686, 8886]],
+      "description": "A Kassziopeia jellegzetes W (vagy M) alakú csillagsora. Népi nevei többnyire kúthoz kötik: Szentkút, Boszorkánykút, Kútgémcsillag; másutt Korcsma a neve.\n\nA Sarkcsillag túloldalán áll, szemben a Göncölszekérrel, és Magyarországról sosem nyugszik le. Amikor a Göncöl alacsonyan jár, a Szentkút magasan van, és fordítva."
+    },
+    {
+      "id": "fiastyuk",
+      "name": "Fiastyúk",
+      "nativeName": "Plejádok (M45)",
+      "lines": [
+        [17847, 17702, 17608, 17499, 17531, 17573, 17702],
+        [17847, 17851],
+        [17499, 17489]
+      ],
+      "description": "A Bika csillagképben látható nyílthalmaz. A népi képzelet kotlós tyúknak látta a csibéivel: Fiastik, Csibéstyúk, Tyúk a csürkékkel; régies neve Hetevény. Szabad szemmel általában hat-hét csillaga látszik.\n\nŐsztől tavaszig az esti égen keressük. A Balaton mellékén a feltűnése a vetés idejét jelezte. Utána kel fel a Kaszás, majd a fényes Sánta Kata (Szíriusz)."
+    },
+    {
+      "id": "mehkas",
+      "name": "Méhkas",
+      "nativeName": "Hyadok (a Bika feje)",
+      "lines": [[20889, 20455, 20205, 20894, 21421]],
+      "description": "A Bika fejét alkotó V alakú csillaghalmaz, a Fiastyúktól délkeletre. Népi nevei: Méhkas, Kikelet hírmondója.\n\nA V egyik szárának végén álló vöröses, fényes csillag, az Aldebaran valójában nem tagja a halmaznak: csak egy irányban látszik vele, és kevesebb mint fele olyan messze van tőlünk."
+    },
+    {
+      "id": "kecskes",
+      "name": "Kecskés",
+      "nativeName": "Szekeres (Auriga)",
+      "lines": [[24608, 28360, 28380, 25428, 23015, 24608]],
+      "description": "A Szekeres csillagkép nagy ötszöge. Legfényesebb csillaga, a Capella népi neve Kecskegida vagy Kecskés csillag; a latin név is kis kecskét jelent. Őszi csillagnak is hívták: őszi estéken feltűnően ragyog az északkeleti égen.\n\nA Capella Magyarországról sosem nyugszik le. Az ötszög alsó csillaga (Elnath) egyben a Bika szarvának hegye."
+    },
+    {
+      "id": "kaszas",
+      "name": "Kaszáscsillag",
+      "nativeName": "Orion öve",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három, szinte egy egyenesbe eső csillaga, a téli ég legkönnyebben felismerhető alakzata. A néphagyomány egymás mögött haladó kaszásokat látott bennük: Három kaszás, Kaszások. Más nevei: Jákob pálcája, Szent Péter pálcája, Háromkirály csillagai, Egészkenyér.\n\nA kaszások után jár Sánta Kata, a fényes Szíriusz. A hagyomány szerint ő viszi nekik az ebédet, de sánta lévén mindig lemarad. Az öv vonalát lefelé, balra meghosszabbítva rátalálsz."
+    },
+    {
+      "id": "felkenyer",
+      "name": "Félkenyér",
+      "nativeName": "Orion kardja",
+      "lines": [[26237, 26220, 26241]],
+      "description": "Az Orion öve alatt függő három halványabb csillag. A néphagyomány az övet Egészkenyérnek, ezt Félkenyérnek nevezte; másutt Gyűjtők a neve.\n\nA középső „csillag” valójában az Orion-köd: sötét égen apró, ködös foltnak látszik, távcsőben az ég egyik leglátványosabb látnivalója."
+    },
+    {
+      "id": "kaszalo",
+      "name": "Kaszáló",
+      "nativeName": "Orion négyszöge",
+      "lines": [[27989, 25336, 24436, 27366, 27989]],
+      "description": "Az Orion négy sarokcsillaga. A népi név a rétet jelenti, amelyet a közepén haladó Kaszások (az öv három csillaga) lekaszálnak. Az egész Orion népi neve Kaszás, másutt Nimród.\n\nA két legfényesebb sarok jól mutatja, hogy a csillagoknak színük van: fent balra a vöröses Betelgeuse, lent jobbra a kékesfehér Rigel."
+    },
+    {
+      "id": "kettos",
+      "name": "Kettős",
+      "nativeName": "Ikrek: Castor és Pollux",
+      "lines": [[36850, 37826]],
+      "description": "Az Ikrek két legfényesebb csillaga, egymás mellett. A népi név egyszerűen a párost írja le; a Polluxot Virrasztó csillagnak is nevezték.\n\nTélen és tavasszal az esti égen magasan látszanak, az Oriontól balra, fölfelé."
+    },
+    {
+      "id": "kereszt",
+      "name": "Kereszt",
+      "nativeName": "Hattyú (Cygnus)",
+      "lines": [
+        [102098, 100453, 95947],
+        [97165, 100453, 102488]
+      ],
+      "description": "A Hattyú csillagkép nagy keresztje a nyári Tejút közepén. Népi nevei: Kereszt, Keresztcsillag, Magyar kereszt. Egy másik hagyomány esküvői menetet látott benne: a keresztszár három csillaga a Három vőfély (másutt Három hadnagy), a kereszt tetején álló fényes Deneb a Nászvezető vagy Hadvezető. A hortobágyi pásztorok szerint a Keresztcsillag a Tejúton, az „Országúton” vándorol.\n\nA közelében ragyog a nyári ég másik két fényes csillaga is: a Vega (népi nevén Csősz) és az Altair (Juhász, Égi pásztor)."
+    },
+    {
+      "id": "kiskereszt",
+      "name": "Kiskereszt",
+      "nativeName": "Delfin (Delphinus)",
+      "lines": [
+        [101958, 102532, 102281, 101769, 101958],
+        [101769, 101421]
+      ],
+      "description": "A Delfin csillagkép apró, de jól felismerhető alakzata: négy csillag rombuszban, egy ötödik alatta. Népi nevei: Kiskereszt, Háló, Hálóscsillag.\n\nA nagy Kereszttől (Hattyú) délre, az Altairtól északkeletre keressük nyári és őszi estéken."
+    },
+    {
+      "id": "koldusszeker",
+      "name": "Koldusszekér",
+      "nativeName": "Nyilas (Sagittarius)",
+      "lines": [
+        [89931, 88635, 90185],
+        [89931, 90185, 93506, 92041, 89931],
+        [89931, 90496, 92041],
+        [92041, 92855, 93864, 93506]
+      ],
+      "description": "A Nyilas csillagkép fényes csillagai, amelyeket ma „teáskanna” alakzatként ismernek. A magyar néphagyomány szekeret látott bennük: Koldusszekér, Talyiga, Törökszekér.\n\nMagyarországról nyári estéken látszik, alacsonyan a déli látóhatár felett. Ebben az irányban van a Tejútrendszer középpontja, ezért itt a legfényesebb és legsűrűbb a Tejút."
+    }
+  ]
+}
