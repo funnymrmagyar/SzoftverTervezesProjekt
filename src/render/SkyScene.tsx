@@ -85,7 +85,7 @@ export function SkyScene({ date, location, cultureId, showLines }: SkySceneProps
       <CameraRig />
       <SkyDome matrix={matrix}>
         {showLines && culture ? (
-          <ConstellationLines segments={segments} color={culture.lineColor} />
+          <ConstellationLines segments={segments} color={colors.constellationLine} />
         ) : null}
         <StarField stars={stars} />
       </SkyDome>

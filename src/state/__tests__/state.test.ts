@@ -28,7 +28,7 @@ describe('nézet (kamera) logika', () => {
 });
 
 describe('useSkyStore', () => {
-  beforeEach(() => useSkyStore.setState({ manualTime: null, showLines: true }));
+  beforeEach(() => useSkyStore.setState({ manualTime: null, showLines: true, showLabels: true }));
 
   it('az időléptetés élő módból a megadott „most”-hoz képest lép', () => {
     const now = Date.UTC(2026, 9, 7, 20, 0);
@@ -43,6 +43,14 @@ describe('useSkyStore', () => {
   it('a vonalak ki-be kapcsolhatók', () => {
     useSkyStore.getState().toggleLines();
     expect(useSkyStore.getState().showLines).toBe(false);
+  });
+
+  it('a csillagképnevek alapból látszanak, és ki-be kapcsolhatók', () => {
+    expect(useSkyStore.getState().showLabels).toBe(true);
+    useSkyStore.getState().toggleLabels();
+    expect(useSkyStore.getState().showLabels).toBe(false);
+    useSkyStore.getState().toggleLabels();
+    expect(useSkyStore.getState().showLabels).toBe(true);
   });
 });
 
