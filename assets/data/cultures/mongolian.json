@@ -1,0 +1,42 @@
+{
+  "id": "mongolian",
+  "name": "Mongol égbolt",
+  "summary": "A mongol szóbeli hagyomány csillagképei: a Hét Buddha, a Három Szarvas és az Íj és nyíl, amelyek az Aranyszög (Sarkcsillag) körül forognak.",
+  "source": "Stellarium – mongol égi kultúra (Anthony Lagain, Batiste Rousseau, mongóliai szóbeli gyűjtés alapján). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "Az Íj és a nyíl",
+      "nativeName": "Num Sum",
+      "lines": [
+        [94779, 95853, 97165, 100453, 102098],
+        [100453, 102488, 104732, 107310],
+        [100453, 98110, 95947]
+      ],
+      "description": "A Hattyú csillagkép, amelyben a mongolok felajzott íjat és nyilat látnak."
+    },
+    {
+      "id": "002",
+      "name": "Az Öt Csillag Asszony",
+      "nativeName": "Hun Tavan Od",
+      "lines": [[8886, 6686, 4427, 3179, 746]],
+      "description": "A Kassziopeia öt csillaga az egység és a testvériség jelképe. A monda szerint Dzsingisz kán feleségének öt veszekedő gyermekét jelképezik: anyjuk öt erős csomót köttetett velük, hogy próbára tegye összetartásukat."
+    },
+    {
+      "id": "003",
+      "name": "A Hét Buddha",
+      "nativeName": "Doloon Burkhan",
+      "lines": [[67301, 65378, 62956, 59774, 58001, 53910, 54061, 59774]],
+      "description": "A Göncölszekér hét csillaga. A monda szerint nyolc árva fivér kiszabadította a királynét egy szörnytől; a király az égre dobta jutalmul ígért aranynyílvesszőjét. A legkisebb kapta el, és Sarkcsillag (Aranyszög) lett belőle, a hét bátyja pedig minden éjjel körüljárja őt. Az Alcor a hagyomány szerint a védelmező csillag: Dzsingisz kán íjásza csak az lehetett, aki szabad szemmel külön látta a Mizartól."
+    },
+    {
+      "id": "004",
+      "name": "A Három Szarvas",
+      "nativeName": "Gurvan Maral Od",
+      "lines": [[102098, 91262, 97649, 102098]],
+      "description": "A nyári háromszög három fényes csillaga, a Vega, a Deneb és az Altair: három szarvas."
+    }
+  ]
+}

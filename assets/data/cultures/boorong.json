@@ -1,0 +1,282 @@
+{
+  "id": "boorong",
+  "name": "Boorong (ausztrál őslakos) égbolt",
+  "summary": "A délkelet-ausztráliai Tyrrell-tó mellett élt boorong család csillagai: kenguru, sas, varjú, kakadu és bumeráng az égen.",
+  "source": "Stellarium – boorong égi kultúra (John Morieson, Alex Cherney; William Stanbridge 1857-es feljegyzései alapján). Az alakok rekonstrukciók. Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "Wjl",
+      "name": "A Hosszúnyakú teknős",
+      "nativeName": "Wanjel",
+      "lines": [
+        [37740, 38538],
+        [37740, 36962],
+        [38538, 37629],
+        [36962, 37629, 36393, 35941]
+      ],
+      "description": "A Pollux és az Ikrek szomszédos csillagai."
+    },
+    {
+      "id": "Yur",
+      "name": "A Legyezőfarkú kakadu",
+      "nativeName": "Yurree",
+      "lines": [
+        [36366, 36850],
+        [36896, 36850, 37204],
+        [36850, 38319],
+        [37204, 37265, 37580, 38016, 38319]
+      ],
+      "description": "A Castor és az Ikrek szomszédos csillagai."
+    },
+    {
+      "id": "Kul",
+      "name": "A Két kamaszfiú",
+      "nativeName": "Kulkunbulla",
+      "lines": [
+        [26594, 26795, 26870, 26885, 26762, 26727],
+        [26762, 27253, 27588, 27750],
+        [25930, 25737],
+        [26727, 26549],
+        [26213, 26210, 26188, 26149, 25976, 25930],
+        [26149, 26762],
+        [26213, 26174, 26106, 26063, 25980, 26020, 26117, 26319, 26439, 26508, 26727]
+      ],
+      "description": "Az Orion öve és kardja a környező halványabb csillagokkal."
+    },
+    {
+      "id": "Lnk",
+      "name": "A Lányok",
+      "nativeName": "Lamankurrk",
+      "lines": [[17664, 17579, 17531, 17489, 17499, 17608, 17702, 17851, 17847, 17900, 17776]],
+      "description": "A Fiastyúk (Plejádok): fiatal lányok csoportja."
+    },
+    {
+      "id": "Pur",
+      "name": "A Vörös kenguru",
+      "nativeName": "Purra",
+      "lines": [
+        [18246, 18614, 19811, 21476],
+        [23416, 21928, 19811],
+        [21928, 24608],
+        [24902, 24813],
+        [23767, 24902, 24813, 25143],
+        [24902, 25143],
+        [23767, 23453, 21476, 19811],
+        [23416, 25816],
+        [25143, 25816]
+      ],
+      "description": "A fényes Capella és a Szekeres, valamint a Perzeusz szomszédos csillagai."
+    },
+    {
+      "id": "Bun",
+      "name": "A Gyűrűsfarkú posszum",
+      "nativeName": "Bunya",
+      "lines": [
+        [60851, 60718, 59747, 61084],
+        [60969, 60870, 60308, 60379, 60781, 61136, 61966, 62434, 63007],
+        [59397, 59747]
+      ],
+      "description": "A Dél Keresztje csillagai, a kereszt csúcsán álló csillaggal. Magyarországról nem látható."
+    },
+    {
+      "id": "Djt",
+      "name": "A Vörösfarú papagáj",
+      "nativeName": "Djuit",
+      "lines": [
+        [78820, 78401, 78265, 78104],
+        [81266, 80763, 80112, 76742]
+      ],
+      "description": "A vöröses Antares és a Skorpió feje."
+    },
+    {
+      "id": "War",
+      "name": "A Varjú",
+      "nativeName": "War",
+      "lines": [[32402, 31407, 30438, 29990, 30104]],
+      "description": "A fényes Canopus és környéke. Magyarországról nem látható."
+    },
+    {
+      "id": "Cwr",
+      "name": "A Nőstény varjú, War felesége",
+      "nativeName": "Collowgulloric War",
+      "lines": [[50785, 51232, 52102, 52405, 52558, 52922, 53253, 54463]],
+      "description": "Az Eta Carinae és a Hajógerinc csillagai. Magyarországról nem látható."
+    },
+    {
+      "id": "Ydk",
+      "name": "Az Ausztrál bagolyfecske",
+      "nativeName": "Yerredetkurrk",
+      "lines": [[7506, 7387, 7588, 7699, 7751]],
+      "description": "Az Achernar és környéke. Magyarországról nem látható."
+    },
+    {
+      "id": "Tbg",
+      "name": "A Hakea-bokor és a legyezőfarkú madarak",
+      "nativeName": "Tourtchinboiongerra",
+      "lines": [
+        [65245, 64394, 64022, 62763, 62576, 60746, 60351],
+        [64394, 64417, 63950, 61418]
+      ],
+      "description": "A Bereniké Haja csillagai."
+    },
+    {
+      "id": "Bbg",
+      "name": "A Vöröstérdű lile",
+      "nativeName": "Berm-Berm-Gle",
+      "lines": [
+        [73776, 72131, 71908],
+        [72131, 73036],
+        [72131, 70035],
+        [72131, 71683]
+      ],
+      "description": "Az Alfa Centauri és a Körző csillagai. Magyarországról nem látható."
+    },
+    {
+      "id": "Krk",
+      "name": "Az Ausztrál vércse",
+      "nativeName": "Karik Karik",
+      "lines": [
+        [85927, 86670],
+        [85696, 86670, 87073],
+        [86670, 85889, 84143],
+        [86670, 89642]
+      ],
+      "description": "A Skorpió farkának vége; a név dárdavetőt is jelent. Magyarországról csak a déli látóhatár közelében látszik."
+    },
+    {
+      "id": "Nln",
+      "name": "A Homoki ásótyúk",
+      "nativeName": "Neilloan",
+      "lines": [
+        [91262, 91971],
+        [91926, 91971],
+        [91926, 92791, 92833, 93017, 93194, 93279, 92405, 92420, 91852, 91971]
+      ],
+      "description": "A Lant csillagkép a fényes Vegával. A homoki ásótyúk fészekdombot épít, amelyben a tojásait költi ki."
+    },
+    {
+      "id": "Unu",
+      "name": "A Gyík",
+      "nativeName": "Unurgunite",
+      "lines": [
+        [
+          33152, 33478, 33575, 33804, 34041, 34318, 34579, 34798, 34981, 35037, 35044, 34924, 34814,
+          34624, 34331
+        ],
+        [33804, 33817, 33611, 33532, 33492],
+        [33532, 33040],
+        [33492, 33856, 33760, 33492],
+        [33856, 33817]
+      ],
+      "description": "A Nagy Kutya csillagai a Szíriusz alatt (a gyík a Szigma Canis Majoris)."
+    },
+    {
+      "id": "Ktc",
+      "name": "A Brolgadaru-pár",
+      "nativeName": "Kourt-chin",
+      "lines": [
+        [15371, 16245, 17440, 24372, 34481, 33682, 35228],
+        [24372, 37331],
+        [24372, 26069],
+        [24372, 17678]
+      ],
+      "description": "A Magellán-felhők környékének csillagai: hím és nőstény brolgadaru. Magyarországról nem látható."
+    },
+    {
+      "id": "Otc",
+      "name": "A Nagy hal",
+      "nativeName": "Otchocut",
+      "lines": [
+        [101589, 102080, 102281, 102532, 102029, 101958],
+        [102029, 101909],
+        [102029, 101589],
+        [102532, 102611]
+      ],
+      "description": "A Delfin csillagkép."
+    },
+    {
+      "id": "Wpl",
+      "name": "Az Ékfarkú sas",
+      "nativeName": "Warepil",
+      "lines": [[30324, 31592, 32349, 33347, 34045]],
+      "description": "A fényes Szíriusz és szomszédai."
+    },
+    {
+      "id": "Cwp",
+      "name": "A Nőstény sas, Warepil felesége",
+      "nativeName": "Collowgulloric Warepil",
+      "lines": [
+        [22701, 23364, 23972, 24244, 24327, 24305],
+        [23972, 24436]
+      ],
+      "description": "A fényes Rigel és a Nyúl, valamint az Eridánusz szomszédos csillagai."
+    },
+    {
+      "id": "Tot",
+      "name": "A Bíborfejű lóri",
+      "nativeName": "Totyarguil",
+      "lines": [
+        [96229, 97229, 97938, 98526, 99158],
+        [97278, 97649, 98036]
+      ],
+      "description": "A fényes Altair és a Sas csillagai."
+    },
+    {
+      "id": "Mar",
+      "name": "A Húshangya",
+      "nativeName": "Marpeankurrk",
+      "lines": [
+        [67459, 67275, 67927, 69673, 71762, 71795],
+        [69673, 72105],
+        [69673, 71053],
+        [72105, 74666],
+        [71053, 73555, 74666]
+      ],
+      "description": "A fényes Arcturus. A hagyomány szerint ő mutatta meg az embereknek a fahangya lárváit (bittur), kedvelt táplálékukat; az esti égen való feltűnése a gyűjtés idejét jelezte."
+    },
+    {
+      "id": "Wrn",
+      "name": "A Tejút",
+      "nativeName": "Warring",
+      "lines": [[89931, 89931]],
+      "description": "A Tejút neve; itt a Nyilas egyik csillaga jelöli, ahol a Tejút a legfényesebb."
+    },
+    {
+      "id": "Wkr",
+      "name": "Az Éneklő bokorpacsirta",
+      "nativeName": "Weetkurrk",
+      "lines": [[67480, 67480]],
+      "description": "Egy csillag az Ökörhajcsárban, az Arcturustól nyugatra."
+    },
+    {
+      "id": "Gel",
+      "name": "A Rózsás kakadu",
+      "nativeName": "Gellarlec",
+      "lines": [[21421, 21421]],
+      "description": "A vöröses Aldebaran."
+    },
+    {
+      "id": "Col",
+      "name": "A Hangya",
+      "nativeName": "Collenbitchick",
+      "lines": [[100064, 100064]],
+      "description": "A Bak fejének kettőscsillaga."
+    },
+    {
+      "id": "Won",
+      "name": "A Bumeráng",
+      "nativeName": "Won",
+      "lines": [[92953, 93542, 94005, 94160, 94114, 93825, 93174, 91875]],
+      "description": "A Déli Korona íve. Magyarországról csak a látóhatár szélén, nagyon alacsonyan látszana."
+    },
+    {
+      "id": "Min",
+      "name": "A Sörényes kígyó",
+      "nativeName": "Mindi",
+      "lines": [[44816, 44816]],
+      "description": "A Tejút egy része a Vitorla csillagképben. Magyarországról nem látható."
+    }
+  ]
+}

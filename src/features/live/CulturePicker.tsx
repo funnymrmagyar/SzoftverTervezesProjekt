@@ -1,19 +1,28 @@
+import { useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getSkyCultures } from '@/core/catalog';
 import { useSkyStore } from '@/state/useSkyStore';
 import { colors, radius, spacing } from '@/ui/theme';
 
-/** Égi kultúra választó „chipek”, alatta a kiválasztott kultúra rövid leírása. */
+import { useHorizontalWheel } from './useHorizontalWheel';
+
+/**
+ * Égi kultúra választó: kultúránként egy gomb („chip”) egy vízszintesen görgethető sorban,
+ * alatta a kiválasztott kultúra rövid leírása. Telefonon ujjal, weben egérgörgővel is görgethető.
+ */
 export function CulturePicker() {
   const cultures = getSkyCultures().list();
   const cultureId = useSkyStore((s) => s.cultureId);
   const setCulture = useSkyStore((s) => s.setCulture);
   const selected = cultures.find((c) => c.id === cultureId);
+  const scrollRef = useRef<ScrollView>(null);
+  useHorizontalWheel(scrollRef);
 
   return (
     <View style={styles.wrapper} pointerEvents="box-none">
       <ScrollView
+        ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.row}

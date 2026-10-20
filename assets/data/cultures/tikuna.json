@@ -1,0 +1,49 @@
+{
+  "id": "tikuna",
+  "name": "Tikuna (amazóniai) égbolt",
+  "summary": "A Felső-Solimões menti tikuna nép csillagképei: mitikus állatok, amelyek felkelte és lenyugvása az esős és száraz évszakot jelzi.",
+  "source": "Stellarium – tikuna égi kultúra (Priscila Faulhaber, Fernando Vieira, Walmir Thomazi Cardoso, Youssif Ghantous Filho; tikuna adatközlők alapján). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "A Teknősök csoportja",
+      "nativeName": "Baweta",
+      "lines": [
+        [17702, 17448],
+        [17702, 18246]
+      ],
+      "description": "A Fiastyúk és a Perzeusz lábának két csillaga (ezek a teknős szemei). November végén alkonyatkor bukkan fel keleten; „szeptember a teknős hónapja”."
+    },
+    {
+      "id": "002",
+      "name": "Wücütcha lába",
+      "nativeName": "Wücütcha",
+      "lines": [
+        [25930, 26311, 26727],
+        [26311, 26241, 27366, 28103, 28816, 27654, 26862]
+      ],
+      "description": "Az Orion és a Nyúl csillagai: egy égi vadállat, a jaguár nemzetség rokonának lába; ujjai az Orion öve. Május végén tűnik el alkonyatkor nyugaton; felbukkanása szeptember végén az esők kezdetét jelzi."
+    },
+    {
+      "id": "003",
+      "name": "A Kajmán állkapcsa",
+      "nativeName": "Coyatchicüra",
+      "lines": [[21421, 20205, 20889]],
+      "description": "A Hyadok V alakja és az Aldebaran. A Fiastyúk után kel; április-május táján nyugszik le, amikor a kajmánok megjelennek a parton."
+    },
+    {
+      "id": "004",
+      "name": "A Hangyász és a Jaguár",
+      "nativeName": "Tchatü-Ai",
+      "lines": [
+        [60718, 59747, 61084, 66657, 74395, 71683, 71908],
+        [74395, 82396, 80763],
+        [82396, 85927],
+        [84143, 86228, 83081, 82363, 79664, 77952]
+      ],
+      "description": "A déli égen a Skorpiótól a Dél Keresztjéig: a hangyász és a jaguár nyári harca. A jaguár jobb lába az Antares, a hangyász szemei a Déli Háromszögben vannak. Magyarországról csak a Skorpió része látszik."
+    }
+  ]
+}

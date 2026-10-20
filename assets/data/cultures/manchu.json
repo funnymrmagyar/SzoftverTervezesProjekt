@@ -1,0 +1,247 @@
+{
+  "id": "manchu",
+  "name": "Mandzsu égbolt",
+  "summary": "Északkelet-Kína vadász-halász népének sámánhitű csillagképei: a Hét Leány, az Isteni Sas, a sámán dobja és dobverője.",
+  "source": "Stellarium – mandzsu égi kultúra (Lyu Haocheng; Fu Jü-kuang néprajzi gyűjtései alapján). Egyes vonalak a régi kézi rajzok alakját követik, ezért halvány csillagokat is érintenek. Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "Narhu",
+      "name": "A Hét Leány",
+      "nativeName": "Nadan Narhū",
+      "lines": [[17608, 17573, 17531, 17489, 17499, 17608, 17702, 17847]],
+      "description": "A Fiastyúk (Plejádok). A mandzsu mítoszban a csillagszóró istennő segítője, a csillagok vezére: alkonyatkor keleten felkelve vezeti a téli csillagok nyugat felé tartó menetét. A tél kezdetének és az éjszakai időmérésnek fontos jele."
+    },
+    {
+      "id": "Sengge",
+      "name": "A Sünök istene",
+      "nativeName": "Enduri Sengge",
+      "lines": [
+        [100453, 97165, 99675, 102098, 103413, 104887, 105138, 104732, 102488, 101474, 100453]
+      ],
+      "description": "A Hattyú csillagkép a Tejút közepén. „Szarufa-csillagnak” vagy „Sün-csillagnak” is nevezték; az éjszakát és az otthont őrző istenség, fontos északi iránycsillag."
+    },
+    {
+      "id": "Taci",
+      "name": "Taci anyó",
+      "nativeName": "Taci Mama",
+      "lines": [[746, 3179, 4427, 6686, 8886]],
+      "description": "A Kassziopeia W alakja. Az égi istennő őt bízta meg, hogy éjjel-nappal mérje az időt az istenek számára: égi helyzetéből és dőléséből becsülték az órát."
+    },
+    {
+      "id": "Tobo",
+      "name": "A Kunyhó",
+      "nativeName": "Tobo usiha",
+      "lines": [
+        [14328, 15863, 17358, 17529, 18532],
+        [15863, 14668, 14576, 14354],
+        [14576, 13254]
+      ],
+      "description": "A Perzeusz csillagai: kunyhó, ahol a sámán lelke megpihen, miközben az égbe száll."
+    },
+    {
+      "id": "Tehe",
+      "name": "Az Állvány istene",
+      "nativeName": "Enduri Tehe",
+      "lines": [
+        [677, 113881, 113963, 1067, 677],
+        [112158, 113881, 112051],
+        [113963, 112029, 107315],
+        [5447, 3092, 677, 2912, 4436],
+        [1067, 1845]
+      ],
+      "description": "A Pegazus nagy négyszöge és környéke. A sámánok a szél és a havazás jeleit figyelték rajta."
+    },
+    {
+      "id": "Ilan",
+      "name": "A Három Csillag",
+      "nativeName": "Ilan usiha",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három csillaga. Ha alkonyatkor keleten kel, itt a tél közepe; járásukból az éjszaka második felének óráit becsülték. A magyar Kaszáscsillag megfelelője."
+    },
+    {
+      "id": "Nadan",
+      "name": "A Hét Csillag",
+      "nativeName": "Nadan usiha",
+      "lines": [[59774, 54061, 53910, 58001, 59774, 62956, 65378, 67301]],
+      "description": "A Göncölszekér, az éjszakai időmérés és az északi irány legfontosabb csillagcsoportja. „Ha a nyele északra mutat, tél uralkodik a földön.”"
+    },
+    {
+      "id": "Gasha",
+      "name": "Az Isteni Sas",
+      "nativeName": "Gasha",
+      "lines": [
+        [25930, 25336, 27989, 26727, 27366, 26241, 24436, 25281, 25930],
+        [25281, 24127, 23875, 21444, 19587, 16653],
+        [25336, 21421, 18724, 17771, 18581, 18805, 19860, 20356, 21304, 21295, 22449, 25336],
+        [21421, 17847],
+        [
+          27989, 30343, 32246, 32194, 33595, 34861, 34367, 35152, 36046, 36962, 37826, 36850, 31789,
+          28823, 29633, 29884, 29388, 28530, 27196, 23828, 23020, 22545, 22413, 22650, 23416, 21476,
+          18614, 16713, 17448, 18246, 19397, 18687, 19205, 20250, 20711, 21881, 21421
+        ],
+        [30343, 29655, 28734, 28360, 24608, 25428, 24822, 23497]
+      ],
+      "description": "Hatalmas, szárnyát kitáró sas az Orion, a Bika, a Szekeres és az Ikrek csillagain át. A tél közepének égboltját uralja; alakjából időjárást jósoltak. Jobb lábát a Hét Leány vezeti, a balt egy égi kötél (az Eridánusz) köti meg."
+    },
+    {
+      "id": "Singgeri",
+      "name": "A Patkány",
+      "nativeName": "Singgeri usiha",
+      "lines": [
+        [
+          54470, 54483, 54573, 54879, 57632, 54872, 50583, 49583, 49395, 49348, 49669, 52689, 51585,
+          51690, 51388, 51299
+        ],
+        [49583, 48883, 49637, 51624]
+      ],
+      "description": "Az Oroszlán csillagai: a hajnalt köszöntő patkányistennő, aki a téli hajnal előtt keleten kel, hogy fogadja a Nap sugarait."
+    },
+    {
+      "id": "Morin",
+      "name": "A Ló",
+      "nativeName": "Morin usiha",
+      "lines": [[32349, 32349]],
+      "description": "Valójában nem egy csillagkép, hanem évszakjelző gyűjtőnév négy fényes csillagra (Capella, Szíriusz, Arcturus, Spica); itt a Szíriusz jelöli."
+    },
+    {
+      "id": "Wadan",
+      "name": "Az Égi Oltár",
+      "nativeName": "Wadan",
+      "lines": [[59316, 61359, 60965, 59803, 59316, 59199]],
+      "description": "A Holló csillagkép: az égi hely, ahol a szertartási eszközöket őrzik. Ha valaki sámánnak tanult, vagy egy sámán meghalt, ezt a csillagot kellett tisztelni."
+    },
+    {
+      "id": "Imcin",
+      "name": "A Dob",
+      "nativeName": "Imcin",
+      "lines": [
+        [8796, 9884, 8903, 8832, 6193, 6512, 7513, 9640, 10064, 10280, 9884, 8832],
+        [8903, 8796],
+        [6193, 8796, 6512],
+        [10064, 8796, 10280],
+        [7513, 10064]
+      ],
+      "description": "A Kos, a Háromszög és az Androméda tájékán: a csillagszóró istennő sámándobja."
+    },
+    {
+      "id": "Gisun",
+      "name": "A Dobverő",
+      "nativeName": "Gisun",
+      "lines": [[7097, 5571, 4463, 3693]],
+      "description": "A Dob mellett álló halvány csillagsor: a sámándob verője."
+    },
+    {
+      "id": "Siri",
+      "name": "A Pontyok istennője",
+      "nativeName": "Siri Mama",
+      "lines": [
+        [
+          20517, 22783, 23522, 23040, 25346, 28358, 32261, 34912, 33908, 36145, 41075, 45860, 45290,
+          44127, 37406, 37609, 37111, 36634
+        ],
+        [37111, 36434, 33449, 29490, 20517],
+        [44248, 44248],
+        [39847, 39847],
+        [30060, 30060],
+        [29919, 29919]
+      ],
+      "description": "A Hiúz és a Zsiráf halvány csillagai. A monda szerint ponttyá változott, hogy a folyóba menekült démont felkutassa; a jeges folyók halainak úrnője, a téli halászat szerencséjét jósolták belőle."
+    },
+    {
+      "id": "Terkin",
+      "name": "A Lépcső istennője",
+      "nativeName": "Terkin Usiha Mama",
+      "lines": [
+        [57757, 60129, 61941, 63090, 63608, 64823, 65721, 62356],
+        [65721, 64241, 62886],
+        [61941, 65474],
+        [63090, 66249]
+      ],
+      "description": "A Szűz és a Bereniké Haja csillagai: „lépcső az égbe”, ülő istennő, aki segíti a sámán lelkét a felemelkedésben."
+    },
+    {
+      "id": "Buruhun",
+      "name": "A Hajnali Vadállat",
+      "nativeName": "Usiha Buruhun",
+      "lines": [
+        [71053, 71075, 73555, 74666, 75695, 73745, 72105],
+        [
+          74666, 72105, 69673, 67927, 72798, 71795, 69673, 71053, 67665, 64844, 61317, 59856, 60742,
+          63075, 62763, 63462, 64394
+        ]
+      ],
+      "description": "Az Ökörhajcsár és szomszédai: a háromfülű, hatszemű hajnali vadállat, akit az égi istennő küldött, hogy a téli hajnal előtt vezesse a Nap sugarait."
+    },
+    {
+      "id": "Fodoho",
+      "name": "A Fűzfa",
+      "nativeName": "Fodoho usiha",
+      "lines": [
+        [43109, 43234, 42799, 43142, 42028, 42402, 42313, 43109, 43813, 44659, 45336, 46509],
+        [43813, 44066, 45410],
+        [44659, 47508, 49029]
+      ],
+      "description": "A Vízikígyó feje, alacsonyan a déli égen: a gyermekáldás istencsillaga; a termést és a járványokat is jósolták belőle."
+    },
+    {
+      "id": "Asu",
+      "name": "A Háló",
+      "nativeName": "Asu usiha",
+      "lines": [
+        [80170, 80816, 84345, 84379, 80816, 81693, 84379, 84380, 87808],
+        [84380, 81833, 79992],
+        [81693, 81833, 84379],
+        [84345, 86032]
+      ],
+      "description": "A Herkules csillagai: a vadászisten hálója, a halász-vadász életmód tükre."
+    },
+    {
+      "id": "Nimaha",
+      "name": "A Horog",
+      "nativeName": "Nimaha usiha",
+      "lines": [
+        [78820, 78401, 78265, 78104],
+        [78401, 80112, 80763, 81266, 82396, 82514, 82729, 84143, 86228, 87073, 86670, 85927],
+        [86670, 85696]
+      ],
+      "description": "A Skorpió csillagképe: halászhorog. A „meleg csillagnak” nevezett nyári istenség, megjelenéséből a földművelés idejét és a termést jósolták."
+    },
+    {
+      "id": "Hadaha",
+      "name": "A Szög",
+      "nativeName": "Hadaha usiha",
+      "lines": [[11767, 11767]],
+      "description": "A Sarkcsillag, amely körül az ég forog."
+    },
+    {
+      "id": "Juru",
+      "name": "A két ezüstsörényű paripa",
+      "nativeName": "Juru Sirha",
+      "lines": [[75097, 72607]],
+      "description": "A Kis Medve két fényesebb csillaga, a Kochab és a Pherkad."
+    },
+    {
+      "id": "Ikiri",
+      "name": "Az Ökörvezető csillagok",
+      "nativeName": "Ikiri usiha",
+      "lines": [[97278, 97649, 98036]],
+      "description": "A fényes Altair és két szomszédja a Sas csillagképben."
+    },
+    {
+      "id": "Ilmahu",
+      "name": "A Támasztórúd",
+      "nativeName": "Ilmahū usiha",
+      "lines": [[26237, 26235, 26241]],
+      "description": "Az Orion kardjának csillagai, a Három Csillag alatt."
+    },
+    {
+      "id": "Borboho",
+      "name": "A Feltekert szíj",
+      "nativeName": "Borboho usiha",
+      "lines": [[77048, 76127, 75695, 76267, 76952, 77512, 78159, 78493, 78459]],
+      "description": "Az Északi Korona félköre: felcsavart bőrszíj."
+    }
+  ]
+}
