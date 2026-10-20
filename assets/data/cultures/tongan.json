@@ -1,0 +1,93 @@
+{
+  "id": "tongan",
+  "name": "Tongai égbolt",
+  "summary": "A tongai hajósok csillagai: vadkacsák, halfüzér és szigetek nevei az égen. Néhány azonosítás csak feltételezés.",
+  "source": "Stellarium – tongai égi kultúra (Dan Smale; Velt Kik: Stars over Tonga, 1990; E. E. V. Collocott: Tongan Astronomy and Calendar, 1922). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "A Déli Vadkacsa",
+      "nativeName": "Toloatonga",
+      "lines": [
+        [61084, 60718],
+        [62434, 59747]
+      ],
+      "description": "A Dél Keresztje. Magyarországról nem látható."
+    },
+    {
+      "id": "002",
+      "name": "A Két Férfi",
+      "nativeName": "Lua tangata",
+      "lines": [[36850, 37826]],
+      "description": "Az Ikrek két fényes csillaga, a Castor és a Pollux."
+    },
+    {
+      "id": "003",
+      "name": "A Vadkacsa",
+      "nativeName": "Toloa",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három csillaga."
+    },
+    {
+      "id": "004",
+      "name": "A Galambülő",
+      "nativeName": "Tu'ulalupe",
+      "lines": [[21421, 20885, 20205, 20455, 20889]],
+      "description": "A Bika fejét alkotó V alakú Hyadok és az Aldebaran: ág, amelyen a galambok ülnek."
+    },
+    {
+      "id": "005",
+      "name": "A Nagy Vadkacsa",
+      "nativeName": "Toloalahi",
+      "lines": [
+        [42913, 45556],
+        [41037, 45941]
+      ],
+      "description": "A Hajógerinc és a Vitorla csillagaiból álló „hamis kereszt”. Magyarországról nem látható."
+    },
+    {
+      "id": "006",
+      "name": "A Dombtető",
+      "nativeName": "Fungasia",
+      "lines": [[71683, 68702]],
+      "description": "A Kentaur két fényes csillaga (Alfa és Béta Centauri). Magyarországról nem látható."
+    },
+    {
+      "id": "007",
+      "name": "A Halfüzér",
+      "nativeName": "Tuinga ika",
+      "lines": [[25281, 25930, 26311, 26727, 26549, 26263, 26237, 26258, 26241]],
+      "description": "Az Orion öve és kardja: zsinórra fűzött halak."
+    },
+    {
+      "id": "008",
+      "name": "A Vadkacsa földnyelve",
+      "nativeName": "Houmatoloa",
+      "lines": [[26311, 45496, 60781]],
+      "description": "Hosszú vonal az Orion övétől a déli égig, a három vadkacsa-alakzatot (Toloa, Toloatonga, Toloalahi) köti össze. Nagy része Magyarországról nem látható."
+    },
+    {
+      "id": "009",
+      "name": "A Két Hordozó",
+      "nativeName": "Fatanalua",
+      "lines": [[60742, 64394, 64241]],
+      "description": "A Bereniké Haja csillagai. Az azonosítás feltételezés."
+    },
+    {
+      "id": "010",
+      "name": "ʻUvea felhője",
+      "nativeName": "'Ao 'o 'Uvea",
+      "lines": [[78493, 78159, 77512, 76952, 76267, 75695, 76127]],
+      "description": "Az Északi Korona félköre; ʻUvea (Wallis) Tongától északra fekvő sziget. Az azonosítás feltételezés."
+    },
+    {
+      "id": "011",
+      "name": "Tafahi szárnya",
+      "nativeName": "Kapakau'o'tafahi",
+      "lines": [[8886, 6686, 4427, 3179, 746]],
+      "description": "A Kassziopeia W alakja; Tafahi egy tongai sziget. Az azonosítás feltételezés."
+    }
+  ]
+}

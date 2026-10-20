@@ -40,8 +40,29 @@ describe('StarCatalog (beépített adatok)', () => {
 describe('égi kultúrák (adatintegritás)', () => {
   const repo = getSkyCultures();
 
-  it('a magyar és a nyugati kultúra is elérhető', () => {
-    expect(repo.list().map((c) => c.id)).toEqual(['hungarian', 'western']);
+  const ALL_CULTURES = [
+    'hungarian',
+    'western',
+    'romanian',
+    'belarusian',
+    'sami',
+    'norse',
+    'mongolian',
+    'tibetan',
+    'indian',
+    'manchu',
+    'hawaiian',
+    'maori',
+    'samoan',
+    'tongan',
+    'boorong',
+    'seri',
+    'tukano',
+    'tikuna',
+  ];
+
+  it('mind a 18 kultúra elérhető, a választó sorrendjében', () => {
+    expect(repo.list().map((c) => c.id)).toEqual(ALL_CULTURES);
   });
 
   it('a nyugati kultúrában 88 csillagkép van, magyar nevekkel', () => {
@@ -51,12 +72,9 @@ describe('égi kultúrák (adatintegritás)', () => {
     expect(repo.getConstellation('western', 'Ori')?.nativeName).toBe('Orion');
   });
 
-  it.each(['hungarian', 'western'])(
-    'a(z) %s kultúra minden vonalcsillaga szerepel a katalógusban',
-    (id) => {
-      expect(repo.missingStars(id)).toEqual([]);
-    },
-  );
+  it.each(ALL_CULTURES)('a(z) %s kultúra minden vonalcsillaga szerepel a katalógusban', (id) => {
+    expect(repo.missingStars(id)).toEqual([]);
+  });
 
   it('a Göncölszekér 7 csillagból, 7 szakaszból áll', () => {
     const segments = repo.lineSegments('hungarian').filter((s) => s.constellationId === 'gonc');
