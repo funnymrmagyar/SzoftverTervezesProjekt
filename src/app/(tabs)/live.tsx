@@ -7,6 +7,7 @@ import { LocationPicker } from '@/features/live/LocationPicker';
 import { TimeControls } from '@/features/live/TimeControls';
 import { useSkyTime } from '@/features/live/useSkyTime';
 import { ViewControls } from '@/features/live/ViewControls';
+import { ConstellationLabels } from '@/render/ConstellationLabels';
 import { SkyScene } from '@/render/SkyScene';
 import { useSkyGestures } from '@/render/useSkyGestures';
 import { useWheelZoom } from '@/render/useWheelZoom';
@@ -19,6 +20,7 @@ export default function LiveScreen() {
   const location = useSkyStore((s) => s.location);
   const cultureId = useSkyStore((s) => s.cultureId);
   const showLines = useSkyStore((s) => s.showLines);
+  const showLabels = useSkyStore((s) => s.showLabels);
 
   const skyRef = useRef<View>(null);
   const { panHandlers, onLayout } = useSkyGestures();
@@ -45,6 +47,10 @@ export default function LiveScreen() {
       >
         <SkyScene date={date} location={location} cultureId={cultureId} showLines={showLines} />
       </View>
+
+      {showLabels ? (
+        <ConstellationLabels date={date} location={location} cultureId={cultureId} />
+      ) : null}
 
       <SafeAreaView
         style={styles.overlay}
