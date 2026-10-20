@@ -1,0 +1,131 @@
+{
+  "id": "hawaiian",
+  "name": "Hawaii csillagvonalak",
+  "summary": "A polinéz hajósok csillagnavigációja: négy nagy csillagvonal, amelyek segítségével műszer nélkül kelnek át az óceánon.",
+  "source": "Stellarium – hawaii csillagvonalak (Nainoa Thompson és Mau Piailug tanítása alapján; Kamehameha Schools, Honolulu, 2017). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "KOM",
+      "name": "Makaliʻi merítőedénye",
+      "nativeName": "Ke Ka o Makali'i",
+      "lines": [
+        [32349, 37279, 37826, 36850, 28360, 28380, 25428, 23015, 24608, 28360],
+        [32349, 30324, 30438]
+      ],
+      "description": "Az első csillagvonal (novembertől áprilisig): a Capella, a Castor, a Pollux, a Procyon és a Szíriusz egy kenu vízmerítő edényét formázzák, amely az Oriont és a Fiastyúkot kimeríti az éjszakai égre."
+    },
+    {
+      "id": "KHK",
+      "name": "A gyerekek fonaljátéka",
+      "nativeName": "Ka Hei-Hei o Na Keiki",
+      "lines": [
+        [27989, 26727, 27366, 24436, 25930, 25336, 27989],
+        [26727, 26311, 25930]
+      ],
+      "description": "Az Orion fényes csillagai: a gyerekek ujjakra feszített fonaljátéka (cérnajáték). Az öv Mintaka csillaga pontosan keleten kel és nyugaton nyugszik, ezért jó iránymutató."
+    },
+    {
+      "id": "MAK",
+      "name": "A főnök szemei",
+      "nativeName": "Makali'i",
+      "lines": [[17499, 17489]],
+      "description": "A Fiastyúk (Plejádok) két csillaga."
+    },
+    {
+      "id": "MEE",
+      "name": "Az öröm hangja",
+      "nativeName": "Me'e",
+      "lines": [[60965, 59803, 59316, 61359, 60965]],
+      "description": "A Holló csillagkép négy csillaga, amelyek egy dobozt alkotnak a Spica mellett."
+    },
+    {
+      "id": "NAH",
+      "name": "A Hetek",
+      "nativeName": "Na Hiku",
+      "lines": [[67301, 65378, 62956, 59774, 54061, 53910, 58001, 59774]],
+      "description": "A Göncölszekér hét csillaga; a név egyszerűen „a hét”."
+    },
+    {
+      "id": "IWI",
+      "name": "A Gerinc",
+      "nativeName": "Ka Iwikuamo'o",
+      "lines": [
+        [11767, 54061],
+        [67301, 69673, 65474],
+        [60965, 65474],
+        [60221, 61084]
+      ],
+      "description": "A második csillagvonal (áprilistól júliusig): egy gyík gerince a Sarkcsillagtól a Göncölszekéren, az Arcturuson (Hōkūleʻa, Hawaii zenitcsillaga, „az öröm csillaga”) és a Spicán át a Dél Keresztjéig. Nemzedékek leszármazási gerincét is jelképezheti."
+    },
+    {
+      "id": "MAN",
+      "name": "A főnök horgászzsinórja",
+      "nativeName": "Manaiakalani",
+      "lines": [
+        [85927, 86670, 87073, 86228, 84143, 82671, 82514, 82396, 81266, 80763, 80112, 78401],
+        [78820, 78401, 78265]
+      ],
+      "description": "A Skorpió: Maui félisten varázshorga, amellyel a monda szerint kihúzta a szigeteket a tengerből. A harmadik csillagvonal része (májustól októberig)."
+    },
+    {
+      "id": "NAV",
+      "name": "A hajósok háromszöge",
+      "nativeName": "Navigator's Triangle",
+      "lines": [
+        [102098, 97649, 91262, 102098],
+        [95947, 97165, 100453, 102488, 102098, 100453]
+      ],
+      "description": "A nyári háromszög (Deneb, Vega, Altair). A három csillag a polinéz háromszög három csücskét is jelképezi: Hawaiit, a Húsvét-szigetet és Új-Zélandot, amelyeket Maui horga húz."
+    },
+    {
+      "id": "LUP",
+      "name": "Kawelo sárkánya",
+      "nativeName": "Ka Lupe o Kawelo",
+      "lines": [
+        [677, 113881, 113963, 1067, 677],
+        [113368, 113963],
+        [746, 677],
+        [3419, 2081],
+        [1067, 3419],
+        [113881, 112731]
+      ],
+      "description": "A negyedik csillagvonal (szeptembertől februárig): Kauaʻi és Oʻahu nagy főnöke, Kawelo gyerekkorában elvesztett papírsárkánya. Közepe a Pegazus nagy négyszöge, amelynek négy csillaga Kawelo híres őseiről kapta a nevét."
+    },
+    {
+      "id": "IWA",
+      "name": "A Főnök-fregattmadár",
+      "nativeName": "'Iwa Keli'i",
+      "lines": [[8886, 6686, 4427, 3179, 746]],
+      "description": "A Kassziopeia W alakja: a fregattmadár, amely a hajósokat a szárazföld felé vezeti."
+    },
+    {
+      "id": "HAN",
+      "name": "A Hold gondozottja",
+      "nativeName": "Hanaiakamalama",
+      "lines": [
+        [61084, 60718],
+        [62434, 59747]
+      ],
+      "description": "A Dél Keresztje, a Gerinc csillagvonal déli iránymutatója. Magyarországról nem látható."
+    },
+    {
+      "id": "NAK",
+      "name": "A Mutatók",
+      "nativeName": "Nakuhikuhi",
+      "lines": [[71683, 68702]],
+      "description": "A Kentaur két fényes csillaga (Alfa és Béta Centauri), amelyek a Dél Keresztje felé mutatnak. Magyarországról nem látható."
+    },
+    {
+      "id": "KAO",
+      "name": "Kaʻōhiweliweli",
+      "nativeName": "Ka'ohiweliweli",
+      "lines": [
+        [57632, 54872, 54879, 49669, 49583, 50583, 50335, 48455, 47908],
+        [57632, 54879]
+      ],
+      "description": "Az Oroszlán csillagkép hawaii neve."
+    }
+  ]
+}

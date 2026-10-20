@@ -1,0 +1,124 @@
+{
+  "id": "samoan",
+  "name": "Szamoai égbolt",
+  "summary": "A „Hajósok szigeteinek” csillagai: horog, vadkacsa, jégmadár és tengeri szörny, a polinéz hajózás és a földművelés naptárának jelei.",
+  "source": "Stellarium – szamoai égi kultúra (Jake Fitisemanu, szamoai hagyományőrzők és történeti források alapján; programozás: Dan Smale). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "A Ravaszhal",
+      "nativeName": "Sumu",
+      "lines": [
+        [61084, 60718],
+        [62434, 59747]
+      ],
+      "description": "A Dél Keresztje. A monda szerint Filo és Mea (az Alfa és Béta Centauri) erre a halra horgászik. Magyarországról nem látható."
+    },
+    {
+      "id": "002",
+      "name": "A Két Férfi",
+      "nativeName": "Luatagata",
+      "lines": [[68702, 71683]],
+      "description": "Az Alfa és Béta Centauri: Filo és Mea, a két halász, akik a Ravaszhalra (Dél Keresztje) vadásznak. Magyarországról nem látható."
+    },
+    {
+      "id": "003",
+      "name": "A Három Hold",
+      "nativeName": "Tolugāmāuli",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három csillaga, a Hordozórúd része. A hajósok „csillagútja” volt Manuʻa és Pukapuka szigete között."
+    },
+    {
+      "id": "004",
+      "name": "A Vadkacsa",
+      "nativeName": "Toloa",
+      "lines": [
+        [80763, 80112, 78401, 78820],
+        [78401, 78104]
+      ],
+      "description": "A Skorpió feje: repülő kacsa, amelyre a monda szerint két csillagcsoport (az M4 és az M80 gömbhalmaz) vadászik. A kacsa feje, az Antares, a hajózásban is iránycsillag volt."
+    },
+    {
+      "id": "005",
+      "name": "A Csalis horog",
+      "nativeName": "Faipā",
+      "lines": [[85696, 85927, 86670, 87073, 86228, 84143, 82671, 82514, 82396]],
+      "description": "A Skorpió teljes horog alakja: ʻAloʻalolelā varázshorga."
+    },
+    {
+      "id": "006",
+      "name": "A Galambülő",
+      "nativeName": "Tūlālupe",
+      "lines": [[86228, 87073, 85927]],
+      "description": "A Skorpió farkának vége: a galambfogás előkelő sportjához kötődő alakzat."
+    },
+    {
+      "id": "007",
+      "name": "A Jégmadár",
+      "nativeName": "Ti'otala",
+      "lines": [
+        [102532, 102281, 101769, 101421],
+        [102532, 101958, 101769]
+      ],
+      "description": "A Delfin csillagkép. A monda szerint a jégmadár lesből támad a Szöcskére (a Pegazus csillagaira)."
+    },
+    {
+      "id": "008",
+      "name": "A Szöcske",
+      "nativeName": "Sē",
+      "lines": [
+        [107354, 112440, 113881, 113963],
+        [112440, 115250]
+      ],
+      "description": "A Pegazus csillagai: a szöcske, amelyre a Jégmadár (Delfin) lesben áll."
+    },
+    {
+      "id": "009",
+      "name": "A Hordozórúd",
+      "nativeName": "Amoga",
+      "lines": [[22449, 24331, 25930, 26311, 26727, 29651]],
+      "description": "Hosszú alakzat az Oriontól az Egyszarvúig, a Tiʻitiʻiatalaga-mondakörhöz kötve. A Szamoa és Tonga közti hajóút zenitcsillaga."
+    },
+    {
+      "id": "010",
+      "name": "A Gyertyadió-fáklya",
+      "nativeName": "Tuigālama",
+      "lines": [[28614, 28716, 27913, 28614]],
+      "description": "Az Orion felemelt karja és buzogánya: a gyertyadió (kukui) olajos magjából készült fáklya."
+    },
+    {
+      "id": "011",
+      "name": "A Fogó",
+      "nativeName": "I'ofi",
+      "lines": [[25428, 20205, 26451]],
+      "description": "A Bika szarvai és a Hyadok: fogó, Tiʻitiʻiatalaga (Maui) mondájához kötve."
+    },
+    {
+      "id": "012",
+      "name": "A Tengeri szörny",
+      "nativeName": "Tanifā",
+      "lines": [
+        [12706, 14135, 13954, 12828, 11484, 12706, 10826, 9487],
+        [10826, 8645, 8102, 9347],
+        [8645, 6537, 5364, 3419, 1562, 5364]
+      ],
+      "description": "A Cet csillagkép (a Cet farka a szörny feje): a szörny Liʻi félisten kenuját üldözi, akinek arcát a Fiastyúk (Matāliʻi) jelöli."
+    },
+    {
+      "id": "013",
+      "name": "Az Ősi harci buzogány",
+      "nativeName": "'Anava",
+      "lines": [[24608, 33449, 41704, 58001, 59774, 41704]],
+      "description": "Hosszú alakzat a Capellától a Nagy Medve csillagaiig."
+    },
+    {
+      "id": "014",
+      "name": "A Nagy Bárd",
+      "nativeName": "To'ivā",
+      "lines": [[49669, 49583, 50583, 50335, 48455, 47908]],
+      "description": "Az Oroszlán „sarlója”: Tapuʻitea (a Vénusz) fiának, Toʻivānak a jelképe. A Vénusz évente egyszer-kétszer áthalad az Oroszlánon: így látogatja meg anya a fiát."
+    }
+  ]
+}

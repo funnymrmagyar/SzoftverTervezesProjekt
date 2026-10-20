@@ -1,0 +1,91 @@
+{
+  "id": "sami",
+  "name": "Számi égbolt",
+  "summary": "Észak-Skandinávia őslakóinak ege: a hatalmas Szarva jávorszarvas és a rá vadászó íjászok.",
+  "source": "Stellarium – számi égi kultúra (Jonas Persson; Bo Lundmark: Bæi'vi mánno nástit, 1982, Johan Turi írásai alapján). Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "Szarva, a jávorszarvas",
+      "nativeName": "Sarva",
+      "lines": [
+        [8886, 6686, 4427, 3179, 746],
+        [6686, 14328, 15863, 14576],
+        [15863, 17358, 18532, 18246],
+        [17358, 24608, 25428],
+        [24608, 23767, 23015]
+      ],
+      "description": "Az ég uralkodó alakja: a Kassziopeia, a Perzeusz és a Szekeres egy részéből álló hatalmas jávorszarvas. A körülötte álló csillagok mind a rá vadászó alakok. Valószínűleg még a rénszarvas háziasítása előtti vadászkultúrából ered."
+    },
+    {
+      "id": "002",
+      "name": "Favdna íja és nyila",
+      "nativeName": "Fauna davgge",
+      "lines": [
+        [67301, 65378, 62956, 59774, 53910],
+        [54061, 58001]
+      ],
+      "description": "A Göncölszekér csillagai: a vadász íja, amellyel a jávorszarvasra céloz."
+    },
+    {
+      "id": "003",
+      "name": "Galla fiai",
+      "nativeName": "Gallabarneck",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három csillaga, Galla fiai, a vadász segítői."
+    },
+    {
+      "id": "004",
+      "name": "Az ég tartóoszlopa",
+      "nativeName": "Boahjenaste",
+      "lines": [[11767, 11767]],
+      "description": "A Sarkcsillag tartja az eget. A monda szerint ha Favdna nyila eltalálja, a világ véget ér."
+    },
+    {
+      "id": "005",
+      "name": "Favdna, a vadász",
+      "nativeName": "Favdna",
+      "lines": [[69673, 69673]],
+      "description": "Az Arcturus: a vadász, aki íjával a jávorszarvasra céloz."
+    },
+    {
+      "id": "006",
+      "name": "A Futó",
+      "nativeName": "The Runner",
+      "lines": [[91262, 91262]],
+      "description": "A Vega, a vadászat egyik segítője."
+    },
+    {
+      "id": "007",
+      "name": "A Hajnalcsillag",
+      "nativeName": "Guovso-naste",
+      "lines": [[97649, 97649]],
+      "description": "Johan Turi égtérképén a reggel közeledtét jelző csillag. Lehet a Vénusz is, itt az Altairhoz kötjük."
+    },
+    {
+      "id": "008",
+      "name": "A Kutyafalka",
+      "nativeName": "Rougot",
+      "lines": [[17702, 17702]],
+      "description": "A Fiastyúk (Plejádok): a vadászkutyák falkája. Másik neve „borjúcsorda” (Miese-cora)."
+    },
+    {
+      "id": "009",
+      "name": "Galla",
+      "lines": [[37279, 37279]],
+      "description": "A Procyon, a vadász egyik segítője. Az azonosítás bizonytalan: lehet a Rigel vagy a Szíriusz is, de az utóbbi a számik lakta északi tájakon alig látszik."
+    },
+    {
+      "id": "010",
+      "name": "A Síelők",
+      "nativeName": "Cuoigahægjek",
+      "lines": [
+        [36850, 36850],
+        [37826, 37826]
+      ],
+      "description": "Az Ikrek két fényes csillaga, a Castor és a Pollux: két síelő vadász."
+    }
+  ]
+}

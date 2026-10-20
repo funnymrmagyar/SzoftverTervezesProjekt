@@ -1,0 +1,58 @@
+{
+  "id": "maori",
+  "name": "Maori égbolt",
+  "summary": "Új-Zéland őslakóinak tengerjáró képei: kenuk, vitorlák és horgonykötelek az égen, amelyeket hajózásra és a vetés idejének jelzésére használtak.",
+  "source": "Stellarium – maori égi kultúra (Dan Smale; Elsdon Best: The Astronomical Knowledge of the Maori, 1955 és mások). A nevek törzsenként eltérhetnek. Magyar nevek és leírások: a csapat átdolgozása.",
+  "license": "CC BY-SA 4.0",
+  "lineColor": "#6aa9ff",
+  "constellations": [
+    {
+      "id": "001",
+      "name": "Taki-o-Autahi",
+      "lines": [
+        [61084, 60718],
+        [62434, 59747]
+      ],
+      "description": "A Dél Keresztje; másik maori neve Mahutonga. Magyarországról nem látható."
+    },
+    {
+      "id": "002",
+      "name": "Tama-rereti kenujának kötele",
+      "nativeName": "Te Taura-o-te-waka-o-Tamarereti",
+      "lines": [[68702, 71683]],
+      "description": "A Kentaur két fényes csillaga, a Dél Keresztje felé mutató „Mutatók”: a kenu kötele. Magyarországról nem látható."
+    },
+    {
+      "id": "003",
+      "name": "Tau-toro",
+      "lines": [[26727, 26311, 25930]],
+      "description": "Az Orion övének három csillaga."
+    },
+    {
+      "id": "004",
+      "name": "Tama-rereti nagy kenuja",
+      "nativeName": "Te Waka-o-Tama-Rereti",
+      "lines": [[82396, 82514, 82671, 84143, 86228, 87073, 86670, 85927, 85696]],
+      "description": "A Skorpió görbülő farka: Tama-rereti hosszú kenuja. Magyarországról csak alacsonyan, a déli látóhatár közelében látszik."
+    },
+    {
+      "id": "005",
+      "name": "Matakarehu",
+      "lines": [[21421, 20894, 20205, 20455, 20889]],
+      "description": "A Bika fejét alkotó V alakú Hyadok és a vöröses Aldebaran (maori nevén Taumatakuku)."
+    },
+    {
+      "id": "006",
+      "name": "Tainui vitorlája",
+      "nativeName": "Te Ra-o-Tainui",
+      "lines": [
+        [21421, 20894, 20205, 20455, 20889],
+        [21421, 20889],
+        [20205, 25930],
+        [17499, 20205],
+        [26727, 26311, 25930]
+      ],
+      "description": "Európai megfelelő nélküli alakzat: tengerjáró kettős kenu. Az Orion öve a gerinc, a Hyadok a karom alakú vitorla, a Fiastyúk (maori nevén Matariki) az orr. A Tainui a maorik egyik legendás vándorló kenuja."
+    }
+  ]
+}
