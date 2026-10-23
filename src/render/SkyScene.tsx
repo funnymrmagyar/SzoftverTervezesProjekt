@@ -41,6 +41,16 @@ function CameraRig() {
   return null;
 }
 
+function InvalidateOnLinesChange({ showLines }: { showLines: boolean }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    invalidate();
+  }, [invalidate, showLines]);
+
+  return null;
+}
+
 /** Az égbolt-gömb: a gyerekei egyenlítői koordinátákban vannak, ezt a csoportot forgatjuk. */
 function SkyDome({ matrix, children }: { matrix: Mat3; children: ReactNode }) {
   const ref = useRef<Group>(null);
@@ -83,6 +93,7 @@ export function SkyScene({ date, location, cultureId, showLines }: SkySceneProps
     >
       <color attach="background" args={[colors.sky]} />
       <CameraRig />
+      <InvalidateOnLinesChange showLines={showLines} />
       <SkyDome matrix={matrix}>
         {showLines && culture ? (
           <ConstellationLines segments={segments} color={colors.constellationLine} />

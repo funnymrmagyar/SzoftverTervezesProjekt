@@ -28,7 +28,7 @@ export function StarryBackdrop({ count = 90 }: { count?: number }) {
   }, [count]);
 
   return (
-    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
       {stars.map((s, i) => (
         <View
           key={i}

@@ -24,7 +24,9 @@ const fragmentShader = /* glsl */ `
   void main() {
     // Kerek, lágy szélű pont: középen fényes, kifelé halványul.
     float d = length(gl_PointCoord - vec2(0.5));
-    float alpha = smoothstep(0.5, 0.05, d);
+    // A smoothstep fordított élértékei GLSL-ben nem definiáltak, és egyes GPU-kon
+    // emiatt teljesen eltűnhetnek a csillagok.
+    float alpha = 1.0 - smoothstep(0.05, 0.5, d);
     if (alpha < 0.01) discard;
     gl_FragColor = vec4(vColor, alpha);
   }

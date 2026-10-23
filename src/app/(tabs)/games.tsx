@@ -1,45 +1,83 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, font, radius, spacing } from '@/ui/theme';
+import { GameCard } from '@/features/games/GameCard';
+import { GAME_OPTIONS } from '@/features/games/gameOptions';
+import { ScreenContainer } from '@/ui/ScreenContainer';
+import { Badge } from '@/ui/components';
+import { t } from '@/ui/i18n';
+import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 
-const PLANNED = [
-  {
-    title: 'Csillagkép-felismerő',
-    text: 'Válassz kultúrát, és találd meg az égen a kérdezett csillagképet.',
-  },
-  { title: 'Csillagról csillagra', text: 'Egy csillagkép csillagait kell egyenként megtalálni.' },
-  { title: 'Ranglista', text: 'Online toplista kultúránként és játékmódonként.' },
-];
-
-/** Helyőrző: a Seterra-típusú játékok a következő hetekben készülnek. */
 export default function GamesScreen() {
   return (
-    <SafeAreaView style={styles.safe}>
-      <Text style={styles.title}>Játékok</Text>
-      <Text style={styles.subtitle}>Hamarosan — ezek készülnek:</Text>
-      {PLANNED.map((g) => (
-        <View key={g.title} style={styles.card}>
-          <Text style={styles.cardTitle}>{g.title}</Text>
-          <Text style={styles.cardText}>{g.text}</Text>
+    <ScreenContainer maxWidth={sizing.contentCompact}>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.headingCopy}>
+            <Text style={styles.title}>{t('games.title')}</Text>
+            <Text style={styles.subtitle}>Fedezd fel az égbolt játékait.</Text>
+          </View>
+          <View style={styles.headerIcon}>
+            <Ionicons
+              name="game-controller-outline"
+              size={sizing.icon + spacing.xs}
+              color={colors.accent}
+            />
+          </View>
         </View>
-      ))}
-    </SafeAreaView>
+
+        <View style={styles.cards}>
+          {GAME_OPTIONS.map((game) => (
+            <GameCard
+              key={game.id}
+              game={game}
+              title={t(game.titleKey)}
+              subtitle={t(game.subtitleKey)}
+              soonLabel={t('games.soon')}
+              onLeaderboardPress={() =>
+                router.push({ pathname: '/leaderboard', params: { game: game.id } })
+              }
+            />
+          ))}
+        </View>
+
+        <View style={styles.note}>
+          <Badge label={t('leaderboard.demo')} icon="sparkles-outline" />
+          <Text style={styles.noteText}>A játékok fejlesztés alatt állnak.</Text>
+        </View>
+      </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.bg, padding: spacing.xl, gap: spacing.md },
+  content: { flexGrow: 1, gap: spacing.xl },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.lg,
+  },
+  headingCopy: { flex: 1, gap: spacing.sm },
   title: { ...font.title, color: colors.text },
-  subtitle: { color: colors.textMuted, marginBottom: spacing.sm },
-  card: {
-    padding: spacing.lg,
+  subtitle: { ...font.small, color: colors.textMuted, lineHeight: spacing.xl },
+  headerIcon: {
+    width: sizing.gameIcon,
+    height: sizing.gameIcon,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: radius.md,
-    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    gap: spacing.xs,
+    backgroundColor: colors.glass,
   },
-  cardTitle: { color: colors.text, fontSize: 17, fontWeight: '600' },
-  cardText: { color: colors.textMuted },
+  cards: { gap: spacing.md },
+  note: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  noteText: { flex: 1, ...font.caption, color: colors.textMuted },
 });

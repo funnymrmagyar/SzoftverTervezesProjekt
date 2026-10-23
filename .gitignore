@@ -25,13 +25,16 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
 # macOS
 .DS_Store
 *.pem
 
 # local env files
-.env*.local
+.env
+.env.*
+!.env.example
 
 # typescript
 *.tsbuildinfo
@@ -47,3 +50,7 @@ __pycache__/
 # Firebase emulátor naplók
 firebase-debug.log
 *-debug.log
+package-lock.json
+
+# test output
+coverage/

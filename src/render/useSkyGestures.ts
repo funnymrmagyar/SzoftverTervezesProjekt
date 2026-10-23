@@ -1,5 +1,11 @@
-import { useState } from 'react';
-import { PanResponder, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
+import { useEffect, useState, type RefObject } from 'react';
+import {
+  PanResponder,
+  Platform,
+  type GestureResponderEvent,
+  type LayoutChangeEvent,
+  type View,
+} from 'react-native';
 
 import { useViewStore } from '@/state/useViewStore';
 
@@ -17,33 +23,166 @@ function createSkyGestures() {
   let viewportHeight = 800;
   let last = { x: 0, y: 0 };
   let pinch: { distance: number; fov: number } | null = null;
+  let pinchUsed = false;
+  let pendingDrag = { x: 0, y: 0 };
+  let pendingFov: number | null = null;
+  let animationFrame: number | null = null;
+  let flingFrame: number | null = null;
+  let velocity = { x: 0, y: 0 };
+  let webMouseDragging = false;
+  let webLast = { x: 0, y: 0 };
+  let webLastTime = 0;
+  let webVelocity = { x: 0, y: 0 };
+
+  function finishWebMouseDrag() {
+    if (!webMouseDragging) return;
+    webMouseDragging = false;
+    window.removeEventListener('mousemove', onWebMouseMove);
+    window.removeEventListener('mouseup', onWebMouseUp);
+    window.removeEventListener('blur', onWebBlur);
+    startFling(webVelocity.x, webVelocity.y);
+    webVelocity = { x: 0, y: 0 };
+  }
+
+  function onWebMouseMove(event: globalThis.MouseEvent) {
+    if (!webMouseDragging) return;
+    event.preventDefault();
+    const dx = event.clientX - webLast.x;
+    const dy = event.clientY - webLast.y;
+    queueDrag(dx, dy);
+    const now = performance.now();
+    const elapsed = Math.max(1, now - webLastTime);
+    webVelocity = { x: dx / elapsed, y: dy / elapsed };
+    webLast = { x: event.clientX, y: event.clientY };
+    webLastTime = now;
+  }
+
+  function onWebMouseUp() {
+    finishWebMouseDrag();
+  }
+
+  function onWebBlur() {
+    finishWebMouseDrag();
+  }
+
+  function cancelFling() {
+    if (flingFrame !== null) cancelAnimationFrame(flingFrame);
+    flingFrame = null;
+    velocity = { x: 0, y: 0 };
+  }
+
+  function applyPendingDrag() {
+    animationFrame = null;
+    const { x, y } = pendingDrag;
+    pendingDrag = { x: 0, y: 0 };
+    if (x || y) useViewStore.getState().drag(x, y, viewportHeight);
+    if (pendingFov !== null) useViewStore.getState().setFov(pendingFov);
+    pendingFov = null;
+  }
+
+  function queueDrag(dx: number, dy: number) {
+    pendingDrag.x += dx;
+    pendingDrag.y += dy;
+    if (animationFrame === null) animationFrame = requestAnimationFrame(applyPendingDrag);
+  }
+
+  function queueFov(fov: number) {
+    pendingFov = fov;
+    if (animationFrame === null) animationFrame = requestAnimationFrame(applyPendingDrag);
+  }
+
+  function startFling(vx: number, vy: number) {
+    cancelFling();
+    velocity = { x: vx * 16, y: vy * 16 };
+    const animate = () => {
+      const speed = Math.hypot(velocity.x, velocity.y);
+      if (speed < 0.18) {
+        flingFrame = null;
+        return;
+      }
+      useViewStore.getState().drag(velocity.x, velocity.y, viewportHeight);
+      velocity = { x: velocity.x * 0.9, y: velocity.y * 0.9 };
+      flingFrame = requestAnimationFrame(animate);
+    };
+    flingFrame = requestAnimationFrame(animate);
+  }
+
+  function onWebMouseDown(event: globalThis.MouseEvent) {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    cancelFling();
+    webMouseDragging = true;
+    webLast = { x: event.clientX, y: event.clientY };
+    webLastTime = performance.now();
+    webVelocity = { x: 0, y: 0 };
+    window.addEventListener('mousemove', onWebMouseMove, { passive: false });
+    window.addEventListener('mouseup', onWebMouseUp);
+    window.addEventListener('blur', onWebBlur);
+  }
 
   const responder = PanResponder.create({
-    // A *Capture változatokkal a gesztust a 3D vászon előtt elkapjuk.
-    onStartShouldSetPanResponderCapture: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
+    onStartShouldSetPanResponderCapture: () => false,
+    onMoveShouldSetPanResponderCapture: (e, g) =>
+      (e.nativeEvent.touches?.length ?? 0) >= 2 || Math.abs(g.dx) > 6 || Math.abs(g.dy) > 6,
     onPanResponderTerminationRequest: () => false,
-    onPanResponderGrant: () => {
-      last = { x: 0, y: 0 };
+    onPanResponderGrant: (_e, g) => {
+      cancelFling();
+      last = { x: g.dx, y: g.dy };
       pinch = null;
+      pinchUsed = false;
     },
     onPanResponderMove: (e, g) => {
       const view = useViewStore.getState();
       const distance = touchDistance(e);
-      if (distance) {
-        // Két ujj: nagyítás a kezdeti távolsághoz képest
+      if (distance !== null) {
+        cancelFling();
+        pinchUsed = true;
+        last = { x: g.dx, y: g.dy };
         if (!pinch) pinch = { distance, fov: view.fov };
-        else view.setFov((pinch.fov * pinch.distance) / distance);
+        else queueFov((pinch.fov * pinch.distance) / distance);
       } else {
+        if (pinch) last = { x: g.dx, y: g.dy };
         pinch = null;
-        view.drag(g.dx - last.x, g.dy - last.y, viewportHeight);
+        queueDrag(g.dx - last.x, g.dy - last.y);
       }
       last = { x: g.dx, y: g.dy };
+    },
+    onPanResponderRelease: (_e, g) => {
+      if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        applyPendingDrag();
+      }
+      if (!pinchUsed) startFling(g.vx, g.vy);
+      pinch = null;
+      pinchUsed = false;
+    },
+    onPanResponderTerminate: () => {
+      cancelFling();
+      pinch = null;
+      pinchUsed = false;
+      pendingDrag = { x: 0, y: 0 };
+      if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+      animationFrame = null;
     },
   });
 
   return {
     panHandlers: responder.panHandlers,
+    onWebMouseDown,
+    dispose: () => {
+      cancelFling();
+      if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+      pendingDrag = { x: 0, y: 0 };
+      pendingFov = null;
+      pinch = null;
+      pinchUsed = false;
+      if (webMouseDragging) {
+        finishWebMouseDrag();
+        cancelFling();
+      }
+      webVelocity = { x: 0, y: 0 };
+    },
     onLayout: (e: LayoutChangeEvent) => {
       viewportHeight = e.nativeEvent.layout.height;
     },
@@ -51,7 +190,17 @@ function createSkyGestures() {
 }
 
 /** Húzással forgatható, csippentéssel nagyítható égbolt (mobilon és weben is). */
-export function useSkyGestures() {
+export function useSkyGestures(ref: RefObject<View | null>) {
   const [gestures] = useState(createSkyGestures);
-  return gestures;
+  useEffect(() => () => gestures.dispose(), [gestures]);
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const element = ref.current;
+    if (!element || typeof HTMLElement === 'undefined' || !(element instanceof HTMLElement)) return;
+    element.addEventListener('mousedown', gestures.onWebMouseDown, true);
+    return () => element.removeEventListener('mousedown', gestures.onWebMouseDown, true);
+  }, [gestures, ref]);
+  return {
+    ...gestures,
+  };
 }

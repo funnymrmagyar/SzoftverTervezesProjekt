@@ -1,0 +1,51 @@
+const messages = {
+  hu: {
+    'nav.sky': 'Égbolt',
+    'nav.games': 'Játékok',
+    'nav.leaderboard': 'Ranglista',
+    'nav.profile': 'Profil',
+    'games.title': 'Játékok',
+    'games.identify.title': 'Csillagkép-felismerő',
+    'games.identify.subtitle': 'Ismerd fel a csillagképeket',
+    'games.connect.title': 'Csillagról csillagra',
+    'games.connect.subtitle': 'Kösd össze a csillagokat',
+    'games.soon': 'Hamarosan',
+    'leaderboard.demo': 'Demó',
+    'leaderboard.week': 'Heti',
+    'leaderboard.allTime': 'Összes',
+    'leaderboard.allGames': 'Mind',
+    'leaderboard.identify': 'Felismerő',
+    'leaderboard.connect': 'Csillagról',
+    'leaderboard.cultureAll': 'Mind',
+    'leaderboard.cultureHungarian': 'Magyar',
+    'leaderboard.cultureWestern': 'Nyugati',
+    'leaderboard.cultureHawaiian': 'Hawaii',
+    'leaderboard.noResults': 'Még nincs eredmény.',
+    'leaderboard.personal': 'Saját helyed',
+    'leaderboard.noScore': 'Még nincs pontod',
+    'profile.language': 'Nyelv',
+    'profile.trophies': 'Trófeák',
+    'profile.signOut': 'Kijelentkezés',
+    'profile.languageTitle': 'Alkalmazás nyelve',
+    'profile.hungarian': 'Magyar',
+    'profile.english': 'English',
+    'profile.connected': 'Bejelentkezve',
+    'profile.account': 'Fiók',
+    'profile.firstLight': 'Első fény',
+    'profile.explorer': 'Felfedező',
+    'profile.moon': 'Holdjáró',
+    'profile.compass': 'Iránytű',
+    'profile.stargazer': 'Csillagnéző',
+    'profile.streak': 'Sorozat',
+    'profile.stargazerTitle': 'Csillagnéző',
+    'profile.appVersion': 'Verzió',
+    'profile.englishSoon': 'Az angol nyelvű felület részben készül.',
+    'profile.saveError': 'A nyelvi beállítás mentése nem sikerült.',
+  },
+} as const;
+
+export type TranslationKey = keyof (typeof messages)['hu'];
+
+export function t(key: TranslationKey): string {
+  return messages.hu[key];
+}

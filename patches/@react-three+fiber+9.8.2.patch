@@ -1,0 +1,177 @@
+diff --git a/node_modules/@react-three/fiber/dist/events-0dab3c53.cjs.dev.js b/node_modules/@react-three/fiber/dist/events-0dab3c53.cjs.dev.js
+index 705fbd5..9a02485 100644
+--- a/node_modules/@react-three/fiber/dist/events-0dab3c53.cjs.dev.js
++++ b/node_modules/@react-three/fiber/dist/events-0dab3c53.cjs.dev.js
+@@ -32,6 +32,45 @@ var React__namespace = /*#__PURE__*/_interopNamespace(React);
+ var THREE__namespace = /*#__PURE__*/_interopNamespace(THREE);
+ var w1__default = /*#__PURE__*/_interopDefault(w1);
+ 
++function createClock() {
++  const timer = new THREE.Timer();
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      timer.reset();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      timer.update();
++      const delta = timer.getDelta();
++      this.oldTime = performance.now();
++      this.elapsedTime += delta;
++      return delta;
++    },
++  };
++}
++
+ var threeTypes = /*#__PURE__*/Object.freeze({
+   __proto__: null
+ });
+@@ -1229,7 +1268,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE__namespace.Clock(),
++      clock: createClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',
+diff --git a/node_modules/@react-three/fiber/dist/events-98e95d43.cjs.prod.js b/node_modules/@react-three/fiber/dist/events-98e95d43.cjs.prod.js
+index c265e9e..8432e91 100644
+--- a/node_modules/@react-three/fiber/dist/events-98e95d43.cjs.prod.js
++++ b/node_modules/@react-three/fiber/dist/events-98e95d43.cjs.prod.js
+@@ -32,6 +32,45 @@ var React__namespace = /*#__PURE__*/_interopNamespace(React);
+ var THREE__namespace = /*#__PURE__*/_interopNamespace(THREE);
+ var w1__default = /*#__PURE__*/_interopDefault(w1);
+ 
++function createClock() {
++  const timer = new THREE.Timer();
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      timer.reset();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      timer.update();
++      const delta = timer.getDelta();
++      this.oldTime = performance.now();
++      this.elapsedTime += delta;
++      return delta;
++    },
++  };
++}
++
+ var threeTypes = /*#__PURE__*/Object.freeze({
+   __proto__: null
+ });
+@@ -1229,7 +1268,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE__namespace.Clock(),
++      clock: createClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',
+diff --git a/node_modules/@react-three/fiber/dist/events-e51d7528.esm.js b/node_modules/@react-three/fiber/dist/events-e51d7528.esm.js
+index 6c801a2..ffc1139 100644
+--- a/node_modules/@react-three/fiber/dist/events-e51d7528.esm.js
++++ b/node_modules/@react-three/fiber/dist/events-e51d7528.esm.js
+@@ -7,6 +7,45 @@ import { suspend, preload, clear } from 'suspend-react';
+ import { useFiber, useContextBridge, traverseFiber, useActivityBridge as useActivityBridge$1 } from 'its-fine';
+ import w1, { unstable_getCurrentPriorityLevel, unstable_IdlePriority, unstable_LowPriority, unstable_NormalPriority, unstable_UserBlockingPriority, unstable_ImmediatePriority, unstable_scheduleCallback } from 'scheduler';
+ 
++function createClock() {
++  const timer = new THREE.Timer();
++  return {
++    autoStart: true,
++    startTime: 0,
++    oldTime: 0,
++    elapsedTime: 0,
++    running: false,
++    start() {
++      timer.reset();
++      this.startTime = performance.now();
++      this.oldTime = this.startTime;
++      this.elapsedTime = 0;
++      this.running = true;
++    },
++    stop() {
++      this.getElapsedTime();
++      this.running = false;
++      this.autoStart = false;
++    },
++    getElapsedTime() {
++      this.getDelta();
++      return this.elapsedTime;
++    },
++    getDelta() {
++      if (this.autoStart && !this.running) {
++        this.start();
++        return 0;
++      }
++      if (!this.running) return 0;
++      timer.update();
++      const delta = timer.getDelta();
++      this.oldTime = performance.now();
++      this.elapsedTime += delta;
++      return delta;
++    },
++  };
++}
++
+ var threeTypes = /*#__PURE__*/Object.freeze({
+   __proto__: null
+ });
+@@ -1204,7 +1243,7 @@ const createStore = (invalidate, advance) => {
+       linear: false,
+       flat: false,
+       controls: null,
+-      clock: new THREE.Clock(),
++      clock: createClock(),
+       pointer,
+       mouse: pointer,
+       frameloop: 'always',

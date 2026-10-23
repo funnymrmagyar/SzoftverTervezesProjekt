@@ -1,116 +1,114 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { PRESET_LOCATIONS } from '@/core/locations';
 import { getDeviceLocation } from '@/services/location/deviceLocation';
 import { useSkyStore } from '@/state/useSkyStore';
-import { colors, radius, spacing } from '@/ui/theme';
+import { compassPoint } from '@/core/astronomy';
+import { useViewStore } from '@/state/useViewStore';
+import { Select } from '@/ui/Select';
+import type { SelectOption } from '@/ui/Select';
+import { colors, font, radius, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
 
-import { formatLocation, PRESET_LOCATIONS } from '@/core/locations';
+const GPS_LOCATION = 'gps';
+const locationOptions: SelectOption<string>[] = [
+  {
+    value: GPS_LOCATION,
+    label: 'Saját hely',
+    description: 'Helymeghatározás GPS-szel',
+    icon: 'navigate-outline',
+  },
+  ...PRESET_LOCATIONS.map((location, index) => ({
+    value: `city-${index}`,
+    label: location.label ?? 'Ismeretlen hely',
+    description: 'Kézi megfigyelési hely',
+    icon: 'location-outline' as const,
+  })),
+];
 
-/** A megfigyelési hely kijelzője; koppintásra GPS vagy város választható. */
 export function LocationPicker() {
-  const location = useSkyStore((s) => s.location);
-  const source = useSkyStore((s) => s.locationSource);
-  const setLocation = useSkyStore((s) => s.setLocation);
-  const [open, setOpen] = useState(false);
+  const location = useSkyStore((state) => state.location);
+  const source = useSkyStore((state) => state.locationSource);
+  const setLocation = useSkyStore((state) => state.setLocation);
+  const azimuth = useViewStore((state) => Math.round(state.azimuth));
   const [gpsMessage, setGpsMessage] = useState<string | null>(null);
+  const layout = useBreakpoint();
+  const presetIndex = PRESET_LOCATIONS.findIndex(
+    (preset) => preset.latitude === location.latitude && preset.longitude === location.longitude,
+  );
+  const selectedLocation = source === 'gps' ? GPS_LOCATION : `city-${Math.max(presetIndex, 0)}`;
 
-  async function requestGps() {
-    setGpsMessage('Hely lekérése…');
-    const loc = await getDeviceLocation();
-    if (loc) {
-      setLocation(loc, 'gps');
-      setGpsMessage(null);
-      setOpen(false);
-    } else {
-      setGpsMessage('A helymeghatározás nem engedélyezett vagy nem elérhető.');
+  async function chooseLocation(value: string) {
+    setGpsMessage(null);
+    if (value === GPS_LOCATION) {
+      try {
+        const result = await getDeviceLocation();
+        if (result.status === 'permission-denied') {
+          setGpsMessage('A helymeghatározási engedélyt nem adtad meg.');
+          return;
+        }
+        setLocation(result.location, 'gps');
+      } catch (error) {
+        console.error('A GPS-hely meghatározása nem sikerült.', error);
+        setGpsMessage('Nem sikerült meghatározni a helyed. Próbáld újra, vagy válassz várost.');
+      }
+      return;
     }
+
+    const index = Number(value.replace('city-', ''));
+    const selected = PRESET_LOCATIONS[index];
+    if (selected) setLocation(selected, 'manual');
   }
 
   return (
-    <>
-      <Pressable style={styles.chip} onPress={() => setOpen(true)} testID="location-chip">
-        <Ionicons
-          name={source === 'gps' ? 'navigate' : 'location-outline'}
-          size={14}
-          color={colors.text}
-        />
-        <Text style={styles.chipText}>{formatLocation(location)}</Text>
-      </Pressable>
-
-      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setOpen(false)}>
-          <Pressable style={styles.sheet} onPress={() => undefined}>
-            <Text style={styles.title}>Megfigyelési hely</Text>
-            <ScrollView style={styles.list}>
-              <Pressable style={styles.item} onPress={requestGps}>
-                <Ionicons name="navigate" size={16} color={colors.accent} />
-                <Text style={styles.itemText}>Saját hely (GPS)</Text>
-              </Pressable>
-              {gpsMessage ? <Text style={styles.message}>{gpsMessage}</Text> : null}
-              {PRESET_LOCATIONS.map((loc) => (
-                <Pressable
-                  key={loc.label}
-                  style={styles.item}
-                  onPress={() => {
-                    setLocation(loc, 'manual');
-                    setOpen(false);
-                  }}
-                >
-                  <Ionicons name="location-outline" size={16} color={colors.textMuted} />
-                  <Text style={styles.itemText}>{loc.label}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
-    </>
+    <View style={styles.wrapper}>
+      <Select
+        value={selectedLocation}
+        options={locationOptions}
+        onChange={chooseLocation}
+        label="Megfigyelési hely"
+        triggerIcon="location-outline"
+        compactTrigger={!layout.expanded}
+        testID="location-picker"
+      />
+      {layout.expanded ? (
+        <View
+          style={styles.direction}
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={`${compassPoint(azimuth)}, ${azimuth} fok`}
+        >
+          <Ionicons name="compass-outline" size={sizing.iconSmall} color={colors.accent} />
+          <Text style={styles.directionText}>
+            {compassPoint(azimuth)} · {azimuth}°
+          </Text>
+        </View>
+      ) : null}
+      {gpsMessage ? (
+        <Text style={styles.error} accessibilityRole="alert">
+          {gpsMessage}
+        </Text>
+      ) : null}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  chip: {
+  wrapper: { alignItems: 'flex-end', gap: spacing.xs },
+  direction: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs + 2,
-    borderRadius: radius.pill,
-    backgroundColor: colors.overlay,
-    borderWidth: 1,
-    borderColor: colors.border,
+    paddingHorizontal: spacing.sm,
   },
-  chipText: { color: colors.text, fontSize: 13 },
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    padding: spacing.xl,
+  directionText: { ...font.caption, color: colors.textMuted },
+  error: {
+    maxWidth: sizing.contentCompact,
+    padding: spacing.sm,
+    borderRadius: radius.sm,
+    color: colors.text,
+    backgroundColor: colors.glassStrong,
   },
-  sheet: {
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 400,
-    maxHeight: '80%',
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  title: { color: colors.text, fontSize: 18, fontWeight: '600', marginBottom: spacing.md },
-  list: { flexGrow: 0 },
-  item: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingVertical: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-  },
-  itemText: { color: colors.text, fontSize: 16 },
-  message: { color: colors.textMuted, fontSize: 13, paddingVertical: spacing.sm },
 });

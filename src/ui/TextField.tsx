@@ -24,16 +24,16 @@ export function TextField({ label, error, style, ...inputProps }: TextFieldProps
 
 const styles = StyleSheet.create({
   wrapper: { gap: spacing.xs },
-  label: { color: colors.textMuted, fontSize: 14 },
+  label: { color: colors.textMuted, fontSize: 12, fontWeight: '600' },
   input: {
-    minHeight: 48,
+    minHeight: 50,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg,
     color: colors.text,
     paddingHorizontal: spacing.lg,
-    fontSize: 16,
+    fontSize: 15,
   },
   inputError: { borderColor: colors.danger },
   error: { color: colors.danger, fontSize: 13 },

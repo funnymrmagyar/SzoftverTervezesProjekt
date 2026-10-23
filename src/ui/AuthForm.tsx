@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -24,6 +25,12 @@ export function AuthForm({ title, subtitle, error, children }: AuthFormProps) {
       >
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.card}>
+            <View style={styles.brand}>
+              <View style={styles.brandIcon}>
+                <Ionicons name="sparkles" size={19} color={colors.accent} />
+              </View>
+              <Text style={styles.brandName}>CSILLAGNÉZŐ</Text>
+            </View>
             <Text style={styles.title}>{title}</Text>
             {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
             {error ? (
@@ -45,15 +52,25 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, justifyContent: 'center', padding: spacing.xl },
   card: {
     width: '100%',
-    maxWidth: 420,
+    maxWidth: 440,
     alignSelf: 'center',
     gap: spacing.lg,
-    padding: spacing.xl,
+    padding: spacing.xxl,
     borderRadius: radius.lg,
-    backgroundColor: colors.overlay,
+    backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
+  brand: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  brandIcon: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.md,
+    backgroundColor: colors.cardHighlight,
+  },
+  brandName: { color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
   title: { ...font.heading, fontSize: 26, color: colors.text },
   subtitle: { color: colors.textMuted, fontSize: 15, marginTop: -spacing.sm },
   errorBox: {

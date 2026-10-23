@@ -1,43 +1,103 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router/js-tabs';
 import type { ComponentProps } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, type ColorValue } from 'react-native';
 
+import { AppTabBar } from '@/ui/AppTabBar';
+import { motion, colors, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
+import { useReducedMotion } from '@/ui/useReducedMotion';
 import { useAuthStore } from '@/state/useAuthStore';
-import { colors } from '@/ui/theme';
 
-type IconProps = ComponentProps<typeof Ionicons>;
+type IconName = ComponentProps<typeof Ionicons>['name'];
 
-function tabIcon(name: IconProps['name']) {
-  return function TabIcon({ color, size }: { color: IconProps['color']; size: number }) {
+function tabIcon(name: IconName) {
+  return function TabIcon({ color, size }: { focused: boolean; color: ColorValue; size: number }) {
     return <Ionicons name={name} color={color} size={size} />;
   };
 }
 
 export default function TabsLayout() {
-  const loading = useAuthStore((s) => s.status === 'loading');
+  const loading = useAuthStore((state) => state.status === 'loading');
+  const reduceMotion = useReducedMotion();
+  const { expanded } = useBreakpoint();
 
   return (
     <>
       <Tabs
+        tabBar={(props) => <AppTabBar {...props} />}
         screenOptions={{
           headerShown: false,
+          animation: reduceMotion ? 'none' : 'fade',
+          transitionSpec: {
+            animation: 'timing',
+            config: { duration: motion.standard },
+          },
+          sceneStyleInterpolator: reduceMotion
+            ? undefined
+            : ({ current }) => ({
+                sceneStyle: {
+                  opacity: current.progress.interpolate({
+                    inputRange: [-1, 0, 1],
+                    outputRange: [0, 1, 0],
+                  }),
+                  transform: [
+                    {
+                      translateX: current.progress.interpolate({
+                        inputRange: [-1, 0, 1],
+                        outputRange: [-spacing.sm, 0, spacing.sm],
+                      }),
+                    },
+                  ],
+                },
+              }),
+          tabBarPosition: expanded ? 'left' : 'bottom',
+          tabBarStyle: expanded
+            ? { position: 'absolute', width: sizing.navWidth, backgroundColor: colors.transparent }
+            : { position: 'absolute', backgroundColor: colors.transparent, borderTopWidth: 0 },
+          tabBarHideOnKeyboard: true,
+          tabBarShowLabel: false,
           tabBarActiveTintColor: colors.accent,
           tabBarInactiveTintColor: colors.textMuted,
-          tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+          tabBarVisibilityAnimationConfig: {
+            show: { animation: 'timing', config: { duration: motion.standard } },
+            hide: { animation: 'timing', config: { duration: motion.quick } },
+          },
         }}
       >
-        <Tabs.Screen name="live" options={{ title: 'Égbolt', tabBarIcon: tabIcon('sparkles') }} />
+        <Tabs.Screen
+          name="live"
+          options={{
+            title: 'Égbolt',
+            tabBarButtonTestID: 'tab-live',
+            tabBarIcon: tabIcon('sparkles-outline'),
+          }}
+        />
         <Tabs.Screen
           name="games"
-          options={{ title: 'Játékok', tabBarIcon: tabIcon('game-controller') }}
+          options={{
+            title: 'Játékok',
+            tabBarButtonTestID: 'tab-games',
+            tabBarIcon: tabIcon('game-controller-outline'),
+          }}
+        />
+        <Tabs.Screen
+          name="leaderboard"
+          options={{
+            title: 'Ranglista',
+            tabBarButtonTestID: 'tab-leaderboard',
+            tabBarIcon: tabIcon('trophy-outline'),
+          }}
         />
         <Tabs.Screen
           name="profile"
-          options={{ title: 'Profil', tabBarIcon: tabIcon('person-circle') }}
+          options={{
+            title: 'Profil',
+            tabBarButtonTestID: 'tab-profile',
+            tabBarIcon: tabIcon('person-circle-outline'),
+          }}
         />
       </Tabs>
-      {/* Amíg nem tudjuk, be van-e jelentkezve a felhasználó, eltakarjuk a tartalmat. */}
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator color={colors.accent} size="large" />

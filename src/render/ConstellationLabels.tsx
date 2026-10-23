@@ -1,5 +1,12 @@
 import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  type LayoutChangeEvent,
+  type TextStyle,
+} from 'react-native';
 
 import { skyRotationMatrix } from '@/core/astronomy';
 import { getSkyCultures } from '@/core/catalog';
@@ -12,17 +19,26 @@ import {
   LABEL_FONT_SIZE,
   LABEL_LINE_HEIGHT,
   layoutLabels,
+  estimateLabelWidth,
   type Viewport,
 } from './labelLayout';
+
+type LabelTextStyle = TextStyle & { textShadow?: string };
+
+const labelShadow: LabelTextStyle =
+  Platform.OS === 'web'
+    ? { textShadow: '0 0 3px rgba(0, 0, 0, 0.9)' }
+    : {
+        textShadowColor: 'rgba(0, 0, 0, 0.9)',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 3,
+      };
 
 interface Props {
   date: Date;
   location: GeoLocation;
   cultureId: string;
 }
-
-/** Egy felirat dobozának szélessége; a szöveg ezen belül középre igazodik. */
-const LABEL_BOX_WIDTH = 200;
 
 /**
  * Csillagképnevek a 3D égbolt fölött, Stellarium-stílusban, a csillagkép közepén.
@@ -56,8 +72,7 @@ export function ConstellationLabels({ date, location, cultureId }: Props) {
 
   return (
     <View
-      style={StyleSheet.absoluteFill}
-      pointerEvents="none"
+      style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}
       onLayout={onLayout}
       testID="constellation-labels"
     >
@@ -68,8 +83,9 @@ export function ConstellationLabels({ date, location, cultureId }: Props) {
           style={[
             styles.label,
             {
-              left: label.x - LABEL_BOX_WIDTH / 2,
+              left: label.x - estimateLabelWidth(label.name) / 2,
               top: label.y - LABEL_LINE_HEIGHT / 2,
+              width: estimateLabelWidth(label.name),
             },
           ]}
         >
@@ -83,7 +99,6 @@ export function ConstellationLabels({ date, location, cultureId }: Props) {
 const styles = StyleSheet.create({
   label: {
     position: 'absolute',
-    width: LABEL_BOX_WIDTH,
     textAlign: 'center',
     color: colors.textMuted,
     fontSize: LABEL_FONT_SIZE,
@@ -91,9 +106,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.4,
     opacity: 0.9,
-    // sötét körvonal, hogy a fényes csillagok és a Tejút előtt is olvasható legyen
-    textShadowColor: 'rgba(0, 0, 0, 0.9)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 3,
+    ...labelShadow,
   },
 });

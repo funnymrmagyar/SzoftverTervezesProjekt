@@ -2,23 +2,26 @@ import * as Location from 'expo-location';
 
 import type { GeoLocation } from '@/core/models';
 
+export type DeviceLocationResult =
+  { status: 'success'; location: GeoLocation } | { status: 'permission-denied' };
+
 /**
  * A készülék helye (Android/iOS: GPS, web: böngésző Geolocation API).
- * Ha nincs engedély vagy nem sikerül, null-t ad — ilyenkor az app alapértelmezett helyet használ.
+ * Az engedély megtagadását eredményként jelzi, a mérési hibákat a hívónak továbbadja.
  */
-export async function getDeviceLocation(): Promise<GeoLocation | null> {
-  try {
-    const { granted } = await Location.requestForegroundPermissionsAsync();
-    if (!granted) return null;
-    const position =
-      (await Location.getLastKnownPositionAsync({ maxAge: 30 * 60 * 1000 })) ??
-      (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
-    return {
+export async function getDeviceLocation(): Promise<DeviceLocationResult> {
+  const { granted } = await Location.requestForegroundPermissionsAsync();
+  if (!granted) return { status: 'permission-denied' };
+
+  const position = await Location.getCurrentPositionAsync({
+    accuracy: Location.Accuracy.Balanced,
+  });
+  return {
+    status: 'success',
+    location: {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
       label: 'Saját hely (GPS)',
-    };
-  } catch {
-    return null;
-  }
+    },
+  };
 }

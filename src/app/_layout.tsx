@@ -33,7 +33,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
       <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade',
+          contentStyle: { backgroundColor: colors.bg },
+        }}
+      >
         {/* Az index mindig elérhető: töltőképernyő, majd a megfelelő helyre irányít. */}
         <Stack.Screen name="index" />
         <Stack.Protected guard={canSeeAuth}>
