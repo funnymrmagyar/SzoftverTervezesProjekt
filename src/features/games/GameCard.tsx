@@ -1,55 +1,87 @@
 import { useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 import { Badge } from '@/ui/components';
 import { GlassSurface } from '@/ui/GlassSurface';
+import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import type { GAME_OPTIONS } from './gameOptions';
 
 type Game = (typeof GAME_OPTIONS)[number];
 
+const cursorStyle = Platform.OS === 'web' ? ({ cursor: 'pointer' } as ViewStyle) : undefined;
+
 export function GameCard({
   game,
   title,
   subtitle,
-  soonLabel,
+  best,
+  onPlay,
   onLeaderboardPress,
 }: {
   game: Game;
   title: string;
   subtitle: string;
-  soonLabel: string;
+  /** A helyi rekord; undefined, ha még nem játszott. */
+  best?: number;
+  onPlay: () => void;
   onLeaderboardPress: () => void;
 }) {
-  const [focused, setFocused] = useState(false);
+  const [playFocused, setPlayFocused] = useState(false);
+  const [trophyFocused, setTrophyFocused] = useState(false);
 
   return (
-    <GlassSurface style={[styles.card, focused && styles.focused]} testID={`game-card-${game.id}`}>
-      <View style={styles.iconTile}>
-        <Ionicons name={game.icon} size={sizing.icon + spacing.sm} color={colors.accent} />
-      </View>
-      <View style={styles.copy}>
-        <Text style={styles.title} numberOfLines={2}>
-          {title}
-        </Text>
-        <Text style={styles.subtitle} numberOfLines={1}>
-          {subtitle}
-        </Text>
-        <Badge label={soonLabel} icon="lock-closed-outline" tone="locked" />
-      </View>
+    <GlassSurface style={styles.card} testID={`game-card-${game.id}`}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${title}: ${t('games.play')}`}
+        accessibilityHint={subtitle}
+        onPress={onPlay}
+        onFocus={() => setPlayFocused(true)}
+        onBlur={() => setPlayFocused(false)}
+        testID={`game-play-${game.id}`}
+        style={({ pressed }) => [
+          styles.play,
+          pressed && styles.pressed,
+          playFocused && styles.focused,
+          cursorStyle,
+        ]}
+      >
+        <View style={styles.iconTile}>
+          <Ionicons name={game.icon} size={sizing.icon + spacing.sm} color={colors.accent} />
+        </View>
+        <View style={styles.copy}>
+          <Text style={styles.title} numberOfLines={2}>
+            {title}
+          </Text>
+          <Text style={styles.subtitle} numberOfLines={1}>
+            {subtitle}
+          </Text>
+          {best ? (
+            <Badge
+              label={`${t('games.best')}: ${best.toLocaleString('hu-HU')}`}
+              icon="trophy"
+              tone="gold"
+            />
+          ) : (
+            <Badge label={t('games.play')} icon="play-outline" />
+          )}
+        </View>
+      </Pressable>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${title}: ranglista`}
         accessibilityHint="Megnyitja ennek a játéknak a ranglistáját"
         onPress={onLeaderboardPress}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onFocus={() => setTrophyFocused(true)}
+        onBlur={() => setTrophyFocused(false)}
         testID={`game-leaderboard-${game.id}`}
         style={({ pressed }) => [
           styles.trophy,
           pressed && styles.pressed,
-          focused && styles.focused,
+          trophyFocused && styles.focused,
+          cursorStyle,
         ]}
       >
         <Ionicons name="trophy-outline" size={sizing.icon} color={colors.accent} />
@@ -66,6 +98,15 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     minHeight: sizing.gameIcon + spacing.xl,
     padding: spacing.lg,
+  },
+  play: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderRadius: radius.md,
+    borderWidth: 2,
+    borderColor: colors.transparent,
   },
   iconTile: {
     width: sizing.gameIcon,

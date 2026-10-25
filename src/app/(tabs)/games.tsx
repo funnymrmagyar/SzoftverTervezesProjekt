@@ -4,12 +4,15 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { GameCard } from '@/features/games/GameCard';
 import { GAME_OPTIONS } from '@/features/games/gameOptions';
+import { useBestScores } from '@/features/games/useBestScores';
 import { ScreenContainer } from '@/ui/ScreenContainer';
 import { Badge } from '@/ui/components';
 import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 
 export default function GamesScreen() {
+  const best = useBestScores();
+
   return (
     <ScreenContainer maxWidth={sizing.contentCompact}>
       <View style={styles.content}>
@@ -34,7 +37,8 @@ export default function GamesScreen() {
               game={game}
               title={t(game.titleKey)}
               subtitle={t(game.subtitleKey)}
-              soonLabel={t('games.soon')}
+              best={best[game.id]}
+              onPlay={() => router.push(game.route)}
               onLeaderboardPress={() =>
                 router.push({ pathname: '/leaderboard', params: { game: game.id } })
               }
@@ -44,7 +48,7 @@ export default function GamesScreen() {
 
         <View style={styles.note}>
           <Badge label={t('leaderboard.demo')} icon="sparkles-outline" />
-          <Text style={styles.noteText}>A játékok fejlesztés alatt állnak.</Text>
+          <Text style={styles.noteText}>{t('games.note')}</Text>
         </View>
       </View>
     </ScreenContainer>

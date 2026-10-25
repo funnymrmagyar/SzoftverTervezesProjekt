@@ -47,6 +47,8 @@ export default function RootLayout() {
         </Stack.Protected>
         <Stack.Protected guard={canSeeApp}>
           <Stack.Screen name="(tabs)" />
+          {/* Teljes képernyős játékok (tab-sáv nélkül). */}
+          <Stack.Screen name="play" />
         </Stack.Protected>
       </Stack>
     </ThemeProvider>
