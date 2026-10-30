@@ -138,15 +138,21 @@ const NUDGES = [0, LABEL_LINE_HEIGHT, -LABEL_LINE_HEIGHT];
  *  - a horizont alatti csillagképek neve nem látszik (a föld a csillagokat is eltakarja);
  *  - a képernyőn kívüli feliratok kimaradnak;
  *  - az egymásra lógó feliratok közül a nagyobb csillagkép marad a helyén, a kisebbet
- *    egy sorral eltoljuk, és ha úgy sem fér el, elhagyjuk.
+ *    egy sorral eltoljuk, és ha úgy sem fér el, elhagyjuk;
+ *  - a kiválasztott csillagkép (priorityId) neve mindenkit megelőz.
  */
 export function layoutLabels(
   anchors: readonly LabelAnchor[],
   matrix: Mat3,
   view: ViewState,
   viewport: Viewport,
+  /** A kiválasztott csillagkép neve mindig elsőként kerül a helyére. */
+  priorityId: string | null = null,
 ): PlacedLabel[] {
-  const byPriority = [...anchors].sort((a, b) => b.starCount - a.starCount);
+  const byPriority = [...anchors].sort(
+    (a, b) =>
+      Number(b.id === priorityId) - Number(a.id === priorityId) || b.starCount - a.starCount,
+  );
   const taken: Box[] = [];
   const placed: PlacedLabel[] = [];
 

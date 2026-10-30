@@ -1,15 +1,17 @@
-import { memo, useRef } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ConstellationInfo } from '@/features/live/ConstellationInfo';
 import { CulturePicker } from '@/features/live/CulturePicker';
 import { LocationPicker } from '@/features/live/LocationPicker';
 import { TimeControls } from '@/features/live/TimeControls';
 import { useSkyTime } from '@/features/live/useSkyTime';
 import { ViewControls } from '@/features/live/ViewControls';
 import { ConstellationLabels } from '@/render/ConstellationLabels';
+import { pickConstellation } from '@/render/pickConstellation';
 import { SkyScene } from '@/render/SkyScene';
-import { useSkyGestures } from '@/render/useSkyGestures';
+import { useSkyGestures, type SkyTapHandler } from '@/render/useSkyGestures';
 import { useWheelZoom } from '@/render/useWheelZoom';
 import { useSkyStore } from '@/state/useSkyStore';
 import { colors, navigation, radius, sizing, spacing } from '@/ui/theme';
@@ -23,10 +25,30 @@ export default function LiveScreen() {
   const cultureId = useSkyStore((state) => state.cultureId);
   const showLines = useSkyStore((state) => state.showLines);
   const showLabels = useSkyStore((state) => state.showLabels);
+  const selectedId = useSkyStore((state) => state.selectedConstellationId);
   const layout = useBreakpoint();
 
+  // Koppintás az égen: a helyén lévő csillagkép kiválasztása (üres égen a kiválasztás megszűnik).
+  const handleTap = useCallback<SkyTapHandler>(
+    (x, y, viewport) => {
+      const sky = useSkyStore.getState();
+      sky.selectConstellation(
+        pickConstellation({
+          point: { x, y },
+          viewport,
+          date,
+          location: sky.location,
+          cultureId: sky.cultureId,
+          includeLabels: sky.showLabels,
+          selectedId: sky.selectedConstellationId,
+        }),
+      );
+    },
+    [date],
+  );
+
   const skyRef = useRef<View>(null);
-  const { panHandlers, onLayout } = useSkyGestures(skyRef);
+  const { panHandlers, onLayout } = useSkyGestures(skyRef, handleTap);
   useWheelZoom(skyRef);
 
   return (
@@ -38,11 +60,22 @@ export default function LiveScreen() {
         {...panHandlers}
         testID="sky-view"
       >
-        <MemoSkyScene date={date} location={location} cultureId={cultureId} showLines={showLines} />
+        <MemoSkyScene
+          date={date}
+          location={location}
+          cultureId={cultureId}
+          showLines={showLines}
+          selectedId={selectedId}
+        />
       </View>
 
       {showLabels ? (
-        <ConstellationLabels date={date} location={location} cultureId={cultureId} />
+        <ConstellationLabels
+          date={date}
+          location={location}
+          cultureId={cultureId}
+          selectedId={selectedId}
+        />
       ) : null}
 
       <SafeAreaView
@@ -57,6 +90,12 @@ export default function LiveScreen() {
         <View style={[styles.top, layout.expanded && styles.topExpanded]} pointerEvents="box-none">
           <CulturePicker />
           <LocationPicker />
+        </View>
+        <View
+          style={[styles.infoArea, layout.compact ? styles.infoAreaCompact : styles.infoAreaWide]}
+          pointerEvents="box-none"
+        >
+          <ConstellationInfo />
         </View>
         <View style={styles.dockPosition} pointerEvents="box-none">
           <View
@@ -97,6 +136,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   topExpanded: { paddingHorizontal: spacing.sm },
+  infoArea: { flex: 1, minHeight: 0, paddingVertical: spacing.sm },
+  infoAreaCompact: { justifyContent: 'flex-end' },
+  infoAreaWide: { justifyContent: 'flex-start', alignItems: 'flex-start' },
   dockPosition: { alignItems: 'center', width: '100%' },
   dock: {
     width: '100%',

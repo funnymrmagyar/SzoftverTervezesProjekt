@@ -28,7 +28,25 @@ describe('nézet (kamera) logika', () => {
 });
 
 describe('useSkyStore', () => {
-  beforeEach(() => useSkyStore.setState({ manualTime: null, showLines: true, showLabels: true }));
+  beforeEach(() =>
+    useSkyStore.setState({
+      manualTime: null,
+      showLines: true,
+      showLabels: true,
+      cultureId: 'hungarian',
+      selectedConstellationId: null,
+    }),
+  );
+
+  it('csillagkép kiválasztható, és kultúraváltáskor a kiválasztás megszűnik', () => {
+    useSkyStore.getState().selectConstellation('gonc');
+    expect(useSkyStore.getState().selectedConstellationId).toBe('gonc');
+    useSkyStore.getState().selectConstellation(null);
+    expect(useSkyStore.getState().selectedConstellationId).toBeNull();
+    useSkyStore.getState().selectConstellation('gonc');
+    useSkyStore.getState().setCulture('western');
+    expect(useSkyStore.getState().selectedConstellationId).toBeNull();
+  });
 
   it('az időléptetés élő módból a megadott „most”-hoz képest lép', () => {
     const now = Date.UTC(2026, 9, 7, 20, 0);

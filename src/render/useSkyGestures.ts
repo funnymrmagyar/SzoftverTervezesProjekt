@@ -9,6 +9,15 @@ import {
 
 import { useViewStore } from '@/state/useViewStore';
 
+import type { Viewport } from './labelLayout';
+
+/** Koppintás (kattintás) az égbolton: a pont a nézet bal felső sarkához képest, képpontban. */
+export type SkyTapHandler = (x: number, y: number, viewport: Viewport) => void;
+
+/** Ennél kisebb elmozdulás és rövidebb idő koppintásnak számít, nem húzásnak. */
+const TAP_SLOP = 8;
+const TAP_MAX_MS = 500;
+
 function touchDistance(e: GestureResponderEvent): number | null {
   const t = e.nativeEvent.touches;
   if (!t || t.length < 2) return null;
@@ -18,9 +27,15 @@ function touchDistance(e: GestureResponderEvent): number | null {
 /**
  * Gesztuskezelő a React-renderen kívül: a húzás közbeni állapot (utolsó elmozdulás,
  * csippentés kezdete) sima változókban él, a nézetet a useViewStore-ban állítja.
+ * A rövid, helyben maradó érintést / kattintást koppintásként továbbadja (onTap).
  */
 function createSkyGestures() {
+  let onTap: SkyTapHandler | undefined;
   let viewportHeight = 800;
+  let viewportWidth = 0;
+  let touchTap: { x: number; y: number; pageX: number; pageY: number; time: number } | null = null;
+  let mouseTap: { x: number; y: number; clientX: number; clientY: number; time: number } | null =
+    null;
   let last = { x: 0, y: 0 };
   let pinch: { distance: number; fov: number } | null = null;
   let pinchUsed = false;
@@ -57,8 +72,36 @@ function createSkyGestures() {
     webLastTime = now;
   }
 
-  function onWebMouseUp() {
+  function emitTap(x: number, y: number) {
+    onTap?.(x, y, { width: viewportWidth, height: viewportHeight });
+  }
+
+  function onWebMouseUp(event: globalThis.MouseEvent) {
+    const start = mouseTap;
+    mouseTap = null;
     finishWebMouseDrag();
+    if (
+      start &&
+      Math.hypot(event.clientX - start.clientX, event.clientY - start.clientY) <= TAP_SLOP &&
+      performance.now() - start.time <= TAP_MAX_MS
+    ) {
+      emitTap(start.x, start.y);
+    }
+  }
+
+  /** Érintés kezdete: csak az egyujjas érintésből lehet koppintás (két ujj = csippentés). */
+  function onTouchStart(e: GestureResponderEvent) {
+    const { touches, locationX, locationY, pageX, pageY } = e.nativeEvent;
+    touchTap =
+      touches?.length === 1 ? { x: locationX, y: locationY, pageX, pageY, time: Date.now() } : null;
+  }
+
+  function onTouchEnd(e: GestureResponderEvent) {
+    const start = touchTap;
+    touchTap = null;
+    if (!start || (e.nativeEvent.touches?.length ?? 0) > 0) return;
+    const moved = Math.hypot(e.nativeEvent.pageX - start.pageX, e.nativeEvent.pageY - start.pageY);
+    if (moved <= TAP_SLOP && Date.now() - start.time <= TAP_MAX_MS) emitTap(start.x, start.y);
   }
 
   function onWebBlur() {
@@ -111,6 +154,14 @@ function createSkyGestures() {
     if (event.button !== 0) return;
     event.preventDefault();
     cancelFling();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    mouseTap = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      time: performance.now(),
+    };
     webMouseDragging = true;
     webLast = { x: event.clientX, y: event.clientY };
     webLastTime = performance.now();
@@ -167,8 +218,11 @@ function createSkyGestures() {
   });
 
   return {
-    panHandlers: responder.panHandlers,
+    panHandlers: { ...responder.panHandlers, onTouchStart, onTouchEnd },
     onWebMouseDown,
+    setOnTap: (handler: SkyTapHandler | undefined) => {
+      onTap = handler;
+    },
     dispose: () => {
       cancelFling();
       if (animationFrame !== null) cancelAnimationFrame(animationFrame);
@@ -185,13 +239,18 @@ function createSkyGestures() {
     },
     onLayout: (e: LayoutChangeEvent) => {
       viewportHeight = e.nativeEvent.layout.height;
+      viewportWidth = e.nativeEvent.layout.width;
     },
   };
 }
 
-/** Húzással forgatható, csippentéssel nagyítható égbolt (mobilon és weben is). */
-export function useSkyGestures(ref: RefObject<View | null>) {
+/**
+ * Húzással forgatható, csippentéssel nagyítható égbolt (mobilon és weben is).
+ * A koppintásokat (rövid, helyben maradó érintés vagy kattintás) az onTap kapja meg.
+ */
+export function useSkyGestures(ref: RefObject<View | null>, onTap?: SkyTapHandler) {
   const [gestures] = useState(createSkyGestures);
+  useEffect(() => gestures.setOnTap(onTap), [gestures, onTap]);
   useEffect(() => () => gestures.dispose(), [gestures]);
   useEffect(() => {
     if (Platform.OS !== 'web') return;

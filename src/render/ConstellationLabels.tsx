@@ -38,6 +38,8 @@ interface Props {
   date: Date;
   location: GeoLocation;
   cultureId: string;
+  /** A kiválasztott csillagkép neve kiemelve és elsőbbséggel látszik. */
+  selectedId?: string | null;
 }
 
 /**
@@ -45,7 +47,7 @@ interface Props {
  * Minden kultúrában ugyanolyan színűek (a vonalszín kultúránként más lehet).
  * Nem fogja el az érintést, így a húzás és a nagyítás átmegy alatta.
  */
-export function ConstellationLabels({ date, location, cultureId }: Props) {
+export function ConstellationLabels({ date, location, cultureId, selectedId = null }: Props) {
   const [viewport, setViewport] = useState<Viewport>({ width: 0, height: 0 });
   const azimuth = useViewStore((s) => s.azimuth);
   const altitude = useViewStore((s) => s.altitude);
@@ -61,8 +63,10 @@ export function ConstellationLabels({ date, location, cultureId }: Props) {
   const matrix = useMemo(() => skyRotationMatrix(date, location), [date, location]);
   const labels = useMemo(
     () =>
-      viewport.width > 0 ? layoutLabels(anchors, matrix, { azimuth, altitude, fov }, viewport) : [],
-    [anchors, matrix, azimuth, altitude, fov, viewport],
+      viewport.width > 0
+        ? layoutLabels(anchors, matrix, { azimuth, altitude, fov }, viewport, selectedId)
+        : [],
+    [anchors, matrix, azimuth, altitude, fov, viewport, selectedId],
   );
 
   const onLayout = (e: LayoutChangeEvent) => {
@@ -76,22 +80,27 @@ export function ConstellationLabels({ date, location, cultureId }: Props) {
       onLayout={onLayout}
       testID="constellation-labels"
     >
-      {labels.map((label) => (
-        <Text
-          key={label.id}
-          numberOfLines={1}
-          style={[
-            styles.label,
-            {
-              left: label.x - estimateLabelWidth(label.name) / 2,
-              top: label.y - LABEL_LINE_HEIGHT / 2,
-              width: estimateLabelWidth(label.name),
-            },
-          ]}
-        >
-          {label.name}
-        </Text>
-      ))}
+      {labels.map((label) => {
+        // a kiemelt (félkövér) név szélesebb, ezért több helyet kap
+        const width = estimateLabelWidth(label.name) + (label.id === selectedId ? 16 : 0);
+        return (
+          <Text
+            key={label.id}
+            numberOfLines={1}
+            style={[
+              styles.label,
+              label.id === selectedId && styles.selected,
+              {
+                left: label.x - width / 2,
+                top: label.y - LABEL_LINE_HEIGHT / 2,
+                width,
+              },
+            ]}
+          >
+            {label.name}
+          </Text>
+        );
+      })}
     </View>
   );
 }
@@ -108,4 +117,5 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     ...labelShadow,
   },
+  selected: { color: colors.text, fontWeight: '700', opacity: 1 },
 });

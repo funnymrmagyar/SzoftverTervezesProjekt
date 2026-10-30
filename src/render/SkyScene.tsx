@@ -18,6 +18,8 @@ interface SkySceneProps {
   location: GeoLocation;
   cultureId: string;
   showLines: boolean;
+  /** A kiválasztott csillagkép vonalai kiemelve látszanak (kikapcsolt vonalaknál is). */
+  selectedId?: string | null;
 }
 
 /** A kamerát a nézet-store-hoz köti (irány, látómező). Csak változáskor rajzol újra. */
@@ -41,12 +43,18 @@ function CameraRig() {
   return null;
 }
 
-function InvalidateOnLinesChange({ showLines }: { showLines: boolean }) {
+function InvalidateOnLinesChange({
+  showLines,
+  selectedId,
+}: {
+  showLines: boolean;
+  selectedId: string | null;
+}) {
   const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => {
     invalidate();
-  }, [invalidate, showLines]);
+  }, [invalidate, showLines, selectedId]);
 
   return null;
 }
@@ -76,11 +84,21 @@ function SkyDome({ matrix, children }: { matrix: Mat3; children: ReactNode }) {
   );
 }
 
-export function SkyScene({ date, location, cultureId, showLines }: SkySceneProps) {
+export function SkyScene({
+  date,
+  location,
+  cultureId,
+  showLines,
+  selectedId = null,
+}: SkySceneProps) {
   const stars = getStarCatalog().all();
   const repo = getSkyCultures();
   const culture = repo.get(cultureId);
   const segments = useMemo(() => repo.lineSegments(cultureId), [repo, cultureId]);
+  const selectedSegments = useMemo(
+    () => (selectedId ? segments.filter((s) => s.constellationId === selectedId) : []),
+    [segments, selectedId],
+  );
   const matrix = useMemo(() => skyRotationMatrix(date, location), [date, location]);
 
   return (
@@ -93,10 +111,18 @@ export function SkyScene({ date, location, cultureId, showLines }: SkySceneProps
     >
       <color attach="background" args={[colors.sky]} />
       <CameraRig />
-      <InvalidateOnLinesChange showLines={showLines} />
+      <InvalidateOnLinesChange showLines={showLines} selectedId={selectedId} />
       <SkyDome matrix={matrix}>
         {showLines && culture ? (
           <ConstellationLines segments={segments} color={colors.constellationLine} />
+        ) : null}
+        {selectedSegments.length > 0 ? (
+          <ConstellationLines
+            segments={selectedSegments}
+            color={colors.text}
+            opacity={0.95}
+            renderOrder={3}
+          />
         ) : null}
         <StarField stars={stars} />
       </SkyDome>
