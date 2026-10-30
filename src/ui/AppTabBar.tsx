@@ -26,7 +26,13 @@ const LABEL_KEYS: Record<string, TranslationKey> = {
   profile: 'nav.profile',
 };
 
-export function AppTabBar({ state, descriptors, navigation, insets }: BottomTabBarProps) {
+export function AppTabBar({
+  state,
+  descriptors,
+  emitter,
+  navigateToTab,
+  insets,
+}: BottomTabBarProps) {
   const [focusedRoute, setFocusedRoute] = useState<string | null>(null);
   const layout = useBreakpoint();
   const expanded = layout.expanded;
@@ -60,13 +66,13 @@ export function AppTabBar({ state, descriptors, navigation, insets }: BottomTabB
           const label = labelKey ? t(labelKey) : (options.title ?? route.name);
           const color = focused ? colors.accent : colors.textMuted;
           const onPress = () => {
-            const event = navigation.emit({
+            const event = emitter.emit({
               type: 'tabPress',
               target: route.key,
               canPreventDefault: true,
             });
             if (!focused && !event.defaultPrevented) {
-              navigation.navigate(route.name, route.params);
+              navigateToTab(route.key);
             }
           };
 
@@ -78,7 +84,7 @@ export function AppTabBar({ state, descriptors, navigation, insets }: BottomTabB
               accessibilityHint={label}
               accessibilityState={{ selected: focused }}
               onPress={onPress}
-              onLongPress={() => navigation.emit({ type: 'tabLongPress', target: route.key })}
+              onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
               onFocus={() => setFocusedRoute(route.key)}
               onBlur={() => setFocusedRoute(null)}
               testID={options.tabBarButtonTestID}

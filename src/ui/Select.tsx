@@ -13,6 +13,7 @@ import {
   TextInput,
   useWindowDimensions,
   View,
+  type ViewInstance,
   type ViewStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -59,7 +60,7 @@ export function Select<T extends string>({
     y: spacing.xl,
   });
   const [focusedItem, setFocusedItem] = useState<string | null>(null);
-  const triggerRef = useRef<View>(null);
+  const triggerRef = useRef<ViewInstance>(null);
   const [panelAnimation] = useState(() => new Animated.Value(0));
   const reducedMotion = useReducedMotion();
   const insets = useSafeAreaInsets();

@@ -12,6 +12,8 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type PointerEvent,
+  type ScrollViewInstance,
+  type ViewInstance,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -120,8 +122,8 @@ const AUTH_LABELS = {
 
 function TrophyCarousel() {
   const [scrollOffset, setScrollOffset] = useState(0);
-  const scrollRef = useRef<ScrollView>(null);
-  const sliderRef = useRef<View>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const sliderRef = useRef<ViewInstance>(null);
   const sliderLeft = useRef<number | null>(null);
   const { width } = useWindowDimensions();
   const layout = useBreakpoint();
