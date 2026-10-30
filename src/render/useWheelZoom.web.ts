@@ -1,10 +1,10 @@
 import { useEffect, type RefObject } from 'react';
-import type { View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import { useViewStore } from '@/state/useViewStore';
 
 /** Weben egérgörgővel nagyítunk. A react-native-web View ref-je maga a DOM-elem. */
-export function useWheelZoom(ref: RefObject<View | null>): void {
+export function useWheelZoom(ref: RefObject<ViewInstance | null>): void {
   useEffect(() => {
     const el = ref.current as unknown as HTMLElement | null;
     if (!el) return;

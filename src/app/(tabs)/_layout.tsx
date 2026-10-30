@@ -13,7 +13,14 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 
 function tabIcon(name: IconName) {
   return function TabIcon({ color, size }: { focused: boolean; color: ColorValue; size: number }) {
-    return <Ionicons name={name} color={color} size={size} />;
+    // Az SDK 58-tól a ColorValue lehet null vagy szám is; a mi színeink mindig szövegek.
+    return (
+      <Ionicons
+        name={name}
+        color={typeof color === 'string' ? color : colors.textMuted}
+        size={size}
+      />
+    );
   };
 }
 

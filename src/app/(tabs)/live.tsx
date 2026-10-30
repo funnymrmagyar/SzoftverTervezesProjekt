@@ -1,5 +1,5 @@
 import { memo, useCallback, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConstellationInfo } from '@/features/live/ConstellationInfo';
@@ -47,7 +47,7 @@ export default function LiveScreen() {
     [date],
   );
 
-  const skyRef = useRef<View>(null);
+  const skyRef = useRef<ViewInstance>(null);
   const { panHandlers, onLayout } = useSkyGestures(skyRef, handleTap);
   useWheelZoom(skyRef);
 
@@ -84,20 +84,18 @@ export default function LiveScreen() {
           layout.expanded && styles.overlayExpanded,
           layout.landscape && styles.overlayLandscape,
         ]}
-        pointerEvents="box-none"
         edges={['top', 'right', 'bottom', 'left']}
       >
-        <View style={[styles.top, layout.expanded && styles.topExpanded]} pointerEvents="box-none">
+        <View style={[styles.top, layout.expanded && styles.topExpanded]}>
           <CulturePicker />
           <LocationPicker />
         </View>
         <View
           style={[styles.infoArea, layout.compact ? styles.infoAreaCompact : styles.infoAreaWide]}
-          pointerEvents="box-none"
         >
           <ConstellationInfo />
         </View>
-        <View style={styles.dockPosition} pointerEvents="box-none">
+        <View style={styles.dockPosition}>
           <View
             style={[
               styles.dock,
@@ -117,7 +115,10 @@ export default function LiveScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.sky },
+  // A rétegek átengedik az érintést az égboltnak, csak a gyerekeik (gombok, panel) kapják el.
+  // (A pointerEvents a stílusban: a régi pointerEvents prop weben elavult.)
   overlay: {
+    pointerEvents: 'box-none',
     flex: 1,
     justifyContent: 'space-between',
     padding: spacing.md,
@@ -130,16 +131,17 @@ const styles = StyleSheet.create({
   },
   overlayLandscape: { paddingTop: spacing.sm, paddingBottom: sizing.navHeight + spacing.sm },
   top: {
+    pointerEvents: 'box-none',
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: spacing.sm,
   },
   topExpanded: { paddingHorizontal: spacing.sm },
-  infoArea: { flex: 1, minHeight: 0, paddingVertical: spacing.sm },
+  infoArea: { pointerEvents: 'box-none', flex: 1, minHeight: 0, paddingVertical: spacing.sm },
   infoAreaCompact: { justifyContent: 'flex-end' },
   infoAreaWide: { justifyContent: 'flex-start', alignItems: 'flex-start' },
-  dockPosition: { alignItems: 'center', width: '100%' },
+  dockPosition: { pointerEvents: 'box-none', alignItems: 'center', width: '100%' },
   dock: {
     width: '100%',
     maxWidth: sizing.contentCompact,

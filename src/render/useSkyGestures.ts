@@ -4,7 +4,7 @@ import {
   Platform,
   type GestureResponderEvent,
   type LayoutChangeEvent,
-  type View,
+  type ViewInstance,
 } from 'react-native';
 
 import { useViewStore } from '@/state/useViewStore';
@@ -248,7 +248,7 @@ function createSkyGestures() {
  * Húzással forgatható, csippentéssel nagyítható égbolt (mobilon és weben is).
  * A koppintásokat (rövid, helyben maradó érintés vagy kattintás) az onTap kapja meg.
  */
-export function useSkyGestures(ref: RefObject<View | null>, onTap?: SkyTapHandler) {
+export function useSkyGestures(ref: RefObject<ViewInstance | null>, onTap?: SkyTapHandler) {
   const [gestures] = useState(createSkyGestures);
   useEffect(() => gestures.setOnTap(onTap), [gestures, onTap]);
   useEffect(() => () => gestures.dispose(), [gestures]);
