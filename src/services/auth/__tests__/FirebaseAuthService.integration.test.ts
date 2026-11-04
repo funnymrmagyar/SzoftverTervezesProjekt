@@ -5,9 +5,15 @@
 import { deleteApp, initializeApp, type FirebaseApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 
+import { authEmulatorUrl, DEMO_API_KEY, DEMO_PROJECT_ID } from '@/config/env';
+
 import { FirebaseAuthService } from '../FirebaseAuthService';
 
-const EMULATOR = process.env.FIREBASE_AUTH_EMULATOR_HOST ?? '127.0.0.1:9099';
+// Az `npm run test:auth` (firebase emulators:exec) beállítja, pl. „127.0.0.1:9099”;
+// kézi futtatásnál a közös alapértékek (EXPO_PUBLIC_FIREBASE_EMULATOR_PORT, ha meg van adva).
+const EMULATOR_URL = process.env.FIREBASE_AUTH_EMULATOR_HOST
+  ? `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`
+  : authEmulatorUrl();
 
 describe('FirebaseAuthService (Auth emulátor)', () => {
   let app: FirebaseApp;
@@ -15,9 +21,9 @@ describe('FirebaseAuthService (Auth emulátor)', () => {
   const email = `teszt-${Date.now()}@example.com`;
 
   beforeAll(() => {
-    app = initializeApp({ apiKey: 'demo-api-key', projectId: 'demo-csillagnezo' }, 'integration');
+    app = initializeApp({ apiKey: DEMO_API_KEY, projectId: DEMO_PROJECT_ID }, 'integration');
     const auth = getAuth(app);
-    connectAuthEmulator(auth, `http://${EMULATOR}`, { disableWarnings: true });
+    connectAuthEmulator(auth, EMULATOR_URL, { disableWarnings: true });
     service = new FirebaseAuthService(auth);
   });
 

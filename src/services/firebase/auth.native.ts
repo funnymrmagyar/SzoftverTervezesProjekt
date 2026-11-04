@@ -8,7 +8,7 @@ import {
 } from 'firebase/auth';
 
 import { getFirebaseApp } from './app';
-import { AUTH_EMULATOR_PORT, emulatorHost, isUsingEmulator } from './config';
+import { authEmulatorUrl, isUsingEmulator } from './config';
 
 let auth: Auth | undefined;
 
@@ -18,9 +18,7 @@ export function getFirebaseAuth(): Auth {
       persistence: getReactNativePersistence(AsyncStorage),
     });
     if (isUsingEmulator) {
-      connectAuthEmulator(auth, `http://${emulatorHost()}:${AUTH_EMULATOR_PORT}`, {
-        disableWarnings: true,
-      });
+      connectAuthEmulator(auth, authEmulatorUrl(), { disableWarnings: true });
     }
   }
   return auth;

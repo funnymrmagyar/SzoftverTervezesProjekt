@@ -9,6 +9,9 @@ module.exports = {
   transform: {
     '^.+\\.[jt]sx?$': ['babel-jest', { presets: [require.resolve('expo/internal/babel-preset')] }],
   },
+  // Az Expo Babel-presetje a process.env.EXPO_PUBLIC_… hivatkozásokat (src/config/env.ts)
+  // az expo/virtual/env modulra írja át, ami ES modul: ezt az egyet le kell fordítani.
+  transformIgnorePatterns: ['/node_modules/(?!expo/virtual/)'],
   moduleNameMapper: {
     '^@/assets/(.*)$': '<rootDir>/assets/$1',
     '^@/(.*)$': '<rootDir>/src/$1',
