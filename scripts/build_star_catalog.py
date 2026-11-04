@@ -13,16 +13,28 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
 import urllib.request
 from pathlib import Path
+
+from local_env import load_env
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_FILE = ROOT / "data-raw" / "hygdata_v41.csv"
 CULTURES_DIR = ROOT / "assets" / "data" / "cultures"
 OUT_FILE = ROOT / "assets" / "data" / "stars.json"
 
-HYG_URL = "https://raw.githubusercontent.com/astronexus/HYG-Database/main/hyg/CURRENT/hygdata_v41.csv"
+load_env(ROOT)
+
+# A HYG adatbázis egy rögzített commitja (a repónak nincsenek kiadásai), hogy az
+# újragenerálás mindig ugyanazt adja. Felülírható a HYG_URL változóval (.env / .env.local);
+# utána töröld a data-raw/hygdata_v41.csv fájlt, mert a már letöltöttet nem tölti le újra.
+HYG_URL = os.environ.get(
+    "HYG_URL",
+    "https://raw.githubusercontent.com/astronexus/HYG-Database/"
+    "c7f7f883fe678cc7680169a50ccd7dcc49b060ce/hyg/CURRENT/hygdata_v41.csv",
+)
 MAG_LIMIT = 6.5
 
 

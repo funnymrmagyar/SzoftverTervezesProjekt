@@ -13,17 +13,27 @@ Csak a Python standard könyvtárát használja.
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import urllib.request
 from pathlib import Path
+
+from local_env import load_env
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "data-raw" / "stellarium"
 SRC_DIR = ROOT / "data-src" / "cultures"
 OUT_DIR = ROOT / "assets" / "data" / "cultures"
 
-STELLARIUM_RAW = "https://raw.githubusercontent.com/Stellarium/stellarium/master"
+load_env(ROOT)
+
+# Rögzített Stellarium-kiadás, hogy az újragenerálás mindig ugyanazt adja.
+# Felülírható a STELLARIUM_RAW változóval (.env / .env.local); utána töröld a data-raw mappát,
+# mert a már letöltött fájlokat nem tölti le újra.
+STELLARIUM_RAW = os.environ.get(
+    "STELLARIUM_RAW", "https://raw.githubusercontent.com/Stellarium/stellarium/v26.3"
+)
 DOWNLOADS = {
     "modern_index.json": f"{STELLARIUM_RAW}/skycultures/modern/index.json",
     "modern_description.md": f"{STELLARIUM_RAW}/skycultures/modern/description.md",
