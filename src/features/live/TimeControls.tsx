@@ -1,90 +1,61 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { formatYear } from '@/core/time';
 import { useSkyStore } from '@/state/useSkyStore';
-import { IconButton } from '@/ui/components';
-import { colors, font, spacing } from '@/ui/theme';
+import { colors, font, sizing, spacing } from '@/ui/theme';
+import { formatClock, minuteOfDay } from './timeTravel';
 
-export function TimeControls({ date }: { date: Date }) {
+export function TimeControls({
+  date,
+  onOpenTimeTravel,
+}: {
+  date: Date;
+  onOpenTimeTravel: () => void;
+}) {
   const live = useSkyStore((state) => state.manualTime === null);
-  const shiftHours = useSkyStore((state) => state.shiftHours);
-  const resetTimeToNow = useSkyStore((state) => state.resetTimeToNow);
-  const [focused, setFocused] = useState(false);
-  const time = date.toLocaleTimeString('hu-HU', { hour: '2-digit', minute: '2-digit' });
-  const day = date.toLocaleDateString('hu-HU', { day: 'numeric', month: 'short' });
 
   return (
-    <View style={styles.row}>
-      <IconButton
-        icon="play-back"
-        label="Előző óra"
-        onPress={() => shiftHours(-1)}
-        testID="time-back"
-      />
-      <View style={styles.center}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${formatYear(date.getFullYear())}, ${formatClock(minuteOfDay(date))}. Időutazás megnyitása.`}
+      accessibilityHint="Év, nap és napszak beállítása"
+      onPress={onOpenTimeTravel}
+      testID="time-travel-open"
+      style={styles.readout}
+    >
+      <Text style={styles.year} numberOfLines={1}>
+        {formatYear(date.getFullYear())}
+      </Text>
+      <View style={styles.timeRow}>
         <Text style={styles.time} testID="time-display">
-          {time}
+          {formatClock(minuteOfDay(date))}
         </Text>
-        {live ? (
-          <View style={styles.status}>
-            <View style={styles.liveDot} />
-            <Text style={styles.statusText}>Élő · {day}</Text>
-          </View>
-        ) : (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Élő"
-            onPress={resetTimeToNow}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            testID="time-now"
-            style={({ pressed }) => [
-              styles.status,
-              styles.liveButton,
-              pressed && styles.pressed,
-              focused && styles.focused,
-            ]}
-          >
-            <Ionicons name="play-circle-outline" size={spacing.lg} color={colors.accent} />
-            <Text style={styles.liveText}>Élő</Text>
-          </Pressable>
-        )}
+        <View style={[styles.statusDot, !live && styles.manualDot]} />
       </View>
-      <IconButton
-        icon="play-forward"
-        label="Következő óra"
-        onPress={() => shiftHours(1)}
-        testID="time-forward"
-      />
-    </View>
+      <Text style={[styles.status, !live && styles.manualStatus]}>{live ? 'Élő' : 'Kézi'}</Text>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
+  readout: {
+    minWidth: 0,
+    minHeight: sizing.touch,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
+    justifyContent: 'center',
+    gap: 1,
+    paddingHorizontal: spacing.xs,
   },
-  center: { flex: 1, alignItems: 'center', gap: spacing.xs },
-  time: { ...font.mono, color: colors.text, fontSize: 16, fontWeight: '600' },
-  status: { minHeight: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  liveDot: {
-    width: spacing.sm,
-    height: spacing.sm,
-    borderRadius: spacing.sm,
+  year: { color: colors.textMuted, fontSize: 12, fontWeight: '600' },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  time: { ...font.mono, color: colors.text, fontSize: 15, fontWeight: '700' },
+  statusDot: {
+    width: spacing.xs,
+    height: spacing.xs,
+    borderRadius: spacing.xs,
     backgroundColor: colors.success,
   },
-  statusText: { ...font.caption, color: colors.textMuted },
-  liveButton: {
-    minHeight: spacing.xxl,
-    minWidth: spacing.xxxl,
-    paddingHorizontal: spacing.sm,
-    borderRadius: spacing.xl,
-  },
-  liveText: { ...font.caption, color: colors.accent, fontWeight: '600' },
-  pressed: { opacity: 0.82 },
-  focused: { borderWidth: 1, borderColor: colors.accent },
+  manualDot: { backgroundColor: colors.accent },
+  status: { color: colors.success, fontSize: 10, fontWeight: '600' },
+  manualStatus: { color: colors.accent },
 });

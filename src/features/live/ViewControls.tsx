@@ -1,65 +1,76 @@
-import { useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useSkyStore } from '@/state/useSkyStore';
 import { useViewStore } from '@/state/useViewStore';
 import { IconButton } from '@/ui/components';
-import { spacing } from '@/ui/theme';
-import { useBreakpoint } from '@/ui/useBreakpoint';
+import { colors, spacing } from '@/ui/theme';
 
-export function ViewControls() {
-  const [moreOpen, setMoreOpen] = useState(false);
-  const layout = useBreakpoint();
+export function ViewControls({
+  side = 'all',
+  compact = false,
+  moreOpen = false,
+  onToggleMore,
+}: {
+  side?: 'left' | 'right' | 'all';
+  compact?: boolean;
+  moreOpen?: boolean;
+  onToggleMore?: () => void;
+}) {
   const showLines = useSkyStore((state) => state.showLines);
   const toggleLines = useSkyStore((state) => state.toggleLines);
   const showLabels = useSkyStore((state) => state.showLabels);
   const toggleLabels = useSkyStore((state) => state.toggleLabels);
   const zoom = useViewStore((state) => state.zoom);
   const reset = useViewStore((state) => state.reset);
-  const showAdvanced = Platform.OS === 'web' || layout.expanded;
+  const fov = useViewStore((state) => Math.round(state.fov));
 
   return (
-    <View style={[styles.wrap, layout.compact && styles.wrapCompact]}>
-      <View style={styles.row}>
-        <IconButton
-          icon="git-network-outline"
-          label="Csillagképvonalak"
-          active={showLines}
-          onPress={toggleLines}
-          testID="toggle-lines"
-        />
-        <IconButton
-          icon="text-outline"
-          label="Feliratok"
-          active={showLabels}
-          onPress={toggleLabels}
-          testID="toggle-labels"
-        />
-        {showAdvanced ? (
+    <View style={styles.wrap}>
+      {side !== 'right' ? (
+        <View style={[styles.row, compact && styles.column]}>
           <IconButton
-            icon="ellipsis-horizontal"
-            label={moreOpen ? 'Kevesebb vezérlő' : 'További vezérlők'}
-            active={moreOpen}
-            onPress={() => setMoreOpen((open) => !open)}
-            testID="more-view-controls"
+            icon="git-network-outline"
+            label="Csillagképvonalak"
+            active={showLines}
+            onPress={toggleLines}
+            testID="toggle-lines"
           />
-        ) : null}
-      </View>
-      {showAdvanced && moreOpen ? (
-        <View style={styles.row}>
           <IconButton
-            icon="remove"
-            label="Kicsinyítés"
-            onPress={() => zoom(1.25)}
-            testID="zoom-out"
+            icon="text-outline"
+            label="Feliratok"
+            active={showLabels}
+            onPress={toggleLabels}
+            testID="toggle-labels"
           />
-          <IconButton icon="add" label="Nagyítás" onPress={() => zoom(0.8)} testID="zoom-in" />
-          <IconButton
-            icon="compass-outline"
-            label="Alaphelyzet"
-            onPress={reset}
-            testID="view-reset"
-          />
+          {onToggleMore ? (
+            <IconButton
+              icon="ellipsis-horizontal"
+              label={moreOpen ? 'Kevesebb vezérlő' : 'További vezérlők'}
+              active={moreOpen}
+              onPress={onToggleMore}
+              testID="more-view-controls"
+            />
+          ) : null}
+        </View>
+      ) : null}
+      {side !== 'left' ? (
+        <View style={styles.rightGroup}>
+          {moreOpen ? <Text style={styles.fov}>Látómező · {fov}°</Text> : null}
+          <View style={[styles.row, compact && styles.column]}>
+            <IconButton
+              icon="remove"
+              label="Kicsinyítés"
+              onPress={() => zoom(1.25)}
+              testID="zoom-out"
+            />
+            <IconButton icon="add" label="Nagyítás" onPress={() => zoom(0.8)} testID="zoom-in" />
+            <IconButton
+              icon="compass-outline"
+              label="Alaphelyzet"
+              onPress={reset}
+              testID="view-reset"
+            />
+          </View>
         </View>
       ) : null}
     </View>
@@ -68,6 +79,8 @@ export function ViewControls() {
 
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: spacing.sm },
-  wrapCompact: { width: '100%' },
-  row: { flexDirection: 'row', justifyContent: 'center', gap: spacing.sm },
+  row: { flexDirection: 'row', justifyContent: 'center', gap: spacing.xs },
+  column: { flexDirection: 'column' },
+  rightGroup: { alignItems: 'center', gap: spacing.xs },
+  fov: { color: colors.textMuted, fontSize: 10 },
 });

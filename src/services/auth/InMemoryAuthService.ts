@@ -33,6 +33,18 @@ export class InMemoryAuthService implements AuthService {
     this.setCurrent(null);
   }
 
+  async reauthenticate(password: string): Promise<void> {
+    if (!this.current) throw this.error('auth/user-not-found');
+    const account = this.accounts.get(this.current.email?.toLowerCase() ?? '');
+    if (!account || account.password !== password) throw this.error('auth/invalid-credential');
+  }
+
+  async deleteAccount(): Promise<void> {
+    if (!this.current?.email) throw this.error('auth/user-not-found');
+    this.accounts.delete(this.current.email.toLowerCase());
+    this.setCurrent(null);
+  }
+
   onAuthChanged(listener: (user: AuthUser | null) => void): () => void {
     this.listeners.add(listener);
     listener(this.current); // a Firebase is azonnal visszahív az aktuális állapottal

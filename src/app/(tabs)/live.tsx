@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { StyleSheet, View, type ViewInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -6,6 +6,7 @@ import { ConstellationInfo } from '@/features/live/ConstellationInfo';
 import { CulturePicker } from '@/features/live/CulturePicker';
 import { LocationPicker } from '@/features/live/LocationPicker';
 import { TimeControls } from '@/features/live/TimeControls';
+import { TimeTravelPanel } from '@/features/live/TimeTravelPanel';
 import { useSkyTime } from '@/features/live/useSkyTime';
 import { ViewControls } from '@/features/live/ViewControls';
 import { ConstellationLabels } from '@/render/ConstellationLabels';
@@ -14,12 +15,16 @@ import { SkyScene } from '@/render/SkyScene';
 import { useSkyGestures, type SkyTapHandler } from '@/render/useSkyGestures';
 import { useWheelZoom } from '@/render/useWheelZoom';
 import { useSkyStore } from '@/state/useSkyStore';
-import { colors, navigation, radius, sizing, spacing } from '@/ui/theme';
+import { GlassSurface } from '@/ui/GlassSurface';
+import { ThreeZoneBar } from '@/ui/layout/ThreeZoneBar';
+import { colors, navigation, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
 const MemoSkyScene = memo(SkyScene);
 
 export default function LiveScreen() {
+  const [timeTravelOpen, setTimeTravelOpen] = useState(false);
+  const [moreControlsOpen, setMoreControlsOpen] = useState(false);
   const date = useSkyTime();
   const location = useSkyStore((state) => state.location);
   const cultureId = useSkyStore((state) => state.cultureId);
@@ -86,29 +91,52 @@ export default function LiveScreen() {
         ]}
         edges={['top', 'right', 'bottom', 'left']}
       >
-        <View style={[styles.top, layout.expanded && styles.topExpanded]}>
-          <CulturePicker />
-          <LocationPicker />
-        </View>
-        <View
-          style={[styles.infoArea, layout.compact ? styles.infoAreaCompact : styles.infoAreaWide]}
-        >
-          <ConstellationInfo />
+        <View style={styles.top}>
+          <ThreeZoneBar
+            sideSize={Math.min(240, Math.max(148, (layout.width - spacing.xxl) / 2))}
+            style={styles.topZones}
+            left={
+              <View style={styles.topSlot}>
+                <CulturePicker />
+              </View>
+            }
+            center={<View />}
+            right={
+              <View style={styles.topSlot}>
+                <LocationPicker compactTrigger={false} />
+              </View>
+            }
+          />
         </View>
         <View style={styles.dockPosition}>
-          <View
-            style={[
-              styles.dock,
-              layout.expanded && styles.dockExpanded,
-              layout.compact && styles.dockCompact,
-            ]}
-          >
-            <TimeControls date={date} />
-            {!layout.compact ? <View style={styles.separator} /> : null}
-            <ViewControls />
-          </View>
+          <GlassSurface style={[styles.dock, layout.expanded && styles.dockExpanded]}>
+            <ThreeZoneBar
+              sideSize={
+                layout.compact ? sizing.touch + spacing.xs : sizing.touch * 3 + spacing.xs * 2
+              }
+              style={styles.dockZones}
+              left={
+                <ViewControls
+                  side="left"
+                  compact={layout.compact}
+                  moreOpen={moreControlsOpen}
+                  onToggleMore={() => setMoreControlsOpen((open) => !open)}
+                />
+              }
+              center={<TimeControls date={date} onOpenTimeTravel={() => setTimeTravelOpen(true)} />}
+              right={
+                <ViewControls side="right" compact={layout.compact} moreOpen={moreControlsOpen} />
+              }
+            />
+          </GlassSurface>
         </View>
       </SafeAreaView>
+      <TimeTravelPanel
+        date={date}
+        visible={timeTravelOpen}
+        onClose={() => setTimeTravelOpen(false)}
+      />
+      <ConstellationInfo />
     </View>
   );
 }
@@ -121,7 +149,8 @@ const styles = StyleSheet.create({
     pointerEvents: 'box-none',
     flex: 1,
     justifyContent: 'space-between',
-    padding: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
     paddingBottom: navigation.bottomClearance,
   },
   overlayExpanded: {
@@ -130,40 +159,15 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   overlayLandscape: { paddingTop: spacing.sm, paddingBottom: sizing.navHeight + spacing.sm },
-  top: {
-    pointerEvents: 'box-none',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  topExpanded: { paddingHorizontal: spacing.sm },
-  infoArea: { pointerEvents: 'box-none', flex: 1, minHeight: 0, paddingVertical: spacing.sm },
-  infoAreaCompact: { justifyContent: 'flex-end' },
-  infoAreaWide: { justifyContent: 'flex-start', alignItems: 'flex-start' },
+  top: { pointerEvents: 'box-none', width: '100%' },
+  topZones: { width: '100%' },
+  topSlot: { width: '100%', minWidth: 0 },
   dockPosition: { pointerEvents: 'box-none', alignItems: 'center', width: '100%' },
   dock: {
     width: '100%',
-    maxWidth: sizing.contentCompact,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-    padding: spacing.sm,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    borderTopColor: colors.glassHighlight,
-    backgroundColor: colors.glassStrong,
-  },
-  dockCompact: { flexDirection: 'column', maxWidth: sizing.contentCompact },
-  dockExpanded: {
     maxWidth: sizing.contentWide,
-    padding: spacing.md,
+    padding: spacing.sm,
   },
-  separator: {
-    width: 1,
-    height: spacing.xxl,
-    backgroundColor: colors.border,
-  },
+  dockExpanded: { padding: spacing.md },
+  dockZones: { width: '100%' },
 });

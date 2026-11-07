@@ -1,3 +1,4 @@
+import { parseOptionalPort } from '@/config/env';
 import type * as ConfigModule from '../config';
 
 const ORIGINAL_ENV = process.env;
@@ -48,6 +49,11 @@ describe('Firebase-config a .env alapján', () => {
     });
     expect(authMode).toBe('emulator');
     expect(authEmulatorUrl()).toBe('http://192.168.0.134:9199');
+  });
+
+  it('Firestore-emulátor portjának környezeti változós formátumát ellenőrzi', () => {
+    expect(parseOptionalPort('8181')).toBe(8181);
+    expect(parseOptionalPort(undefined)).toBeUndefined();
   });
 
   it('emulátor módban gép és port nélkül az alapértékeket használja', () => {

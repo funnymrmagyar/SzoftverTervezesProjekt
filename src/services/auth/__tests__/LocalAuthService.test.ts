@@ -51,6 +51,19 @@ describe('LocalAuthService (Firebase nélküli mód)', () => {
     });
   });
 
+  it('jelszóval újrahitelesít, majd törli a fiókot és a bejelentkezést', async () => {
+    const service = new LocalAuthService(memoryStorage());
+    await service.register('delete@example.com', 'titok123');
+    await expect(service.reauthenticate('rossz')).rejects.toMatchObject({
+      code: 'auth/invalid-credential',
+    });
+    await expect(service.reauthenticate('titok123')).resolves.toBeUndefined();
+    await service.deleteAccount();
+    await expect(service.signIn('delete@example.com', 'titok123')).rejects.toMatchObject({
+      code: 'auth/invalid-credential',
+    });
+  });
+
   it('sérült tárolóval is elindul', async () => {
     const storage = memoryStorage();
     await storage.setItem('csillagnezo.local-auth.v1', '{nem json');

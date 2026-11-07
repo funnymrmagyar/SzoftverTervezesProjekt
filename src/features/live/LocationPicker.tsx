@@ -28,7 +28,7 @@ const locationOptions: SelectOption<string>[] = [
   })),
 ];
 
-export function LocationPicker() {
+export function LocationPicker({ compactTrigger = false }: { compactTrigger?: boolean }) {
   const location = useSkyStore((state) => state.location);
   const source = useSkyStore((state) => state.locationSource);
   const setLocation = useSkyStore((state) => state.setLocation);
@@ -63,14 +63,14 @@ export function LocationPicker() {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, !compactTrigger && styles.wrapperWide]}>
       <Select
         value={selectedLocation}
         options={locationOptions}
         onChange={chooseLocation}
         label="Megfigyelési hely"
         triggerIcon="location-outline"
-        compactTrigger={!layout.expanded}
+        compactTrigger={compactTrigger}
         testID="location-picker"
       />
       {layout.expanded ? (
@@ -97,6 +97,7 @@ export function LocationPicker() {
 
 const styles = StyleSheet.create({
   wrapper: { alignItems: 'flex-end', gap: spacing.xs },
+  wrapperWide: { width: '100%', alignItems: 'stretch' },
   direction: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -11,6 +11,8 @@ export interface AuthUser {
 export interface AuthService {
   signIn(email: string, password: string): Promise<AuthUser>;
   register(email: string, password: string): Promise<AuthUser>;
+  reauthenticate(password: string): Promise<void>;
+  deleteAccount(): Promise<void>;
   signOut(): Promise<void>;
   /** Feliratkozás a bejelentkezési állapot változására; leiratkozó függvényt ad vissza. */
   onAuthChanged(listener: (user: AuthUser | null) => void): () => void;

@@ -18,6 +18,7 @@ import {
   localSiderealTime,
   multiplyMat3,
   normalizeDegrees,
+  precessionMatrix,
   skyRotationMatrix,
   transposeMat3,
   vectorToHorizontal,
@@ -147,29 +148,67 @@ describe('égbolt-forgatási mátrix', () => {
         const m = skyRotationMatrix(date, loc);
         const lst = localSiderealTime(date, loc.longitude);
         for (const star of STARS) {
+          const precessed = applyMat3(
+            precessionMatrix(date),
+            equatorialToVector(star.ra, star.dec),
+          );
+          const ra = normalizeDegrees((Math.atan2(precessed[1], precessed[0]) * 180) / Math.PI);
+          const dec = (Math.asin(precessed[2] / Math.hypot(...precessed)) * 180) / Math.PI;
           const viaMatrix = applyMat3(m, equatorialToVector(star.ra, star.dec));
-          const viaFormula = horizontalToVector(equatorialToHorizontal(star, lst, loc.latitude));
+          const viaFormula = horizontalToVector(
+            equatorialToHorizontal({ ra, dec }, lst, loc.latitude),
+          );
           expect(angleBetween(viaMatrix, viaFormula)).toBeLessThan(1e-4);
         }
       }
     }
   });
 
-  it('a precesszió miatti eltérés az astronomy-engine-hez képest 0,5° alatt marad', () => {
-    // Az astronomy-engine a J2000 → horizontális forgatásban a precessziót is számolja.
-    const date = DATES[1];
-    const observer = new Astronomy.Observer(BUDAPEST.latitude, BUDAPEST.longitude, 0);
-    const rot = Astronomy.Rotation_EQJ_HOR(date, observer);
-    const m = skyRotationMatrix(date, BUDAPEST);
-    for (const star of STARS) {
-      const e = equatorialToVector(star.ra, star.dec);
-      // Az astronomy-engine HOR rendszere: x = észak, y = nyugat, z = zenit.
-      const h = Astronomy.RotateVector(
-        rot,
-        new Astronomy.Vector(e[0], e[1], e[2], Astronomy.MakeTime(date)),
+  it('J2000 epochán a precessziós mátrix azonosság', () => {
+    expect(precessionMatrix(new Date('2000-01-01T12:00:00Z'))).toEqual([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+  });
+
+  it.each([
+    new Date('2026-10-07T20:00:00Z'),
+    new Date('2100-01-01T00:00:00Z'),
+    new Date('2800-01-01T00:00:00Z'),
+  ])('a precessziós bázisvektorok 0,05°-on belül egyeznek az astronomy-engine-nel (%s)', (date) => {
+    const actual = precessionMatrix(date);
+    const expected = Astronomy.Rotation_EQJ_EQD(date);
+    for (const axis of [
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ] as Vec3[]) {
+      const actualVector = applyMat3(actual, axis);
+      const expectedVector = Astronomy.RotateVector(
+        expected,
+        new Astronomy.Vector(axis[0], axis[1], axis[2], Astronomy.MakeTime(date)),
       );
-      const expected: Vec3 = [-h.y, h.z, -h.x];
-      expect(angleBetween(applyMat3(m, e), expected)).toBeLessThan(0.5);
+      expect(
+        angleBetween(actualVector, [expectedVector.x, expectedVector.y, expectedVector.z]),
+      ).toBeLessThan(0.05);
     }
+  });
+
+  it('a 2026-os tavaszpont iránya a J2000 tengelytől körülbelül 0,36°-kal tér el', () => {
+    const matrix = precessionMatrix(DATES[1]);
+    expect(angleBetween(applyMat3(matrix, [1, 0, 0]), [1, 0, 0])).toBeCloseTo(0.376, 2);
+  });
+
+  it('a pólus közelsége Thubanról a Polarisra vált', () => {
+    const thuban = equatorialToVector(211.097, 64.375);
+    const polaris = equatorialToVector(37.9463, 89.2641);
+    const declination = (vector: Vec3, date: Date) => {
+      const position = applyMat3(precessionMatrix(date), vector);
+      return (Math.asin(position[2]) * 180) / Math.PI;
+    };
+
+    const ancientEpoch = new Date(-2800, 0, 1);
+    const modernEpoch = new Date(2100, 0, 1);
+    expect(declination(thuban, ancientEpoch)).toBeGreaterThan(89.8);
+    expect(declination(thuban, ancientEpoch)).toBeGreaterThan(declination(polaris, ancientEpoch));
+    expect(declination(polaris, modernEpoch)).toBeGreaterThan(89.5);
+    expect(declination(polaris, modernEpoch)).toBeGreaterThan(declination(thuban, modernEpoch));
   });
 });

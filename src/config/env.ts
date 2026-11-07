@@ -39,6 +39,7 @@ export interface AppEnv {
     /** A gép címe, amin az emulátor fut; ha nincs megadva, a Firebase-config kitalálja. */
     host?: string;
     authPort: number;
+    firestorePort?: number;
   };
 }
 
@@ -60,6 +61,17 @@ export function parsePort(value: string | undefined, fallback: number): number {
   return port;
 }
 
+export function parseOptionalPort(value: string | undefined): number | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+  const port = Number(trimmed);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    console.warn(`Érvénytelen Firestore-emulátor port a .env-ben: „${value}”.`);
+    return undefined;
+  }
+  return port;
+}
+
 export const env: AppEnv = {
   firebase: {
     apiKey: optionalText(process.env.EXPO_PUBLIC_FIREBASE_API_KEY),
@@ -73,6 +85,7 @@ export const env: AppEnv = {
     enabled: process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR?.trim() === 'true',
     host: optionalText(process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_HOST),
     authPort: parsePort(process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_PORT, DEFAULT_AUTH_EMULATOR_PORT),
+    firestorePort: parseOptionalPort(process.env.EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT),
   },
 };
 
