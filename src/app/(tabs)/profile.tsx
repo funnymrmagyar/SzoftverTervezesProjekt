@@ -2,20 +2,17 @@ import Constants from 'expo-constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef, useState } from 'react';
 import {
-  ScrollView,
+  Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
-  useWindowDimensions,
-  type GestureResponderEvent,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
-  type PointerEvent,
   type ScrollViewInstance,
-  type ViewInstance,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/state/useAuthStore';
 import { authMode } from '@/services/firebase/config';
@@ -25,10 +22,11 @@ import { ScreenContainer } from '@/ui/ScreenContainer';
 import { Avatar, SettingsRow, TrophyBadge } from '@/ui/components';
 import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
-import { useBreakpoint } from '@/ui/useBreakpoint';
+import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
 
 const TROPHIES = [
   {
+    id: 'first-light',
     icon: 'star-outline',
     title: 'Első fény',
     description: 'Nézd meg első alkalommal az égboltot.',
@@ -36,6 +34,7 @@ const TROPHIES = [
     color: colors.success,
   },
   {
+    id: 'explorer',
     icon: 'telescope-outline',
     title: 'Felfedező',
     description: 'Fedezz fel öt különböző csillagképet.',
@@ -43,6 +42,7 @@ const TROPHIES = [
     color: colors.success,
   },
   {
+    id: 'moon-walker',
     icon: 'moon-outline',
     title: 'Holdjáró',
     description: 'Látogasd meg az égboltot három különböző éjszakán.',
@@ -50,6 +50,7 @@ const TROPHIES = [
     color: colors.info,
   },
   {
+    id: 'compass',
     icon: 'compass-outline',
     title: 'Iránytű',
     description: 'Fedezd fel az égbolt mind a négy égtáját.',
@@ -57,6 +58,7 @@ const TROPHIES = [
     color: colors.info,
   },
   {
+    id: 'streak',
     icon: 'flame-outline',
     title: 'Sorozat',
     description: 'Térj vissza hét egymást követő napon.',
@@ -64,6 +66,7 @@ const TROPHIES = [
     color: colors.bronze,
   },
   {
+    id: 'stargazer',
     icon: 'ribbon-outline',
     title: 'Csillagnéző',
     description: 'Teljesíts tíz csillagászati kihívást.',
@@ -71,6 +74,7 @@ const TROPHIES = [
     color: colors.bronze,
   },
   {
+    id: 'world-traveler',
     icon: 'planet-outline',
     title: 'Világjáró',
     description: 'Próbálj ki öt különböző égikultúrát.',
@@ -78,6 +82,7 @@ const TROPHIES = [
     color: colors.info,
   },
   {
+    id: 'night-owl',
     icon: 'eye-outline',
     title: 'Éjjeli bagoly',
     description: 'Fedezd fel az eget éjfél után.',
@@ -85,6 +90,7 @@ const TROPHIES = [
     color: colors.success,
   },
   {
+    id: 'milky-way',
     icon: 'sparkles-outline',
     title: 'Tejút',
     description: 'Ismerj fel húsz csillagképet.',
@@ -92,6 +98,7 @@ const TROPHIES = [
     color: colors.bronze,
   },
   {
+    id: 'regular',
     icon: 'calendar-outline',
     title: 'Állandó vendég',
     description: 'Gyűjts össze harminc megfigyelési alkalmat.',
@@ -99,6 +106,7 @@ const TROPHIES = [
     color: colors.bronze,
   },
   {
+    id: 'culture-keeper',
     icon: 'planet-outline',
     title: 'Kultúrák őre',
     description: 'Ismerj meg minden elérhető égikultúrát.',
@@ -106,6 +114,7 @@ const TROPHIES = [
     color: colors.info,
   },
   {
+    id: 'master-observer',
     icon: 'trophy-outline',
     title: 'Mestermegfigyelő',
     description: 'Érj el kiemelkedő eredményt egy játékban.',
@@ -120,73 +129,14 @@ const AUTH_LABELS = {
   firebase: 'Firebase',
 } as const;
 
-function TrophyCarousel() {
+function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
   const [scrollOffset, setScrollOffset] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
+  const [contentWidth, setContentWidth] = useState(0);
   const scrollRef = useRef<ScrollViewInstance>(null);
-  const sliderRef = useRef<ViewInstance>(null);
-  const sliderLeft = useRef<number | null>(null);
-  const { width } = useWindowDimensions();
-  const layout = useBreakpoint();
-  const insets = useSafeAreaInsets();
-  const contentWidth =
-    TROPHIES.length * (sizing.gameIcon + spacing.xxxl + spacing.sm) - spacing.sm + spacing.md;
-  const viewportWidth = Math.max(
-    0,
-    Math.min(
-      layout.contentMaxWidth,
-      width -
-        insets.left -
-        insets.right -
-        layout.pagePadding * 2 -
-        (layout.expanded ? sizing.navWidth + spacing.xxl - layout.pagePadding : 0),
-    ),
-  );
-  const trackWidth = viewportWidth;
-  const maxOffset = Math.max(0, contentWidth - viewportWidth);
-  const scrollProgress = maxOffset ? Math.min(1, scrollOffset / maxOffset) : 0;
-  const thumbWidth =
-    contentWidth && trackWidth
-      ? Math.min(trackWidth, Math.max(sizing.touch, (viewportWidth / contentWidth) * trackWidth))
-      : sizing.touch;
-  const thumbRange = Math.max(0, trackWidth - thumbWidth);
-
-  function setProgressFromTrack(locationX: number) {
-    if (!maxOffset || !thumbRange) return;
-    const progress = Math.max(0, Math.min(1, (locationX - thumbWidth / 2) / thumbRange));
-    scrollRef.current?.scrollTo({ x: progress * maxOffset, animated: false });
-    setScrollOffset(progress * maxOffset);
-  }
-
-  function onPointerDown(event: PointerEvent) {
-    const clientX = event.nativeEvent.clientX;
-    sliderRef.current?.measureInWindow((left) => {
-      sliderLeft.current = left;
-      setProgressFromTrack(clientX - left);
-    });
-  }
-
-  function onPointerMove(event: PointerEvent) {
-    if (event.nativeEvent.buttons > 0 && sliderLeft.current !== null) {
-      setProgressFromTrack(event.nativeEvent.clientX - sliderLeft.current);
-    }
-  }
-
-  function onPointerUp() {
-    sliderLeft.current = null;
-  }
 
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     setScrollOffset(event.nativeEvent.contentOffset.x);
-  }
-
-  function onAccessibilityAction(actionName: string) {
-    const change = maxOffset / 10;
-    const nextOffset =
-      actionName === 'increment'
-        ? Math.min(maxOffset, scrollOffset + change)
-        : Math.max(0, scrollOffset - change);
-    scrollRef.current?.scrollTo({ x: nextOffset, animated: true });
-    setScrollOffset(nextOffset);
   }
 
   return (
@@ -198,61 +148,61 @@ function TrophyCarousel() {
         contentContainerStyle={styles.trophyList}
         accessibilityLabel="Trófeák, oldalra görgethető lista"
         onScroll={onScroll}
+        onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
+        onContentSizeChange={(width) => setContentWidth(width)}
         scrollEventThrottle={16}
       >
         {TROPHIES.map((trophy) => (
           <TrophyBadge
-            key={trophy.title}
+            key={trophy.id}
             icon={trophy.icon}
             title={trophy.title}
             description={trophy.description}
             difficulty={trophy.difficulty}
             difficultyColor={trophy.color}
-            locked
+            locked={!unlockedIds.includes(trophy.id)}
           />
         ))}
       </ScrollView>
-      {maxOffset > 0 ? (
-        <Pressable
-          ref={sliderRef}
-          accessibilityRole="adjustable"
+      <View style={styles.scrollbar}>
+        <StyledScrollbar
+          orientation="horizontal"
+          contentSize={contentWidth}
+          viewportSize={viewportWidth}
+          offset={scrollOffset}
           accessibilityLabel="Trófeák görgetősávja"
-          accessibilityValue={{
-            min: 0,
-            max: 100,
-            now: Math.round(scrollProgress * 100),
+          onScrollTo={(offset) => {
+            scrollRef.current?.scrollTo({ x: offset, animated: false });
+            setScrollOffset(offset);
           }}
-          accessibilityActions={[
-            { name: 'increment', label: 'További trófeák' },
-            { name: 'decrement', label: 'Előző trófeák' },
-          ]}
-          onAccessibilityAction={(event) => onAccessibilityAction(event.nativeEvent.actionName)}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          onPress={(event: GestureResponderEvent) =>
-            setProgressFromTrack(event.nativeEvent.locationX)
-          }
-          style={styles.sliderTrack}
-        >
-          <View style={[styles.sliderRail, { pointerEvents: 'none' }]} />
-          <View
-            style={[
-              styles.sliderThumb,
-              { width: thumbWidth, left: scrollProgress * thumbRange, pointerEvents: 'none' },
-            ]}
-          />
-        </Pressable>
-      ) : null}
+        />
+      </View>
     </View>
   );
 }
 
 export default function ProfileScreen() {
   const user = useAuthStore((state) => state.user);
+  const syncError = useAuthStore((state) => state.syncError);
+  const trophyIds = useAuthStore((state) => state.trophyIds);
   const signOut = useAuthStore((state) => state.signOut);
+  const deleteAccount = useAuthStore((state) => state.deleteAccount);
+  const authBusy = useAuthStore((state) => state.busy);
+  const authError = useAuthStore((state) => state.error);
+  const clearAuthError = useAuthStore((state) => state.clearError);
   const initials = user?.email?.slice(0, 1) ?? '?';
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+
+  function closeDeleteDialog() {
+    setDeleteOpen(false);
+    setDeletePassword('');
+    clearAuthError();
+  }
+
+  async function confirmDeleteAccount() {
+    if (await deleteAccount(deletePassword)) closeDeleteDialog();
+  }
 
   return (
     <ScreenContainer maxWidth={sizing.contentWide}>
@@ -284,6 +234,19 @@ export default function ProfileScreen() {
           <Text style={styles.sectionTitle}>Beállítások</Text>
           <GlassSurface style={styles.settingsGroup}>
             <SettingsRow icon="language-outline" title="Nyelv" value="Magyar" />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Adataim törlése"
+              onPress={() => {
+                clearAuthError();
+                setDeleteOpen(true);
+              }}
+              testID="profile-delete-data"
+              style={styles.deleteRow}
+            >
+              <Ionicons name="trash-outline" size={sizing.icon} color={colors.danger} />
+              <Text style={styles.deleteRowText}>Adataim törlése</Text>
+            </Pressable>
           </GlassSurface>
         </View>
 
@@ -292,7 +255,7 @@ export default function ProfileScreen() {
             <Text style={styles.sectionTitle}>{t('profile.trophies')}</Text>
             <Ionicons name="trophy-outline" size={sizing.icon} color={colors.accent} />
           </View>
-          <TrophyCarousel />
+          <TrophyCarousel unlockedIds={trophyIds} />
         </View>
 
         <Button
@@ -302,10 +265,61 @@ export default function ProfileScreen() {
           onPress={signOut}
           testID="profile-signout"
         />
+        {syncError ? <Text style={styles.syncError}>{syncError}</Text> : null}
         <Text style={styles.meta}>
           {t('profile.appVersion')} {Constants.expoConfig?.version} · {AUTH_LABELS[authMode]}
         </Text>
       </View>
+      <Modal
+        visible={deleteOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={closeDeleteDialog}
+      >
+        <View style={styles.deleteModal}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Párbeszéd bezárása"
+            onPress={closeDeleteDialog}
+            style={StyleSheet.absoluteFill}
+          />
+          <GlassSurface style={styles.deleteDialog} testID="profile-delete-dialog">
+            <Text style={styles.deleteTitle}>Adataim törlése</Text>
+            <Text style={styles.deleteDescription}>
+              A játékrekordjaid, trófeáid és fiókod véglegesen törlődnek. A folytatáshoz add meg a
+              jelszavad.
+            </Text>
+            <TextInput
+              value={deletePassword}
+              onChangeText={setDeletePassword}
+              secureTextEntry
+              autoComplete="current-password"
+              accessibilityLabel="Jelszó a fiók törlésének megerősítéséhez"
+              placeholder="Jelszó"
+              placeholderTextColor={colors.textMuted}
+              onSubmitEditing={() => void confirmDeleteAccount()}
+              style={styles.deletePassword}
+              testID="profile-delete-password"
+            />
+            {authError ? <Text style={styles.deleteError}>{authError}</Text> : null}
+            <View style={styles.deleteActions}>
+              <Button
+                title="Mégse"
+                variant="secondary"
+                onPress={closeDeleteDialog}
+                disabled={authBusy}
+              />
+              <Button
+                title="Végleges törlés"
+                onPress={() => void confirmDeleteAccount()}
+                loading={authBusy}
+                disabled={!deletePassword}
+                testID="profile-delete-confirm"
+              />
+            </View>
+          </GlassSurface>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -335,33 +349,46 @@ const styles = StyleSheet.create({
   sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   sectionTitle: { ...font.heading, color: colors.text },
   settingsGroup: { padding: spacing.xs },
+  deleteRow: {
+    minHeight: sizing.touch + spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  deleteRowText: { ...font.body, color: colors.danger },
+  deleteModal: {
+    ...StyleSheet.absoluteFill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
+    backgroundColor: colors.backdrop,
+  },
+  deleteDialog: { width: '100%', maxWidth: 440, gap: spacing.md, padding: spacing.lg },
+  deleteTitle: { ...font.heading, color: colors.text },
+  deleteDescription: { ...font.small, color: colors.textMuted, lineHeight: spacing.xl },
+  deletePassword: {
+    minHeight: sizing.touch + spacing.md,
+    paddingHorizontal: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.borderStrong,
+    borderRadius: radius.sm,
+    backgroundColor: colors.bg,
+    color: colors.text,
+    fontSize: 16,
+  },
+  deleteError: { ...font.small, color: colors.danger },
+  deleteActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
   trophyList: { gap: spacing.sm, paddingVertical: spacing.xs, paddingRight: spacing.md },
   trophyCarousel: { width: '100%' },
-  sliderTrack: {
-    minHeight: sizing.touch,
-    justifyContent: 'center',
-    marginTop: spacing.xs,
-  },
-  sliderRail: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: spacing.xs,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surfaceRaised,
-  },
-  sliderThumb: {
-    position: 'absolute',
-    height: spacing.md,
-    borderRadius: radius.pill,
-    backgroundColor: colors.accent,
-    borderWidth: 1,
-    borderColor: colors.accent,
-  },
+  scrollbar: { marginTop: spacing.xs },
   meta: {
     ...font.caption,
     color: colors.textMuted,
     textAlign: 'center',
     paddingBottom: spacing.sm,
   },
+  syncError: { ...font.caption, color: colors.danger, textAlign: 'center' },
 });

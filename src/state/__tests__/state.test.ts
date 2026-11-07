@@ -58,6 +58,47 @@ describe('useSkyStore', () => {
     expect(useSkyStore.getState().manualTime).toBeNull();
   });
 
+  it('az idővonal közvetlen időpontot állít be, majd élő módba visszaállítható', () => {
+    const timestamp = Date.UTC(1500, 0, 1);
+    useSkyStore.getState().setManualTime(timestamp);
+    expect(useSkyStore.getState().manualTime).toBe(timestamp);
+    useSkyStore.getState().resetTimeToNow();
+    expect(useSkyStore.getState().manualTime).toBeNull();
+  });
+
+  it('az évváltás megtartja a napot és az időt, a február 29-et pedig korrigálja', () => {
+    const leapDay = new Date(0);
+    leapDay.setFullYear(2024, 1, 29);
+    leapDay.setHours(17, 42, 0, 0);
+    useSkyStore.getState().setManualTime(leapDay.getTime());
+    useSkyStore.getState().setYear(2025);
+    const result = new Date(useSkyStore.getState().manualTime!);
+    expect([
+      result.getFullYear(),
+      result.getMonth() + 1,
+      result.getDate(),
+      result.getHours(),
+    ]).toEqual([2025, 2, 28, 17]);
+  });
+
+  it('az időpont percben és naptári napokkal léptethető', () => {
+    const now = new Date(0);
+    now.setFullYear(99, 6, 12);
+    now.setHours(21, 30, 0, 0);
+    useSkyStore.getState().setTimeOfDay(135, now.getTime());
+    const timed = new Date(useSkyStore.getState().manualTime!);
+    expect([
+      timed.getFullYear(),
+      timed.getMonth() + 1,
+      timed.getDate(),
+      timed.getHours(),
+      timed.getMinutes(),
+    ]).toEqual([99, 7, 12, 2, 15]);
+    useSkyStore.getState().shiftDays(1);
+    const shifted = new Date(useSkyStore.getState().manualTime!);
+    expect([shifted.getFullYear(), shifted.getMonth() + 1, shifted.getDate()]).toEqual([99, 7, 13]);
+  });
+
   it('a vonalak ki-be kapcsolhatók', () => {
     useSkyStore.getState().toggleLines();
     expect(useSkyStore.getState().showLines).toBe(false);

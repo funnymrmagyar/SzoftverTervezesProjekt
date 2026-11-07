@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owns(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validScore(value) {
+      return value is int && value >= 0;
+    }
+
+    function validScores(scores) {
+      return scores is map
+        && scores.keys().hasOnly(['constellation-finder', 'star-connection'])
+        && (!('constellation-finder' in scores) || validScore(scores['constellation-finder']))
+        && (!('star-connection' in scores) || validScore(scores['star-connection']));
+    }
+
+    match /users/{userId} {
+      allow read, write: if owns(userId);
+    }
+
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow create, update: if owns(userId)
+        && request.resource.data.keys().hasAll([
+          'uid', 'displayName', 'scores', 'points', 'trophyCount', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'uid', 'displayName', 'scores', 'points', 'trophyCount', 'updatedAt'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 24
+        && validScores(request.resource.data.scores)
+        && validScore(request.resource.data.points)
+        && validScore(request.resource.data.trophyCount)
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if owns(userId);
+    }
+  }
+}

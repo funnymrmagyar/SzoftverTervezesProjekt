@@ -6,6 +6,7 @@ import { Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'rea
 import { colors, radius, sizing, spacing } from './theme';
 import { t } from './i18n';
 import { useBreakpoint } from './useBreakpoint';
+import { ThreeZoneBar } from './layout/ThreeZoneBar';
 import type { TranslationKey } from './i18n';
 
 const barShadow: ViewStyle =
@@ -58,63 +59,70 @@ export function AppTabBar({
             },
       ]}
     >
-      <View style={[styles.bar, expanded ? styles.rail : styles.pill]}>
-        {state.routes.map((route, index) => {
-          const focused = state.index === index;
-          const options = descriptors[route.key].options;
-          const labelKey = LABEL_KEYS[route.name];
-          const label = labelKey ? t(labelKey) : (options.title ?? route.name);
-          const color = focused ? colors.accent : colors.textMuted;
-          const onPress = () => {
-            const event = emitter.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-            if (!focused && !event.defaultPrevented) {
-              navigateToTab(route.key);
-            }
-          };
+      <ThreeZoneBar
+        orientation={expanded ? 'vertical' : 'horizontal'}
+        sideSize={expanded ? sizing.touch + spacing.md : sizing.touch}
+        style={expanded ? styles.expandedZones : styles.bottomZones}
+        center={
+          <View style={[styles.bar, expanded ? styles.rail : styles.pill]}>
+            {state.routes.map((route, index) => {
+              const focused = state.index === index;
+              const options = descriptors[route.key].options;
+              const labelKey = LABEL_KEYS[route.name];
+              const label = labelKey ? t(labelKey) : (options.title ?? route.name);
+              const color = focused ? colors.accent : colors.textMuted;
+              const onPress = () => {
+                const event = emitter.emit({
+                  type: 'tabPress',
+                  target: route.key,
+                  canPreventDefault: true,
+                });
+                if (!focused && !event.defaultPrevented) {
+                  navigateToTab(route.key);
+                }
+              };
 
-          return (
-            <Pressable
-              key={route.key}
-              accessibilityRole="button"
-              accessibilityLabel={label}
-              accessibilityHint={label}
-              accessibilityState={{ selected: focused }}
-              onPress={onPress}
-              onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
-              onFocus={() => setFocusedRoute(route.key)}
-              onBlur={() => setFocusedRoute(null)}
-              testID={options.tabBarButtonTestID}
-              style={({ pressed }) => [
-                styles.item,
-                expanded && styles.railItem,
-                focused && styles.itemActive,
-                focusedRoute === route.key && styles.focused,
-                pressed && styles.pressed,
-              ]}
-            >
-              <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
-                {options.tabBarIcon ? (
-                  options.tabBarIcon({ focused, color, size: sizing.icon + spacing.xs })
-                ) : (
-                  <Ionicons name="ellipse-outline" size={sizing.icon} color={color} />
-                )}
-              </View>
-              {!expanded && layout.compact ? (
-                <Text
-                  style={[styles.activeLabel, focused && styles.itemActiveLabel]}
-                  numberOfLines={1}
+              return (
+                <Pressable
+                  key={route.key}
+                  accessibilityRole="button"
+                  accessibilityLabel={label}
+                  accessibilityHint={label}
+                  accessibilityState={{ selected: focused }}
+                  onPress={onPress}
+                  onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
+                  onFocus={() => setFocusedRoute(route.key)}
+                  onBlur={() => setFocusedRoute(null)}
+                  testID={options.tabBarButtonTestID}
+                  style={({ pressed }) => [
+                    styles.item,
+                    expanded && styles.railItem,
+                    focused && styles.itemActive,
+                    focusedRoute === route.key && styles.focused,
+                    pressed && styles.pressed,
+                  ]}
                 >
-                  {label}
-                </Text>
-              ) : null}
-            </Pressable>
-          );
-        })}
-      </View>
+                  <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
+                    {options.tabBarIcon ? (
+                      options.tabBarIcon({ focused, color, size: sizing.icon + spacing.xs })
+                    ) : (
+                      <Ionicons name="ellipse-outline" size={sizing.icon} color={color} />
+                    )}
+                  </View>
+                  {!expanded && layout.compact ? (
+                    <Text
+                      style={[styles.activeLabel, focused && styles.itemActiveLabel]}
+                      numberOfLines={1}
+                    >
+                      {label}
+                    </Text>
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        }
+      />
     </View>
   );
 }
@@ -126,16 +134,17 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
   },
+  bottomZones: { width: '92%', maxWidth: sizing.contentCompact },
+  expandedZones: { width: '100%', height: '100%' },
   bar: {
     alignItems: 'center',
+    width: '100%',
     borderWidth: 1,
     borderColor: colors.borderStrong,
     backgroundColor: colors.glassStrong,
     ...barShadow,
   },
   pill: {
-    width: '92%',
-    maxWidth: sizing.contentCompact,
     minHeight: sizing.navHeight + spacing.xs,
     flexDirection: 'row',
     justifyContent: 'center',

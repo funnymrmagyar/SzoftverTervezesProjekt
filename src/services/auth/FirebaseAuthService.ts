@@ -1,6 +1,9 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
+  EmailAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword,
   signOut,
   type Auth,
@@ -38,6 +41,26 @@ export class FirebaseAuthService implements AuthService {
 
   async signOut(): Promise<void> {
     await signOut(this.auth);
+  }
+
+  async reauthenticate(password: string): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user?.email) throw toAuthError({ code: 'auth/user-not-found' });
+    try {
+      await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email, password));
+    } catch (error) {
+      throw toAuthError(error);
+    }
+  }
+
+  async deleteAccount(): Promise<void> {
+    const user = this.auth.currentUser;
+    if (!user) throw toAuthError({ code: 'auth/user-not-found' });
+    try {
+      await deleteUser(user);
+    } catch (error) {
+      throw toAuthError(error);
+    }
   }
 
   onAuthChanged(listener: (user: AuthUser | null) => void): () => void {

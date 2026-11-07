@@ -5,17 +5,20 @@ import { StyleSheet, Text, View } from 'react-native';
 import { GameCard } from '@/features/games/GameCard';
 import { GAME_OPTIONS } from '@/features/games/gameOptions';
 import { useBestScores } from '@/features/games/useBestScores';
-import { ScreenContainer } from '@/ui/ScreenContainer';
+import { Screen } from '@/ui/layout/Screen';
 import { Badge } from '@/ui/components';
 import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
 
 export default function GamesScreen() {
   const best = useBestScores();
+  const layout = useBreakpoint();
+  const compactLandscape = layout.landscape && layout.height < 500;
 
   return (
-    <ScreenContainer maxWidth={sizing.contentCompact}>
-      <View style={styles.content}>
+    <Screen maxWidth={sizing.contentCompact} scroll={false} contentStyle={styles.screenContent}>
+      <View style={[styles.content, compactLandscape && styles.contentLandscape]}>
         <View style={styles.header}>
           <View style={styles.headingCopy}>
             <Text style={styles.title}>{t('games.title')}</Text>
@@ -30,19 +33,20 @@ export default function GamesScreen() {
           </View>
         </View>
 
-        <View style={styles.cards}>
+        <View style={[styles.cards, compactLandscape && styles.cardsLandscape]}>
           {GAME_OPTIONS.map((game) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              title={t(game.titleKey)}
-              subtitle={t(game.subtitleKey)}
-              best={best[game.id]}
-              onPlay={() => router.push(game.route)}
-              onLeaderboardPress={() =>
-                router.push({ pathname: '/leaderboard', params: { game: game.id } })
-              }
-            />
+            <View key={game.id} style={compactLandscape && styles.gameSlot}>
+              <GameCard
+                game={game}
+                title={t(game.titleKey)}
+                subtitle={t(game.subtitleKey)}
+                best={best[game.id]}
+                onPlay={() => router.push(game.route)}
+                onLeaderboardPress={() =>
+                  router.push({ pathname: '/leaderboard', params: { game: game.id } })
+                }
+              />
+            </View>
           ))}
         </View>
 
@@ -51,12 +55,14 @@ export default function GamesScreen() {
           <Text style={styles.noteText}>{t('games.note')}</Text>
         </View>
       </View>
-    </ScreenContainer>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { flexGrow: 1, gap: spacing.xl },
+  screenContent: { paddingTop: spacing.sm, paddingBottom: spacing.sm },
+  content: { flex: 1, justifyContent: 'center', gap: spacing.xl },
+  contentLandscape: { gap: spacing.md },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,6 +83,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glass,
   },
   cards: { gap: spacing.md },
+  cardsLandscape: { flexDirection: 'row', alignItems: 'stretch' },
+  gameSlot: { flex: 1, minWidth: 0 },
   note: {
     flexDirection: 'row',
     alignItems: 'center',

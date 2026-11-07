@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import type { GeoLocation } from '@/core/models';
 import { DEFAULT_LOCATION } from '@/core/locations';
+import { clampToRange, shiftDays as shiftDateByDays, withTimeOfDay, withYear } from '@/core/time';
 
 export type LocationSource = 'default' | 'gps' | 'manual';
 
@@ -26,6 +27,14 @@ interface SkyState {
   selectConstellation(id: string | null): void;
   /** Időugrás órákban a jelenleg mutatott időponthoz képest. */
   shiftHours(hours: number, now?: number): void;
+  /** Év beállítása a jelenleg mutatott időpont hónapjának, napjának és órájának megtartásával. */
+  setYear(year: number, now?: number): void;
+  /** UTC nap kezdetétől számított perc beállítása. */
+  setTimeOfDay(minuteOfDay: number, now?: number): void;
+  /** Naptári napokkal léptetés a jelenleg mutatott időponthoz képest. */
+  shiftDays(days: number, now?: number): void;
+  /** A megjelenítendő időpont közvetlen beállítása (pl. idővonal-húzásból). */
+  setManualTime(timestamp: number): void;
   resetTimeToNow(): void;
   setLocation(location: GeoLocation, source: LocationSource): void;
 }
@@ -45,7 +54,18 @@ export const useSkyStore = create<SkyState>((set, get) => ({
   toggleLabels: () => set({ showLabels: !get().showLabels }),
   selectConstellation: (selectedConstellationId) => set({ selectedConstellationId }),
   shiftHours: (hours, now = Date.now()) =>
-    set({ manualTime: (get().manualTime ?? now) + hours * 3600 * 1000 }),
+    set({
+      manualTime: clampToRange(new Date((get().manualTime ?? now) + hours * 3600 * 1000)).getTime(),
+    }),
+  setYear: (year, now = Date.now()) =>
+    set({ manualTime: withYear(new Date(get().manualTime ?? now), year).getTime() }),
+  setTimeOfDay: (minuteOfDay, now = Date.now()) =>
+    set({
+      manualTime: withTimeOfDay(new Date(get().manualTime ?? now), minuteOfDay).getTime(),
+    }),
+  shiftDays: (days, now = Date.now()) =>
+    set({ manualTime: shiftDateByDays(new Date(get().manualTime ?? now), days).getTime() }),
+  setManualTime: (manualTime) => set({ manualTime: clampToRange(new Date(manualTime)).getTime() }),
   resetTimeToNow: () => set({ manualTime: null }),
   setLocation: (location, locationSource) => set({ location, locationSource }),
 }));

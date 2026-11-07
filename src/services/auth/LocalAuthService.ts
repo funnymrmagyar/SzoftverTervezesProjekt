@@ -61,6 +61,22 @@ export class LocalAuthService implements AuthService {
     await this.commit();
   }
 
+  async reauthenticate(password: string): Promise<void> {
+    await this.ready;
+    const email = this.data.currentEmail;
+    const account = email ? this.data.accounts[email] : undefined;
+    if (!account || account.password !== password) throw this.error('auth/invalid-credential');
+  }
+
+  async deleteAccount(): Promise<void> {
+    await this.ready;
+    const email = this.data.currentEmail;
+    if (!email || !this.data.accounts[email]) throw this.error('auth/user-not-found');
+    delete this.data.accounts[email];
+    this.data.currentEmail = null;
+    await this.commit();
+  }
+
   onAuthChanged(listener: (user: AuthUser | null) => void): () => void {
     this.listeners.add(listener);
     // A Firebase-hez hasonlóan az első értéket akkor adjuk, amikor a tárolt állapot betöltődött.

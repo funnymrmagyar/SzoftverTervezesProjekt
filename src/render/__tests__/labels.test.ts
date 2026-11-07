@@ -2,8 +2,10 @@ import {
   equatorialToHorizontal,
   horizontalToVector,
   localSiderealTime,
+  precessionMatrix,
   RAD,
   skyRotationMatrix,
+  applyMat3,
 } from '@/core/astronomy';
 import { getSkyCultures, type LineSegment } from '@/core/catalog';
 import type { Constellation, Mat3, Star, Vec3 } from '@/core/models';
@@ -148,7 +150,7 @@ describe('csillagképnevek: elrendezés', () => {
     const anchors = constellationAnchors(repo.lineSegments('hungarian'), culture.constellations);
     const gonc = anchors.find((a) => a.id === 'gonc')!;
 
-    const [x, y, z] = gonc.direction;
+    const [x, y, z] = applyMat3(precessionMatrix(date), gonc.direction);
     const radec = { ra: Math.atan2(y, x) * RAD, dec: Math.asin(z) * RAD };
     const { azimuth, altitude } = equatorialToHorizontal(
       radec,

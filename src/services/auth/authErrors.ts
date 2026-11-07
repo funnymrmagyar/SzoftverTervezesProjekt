@@ -8,6 +8,7 @@ const MESSAGES: Record<string, string> = {
   'auth/wrong-password': 'Hibás e-mail-cím vagy jelszó.',
   'auth/user-not-found': 'Hibás e-mail-cím vagy jelszó.',
   'auth/user-disabled': 'Ez a fiók le van tiltva.',
+  'auth/requires-recent-login': 'A művelethez jelentkezz be újra a jelszavaddal.',
   'auth/email-already-in-use': 'Ezzel az e-mail-címmel már regisztráltak.',
   'auth/weak-password': 'A jelszó túl gyenge (legalább 6 karakter kell).',
   'auth/too-many-requests': 'Túl sok próbálkozás. Próbáld újra néhány perc múlva.',
