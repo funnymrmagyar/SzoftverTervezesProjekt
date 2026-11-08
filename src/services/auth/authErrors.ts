@@ -17,6 +17,11 @@ const MESSAGES: Record<string, string> = {
 
 export const UNKNOWN_ERROR_MESSAGE = 'Váratlan hiba történt. Próbáld újra.';
 
+/** Ismert hibakód-e (pl. rossz jelszó, foglalt e-mail), szemben a váratlan hibákkal. */
+export function isKnownAuthErrorCode(code: string): boolean {
+  return Object.hasOwn(MESSAGES, code);
+}
+
 /** Firebase hibakód → magyar üzenet. */
 export function authErrorMessage(code: string | undefined): string {
   return (code && MESSAGES[code]) || UNKNOWN_ERROR_MESSAGE;

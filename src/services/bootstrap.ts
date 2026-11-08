@@ -1,8 +1,16 @@
+import { Platform } from 'react-native';
+
+import { configWarnings } from '@/config/env';
+
 import { setAuthService } from './auth';
 import { FirebaseAuthService } from './auth/FirebaseAuthService';
 import { LocalAuthService } from './auth/LocalAuthService';
 import { getFirebaseAuth } from './firebase/auth';
 import { authMode } from './firebase/config';
+import { createLogger, getLogLevel } from './logger';
+import { installGlobalErrorHandlers } from './logger/globalErrorHandlers';
+
+const log = createLogger('app');
 
 let configured = false;
 
@@ -17,8 +25,13 @@ let configured = false;
  */
 export function configureServices(): void {
   if (configured) return;
+  // Elsőként: innentől minden el nem kapott hiba is a naplóba kerül.
+  installGlobalErrorHandlers();
+  for (const warning of configWarnings) log.warn(warning.message, warning.meta);
+
   setAuthService(
     authMode === 'local' ? new LocalAuthService() : new FirebaseAuthService(getFirebaseAuth()),
   );
   configured = true;
+  log.info('Az alkalmazás elindult', { platform: Platform.OS, authMode, logLevel: getLogLevel() });
 }

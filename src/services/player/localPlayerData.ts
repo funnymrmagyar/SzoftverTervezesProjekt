@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { createLogger } from '@/services/logger';
+
+const log = createLogger('player');
+
 const TROPHY_STORAGE_KEY = 'csillagnezo.playerTrophies.v1';
 
 function keyFor(uid: string): string {
@@ -13,7 +17,8 @@ export async function loadTrophyIds(uid: string): Promise<string[]> {
     return Array.isArray(parsed)
       ? [...new Set(parsed.filter((id): id is string => typeof id === 'string'))]
       : [];
-  } catch {
+  } catch (error) {
+    log.warn('A helyi trófeák nem olvashatók; üres listával folytatjuk', { error });
     return [];
   }
 }

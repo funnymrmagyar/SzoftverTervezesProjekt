@@ -1,7 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { PlayerScores } from '@/core/models/PlayerProfile';
+import { createLogger } from '@/services/logger';
 import type { GameId } from './gameOptions';
+
+const log = createLogger('games');
 
 const STORAGE_KEY = 'csillagnezo.gameBest.v1';
 const GUEST_MIGRATION_KEY = 'csillagnezo.gameBest.migrated.v1';
@@ -31,7 +34,8 @@ export async function loadBestScores(uid?: string): Promise<BestScores> {
       }
     }
     return scores;
-  } catch {
+  } catch (error) {
+    log.warn('A helyi rekordok nem olvashatók; üres listával folytatjuk', { error });
     return {};
   }
 }

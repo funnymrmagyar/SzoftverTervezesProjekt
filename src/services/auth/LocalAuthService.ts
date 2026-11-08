@@ -1,8 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { createLogger } from '@/services/logger';
+
 import { AuthError, type AuthService, type AuthUser } from './AuthService';
 import { authErrorMessage } from './authErrors';
 import { MIN_PASSWORD_LENGTH } from './validation';
+
+const log = createLogger('auth');
 
 /** Minimális tárolófelület (az AsyncStorage és a tesztbeli mock is megfelel neki). */
 export interface KeyValueStorage {
@@ -96,8 +100,9 @@ export class LocalAuthService implements AuthService {
     try {
       const raw = await this.storage.getItem(LOCAL_AUTH_KEY);
       if (raw) this.data = { ...this.data, ...(JSON.parse(raw) as Partial<Stored>) };
-    } catch {
+    } catch (error) {
       // Sérült vagy elérhetetlen tároló: üres állapottal indulunk.
+      log.warn('A helyi fiókadatok nem olvashatók; üres állapottal indulunk', { error });
     }
   }
 
@@ -105,8 +110,9 @@ export class LocalAuthService implements AuthService {
   private async commit(): Promise<void> {
     try {
       await this.storage.setItem(LOCAL_AUTH_KEY, JSON.stringify(this.data));
-    } catch {
+    } catch (error) {
       // Ha nem sikerül menteni, az app a munkamenet végéig még működik.
+      log.warn('A helyi fiókadatok mentése nem sikerült', { error });
     }
     const user = this.currentUser();
     this.listeners.forEach((l) => l(user));

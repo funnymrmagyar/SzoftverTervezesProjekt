@@ -1,7 +1,7 @@
 import type { AuthService } from './AuthService';
 
 export { AuthError, type AuthService, type AuthUser } from './AuthService';
-export { authErrorMessage, toAuthError } from './authErrors';
+export { authErrorMessage, isKnownAuthErrorCode, toAuthError } from './authErrors';
 export * from './validation';
 
 /*

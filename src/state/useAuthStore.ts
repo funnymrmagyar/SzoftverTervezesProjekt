@@ -7,8 +7,14 @@ import {
   saveBestScores,
 } from '@/features/games/scoreStorage';
 import { flushQueuedResults, removeQueuedResults } from '@/features/games/resultQueue';
-import { getAuthService, toAuthError, type AuthUser } from '@/services/auth';
+import {
+  getAuthService,
+  isKnownAuthErrorCode,
+  toAuthError,
+  type AuthUser,
+} from '@/services/auth';
 import { authMode } from '@/services/firebase/config';
+import { createLogger } from '@/services/logger';
 import {
   deletePlayerProfile,
   syncPlayerProfile,
@@ -25,6 +31,24 @@ export type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
 const PLAYER_SYNC_ERROR =
   'A felhasználói adatok szinkronizálása nem sikerült. Ellenőrizd a kapcsolatot, majd próbáld újra.';
+
+const log = createLogger('auth');
+
+/**
+ * Sikertelen fiókművelet naplózása. A felhasználói hibák (rossz jelszó, foglalt e-mail)
+ * a normál működés részei, ezért csak „info”; a hálózati gond „warn”; a váratlan hiba „error”,
+ * a teljes hibával együtt. E-mail-címet és jelszót soha nem naplózunk.
+ */
+function logAuthFailure(action: string, error: unknown) {
+  const { code } = toAuthError(error);
+  if (!isKnownAuthErrorCode(code)) {
+    log.error(`${action}: váratlan hiba`, { error });
+  } else if (code === 'auth/network-request-failed' || code === 'auth/too-many-requests') {
+    log.warn(`${action} sikertelen`, { code });
+  } else {
+    log.info(`${action} sikertelen`, { code });
+  }
+}
 
 interface AuthState {
   status: AuthStatus;
@@ -76,13 +100,19 @@ export const useAuthStore = create<AuthState>((set, get) => {
     return synced;
   }
 
-  /** Közös hibakezelés a bejelentkezéshez és a regisztrációhoz. */
-  async function run(action: () => Promise<unknown>): Promise<boolean> {
+  /** A szinkronizálási hibák egy helyen: naplózzuk, a felület pedig a syncError-t mutatja. */
+  function reportSyncError(error: unknown) {
+    log.error('A játékosadatok szinkronizálása nem sikerült', { error });
+  }
+
+  /** Közös hibakezelés a fiókműveletekhez (bejelentkezés, regisztráció, fióktörlés). */
+  async function run(actionName: string, action: () => Promise<unknown>): Promise<boolean> {
     set({ busy: true, error: null });
     try {
       await action();
       return true;
     } catch (error) {
+      logAuthFailure(actionName, error);
       set({ error: toAuthError(error).message });
       return false;
     } finally {
@@ -110,7 +140,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
           trophyIds: [],
           profileRevision: accountChanged ? get().profileRevision + 1 : get().profileRevision,
         });
-        if (accountChanged) resetAccountStores();
+        if (accountChanged) {
+          resetAccountStores();
+          if (user) log.info('Bejelentkezett felhasználó', { uid: user.uid });
+          else log.info('Nincs bejelentkezett felhasználó');
+        }
         if (!user) return;
 
         void synchronizePlayerData(user)
@@ -122,7 +156,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
               }));
             }
           })
-          .catch(() => {
+          .catch((error: unknown) => {
+            reportSyncError(error);
             if (revision === authRevision) {
               set((state) => ({
                 syncError: PLAYER_SYNC_ERROR,
@@ -144,7 +179,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
           profileRevision: state.profileRevision + 1,
         }));
         return true;
-      } catch {
+      } catch (error) {
+        reportSyncError(error);
         set({ syncError: PLAYER_SYNC_ERROR });
         return false;
       }
@@ -158,29 +194,34 @@ export const useAuthStore = create<AuthState>((set, get) => {
         await saveLocalTrophyIds(user.uid, uniqueTrophyIds);
         set({ trophyIds: uniqueTrophyIds });
         return await get().syncPlayerData();
-      } catch {
+      } catch (error) {
+        log.error('A trófeák mentése nem sikerült', { error });
         set({ syncError: PLAYER_SYNC_ERROR });
         return false;
       }
     },
 
-    signIn: (email, password) => run(() => getAuthService().signIn(email, password)),
-    register: (email, password) => run(() => getAuthService().register(email, password)),
+    signIn: (email, password) =>
+      run('Bejelentkezés', () => getAuthService().signIn(email, password)),
+    register: (email, password) =>
+      run('Regisztráció', () => getAuthService().register(email, password)),
     signOut: async () => {
       const user = get().user;
       if (!user) return;
       if (authMode !== 'local') {
         try {
           await flushQueuedResults(user.uid, () => get().user?.uid === user.uid);
-        } catch {
+        } catch (error) {
           // A failed send remains queued for the next sign-in of this UID.
+          log.warn('Kijelentkezés előtt nem sikerült elküldeni az eredményeket', { error });
         }
       }
       await getAuthService().signOut();
       try {
         await clearLocalAccountData(user.uid);
-      } catch {
+      } catch (error) {
         // The UID-scoped cache cannot be observed by another account.
+        log.warn('A helyi fiókadatok törlése nem sikerült', { error });
       }
       resetAccountStores();
       set((state) => ({
@@ -194,7 +235,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     deleteAccount: async (password) => {
       const user = get().user;
       if (!user) return false;
-      return run(async () => {
+      return run('Fióktörlés', async () => {
         await getAuthService().reauthenticate(password);
         if (authMode !== 'local') {
           await flushQueuedResults(user.uid, () => get().user?.uid === user.uid);
@@ -205,6 +246,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
           clearLocalAccountData(user.uid),
           removeQueuedResults(user.uid),
         ]);
+        log.info('A fiók törölve', { uid: user.uid });
         resetAccountStores();
         set((state) => ({
           user: null,

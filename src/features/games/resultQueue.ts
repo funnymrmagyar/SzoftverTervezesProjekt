@@ -3,10 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createPlayerProfile } from '@/core/models/PlayerProfile';
 import { loadBestScores, saveBestScores } from './scoreStorage';
 import type { GameId } from './gameOptions';
+import { createLogger } from '@/services/logger';
 import { syncPlayerProfile } from '@/services/player/FirebasePlayerDataService';
 import { loadTrophyIds } from '@/services/player/localPlayerData';
 
 const QUEUE_KEY = 'csillagnezo.gameResults.pending.v1';
+
+const log = createLogger('games');
 
 export type ResultMeta = Record<string, string | number | boolean | null | undefined>;
 
@@ -150,6 +153,8 @@ async function flushUserQueue(
       sent += 1;
     } catch (error) {
       if (errorCode(error) === 'permission-denied') {
+        // A szerver elutasította (pl. érvénytelen pontszám): újraküldeni sem lenne értelme.
+        log.warn('A szerver elutasította a játékeredményt; eldobjuk', { game: next.game });
         await withQueueLock(async () => {
           const queue = await readQueue();
           await writeQueue(queue.filter((item) => item.id !== next.id));
@@ -157,11 +162,15 @@ async function flushUserQueue(
         dropped += 1;
         continue;
       }
+      log.warn('A játékeredmény küldése nem sikerült; a sorban marad', { game: next.game, error });
       break;
     }
   }
 
   const pending = (await readQueue()).filter((item) => item.uid === uid).length;
+  if (sent > 0 || dropped > 0) {
+    log.info('Sorban álló játékeredmények elküldve', { sent, dropped, pending });
+  }
   return { sent, dropped, pending };
 }
 
@@ -175,4 +184,4 @@ export async function removeQueuedResults(uid: string): Promise<void> {
 export async function loadQueuedResults(uid?: string): Promise<QueuedGameResult[]> {
   const queue = await readQueue();
   return uid ? queue.filter((item) => item.uid === uid) : queue;
-}
+}

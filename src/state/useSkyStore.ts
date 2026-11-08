@@ -3,6 +3,9 @@ import { create } from 'zustand';
 import type { GeoLocation } from '@/core/models';
 import { DEFAULT_LOCATION } from '@/core/locations';
 import { clampToRange, shiftDays as shiftDateByDays, withTimeOfDay, withYear } from '@/core/time';
+import { createLogger } from '@/services/logger';
+
+const log = createLogger('sky');
 
 export type LocationSource = 'default' | 'gps' | 'manual';
 
@@ -49,7 +52,10 @@ export const useSkyStore = create<SkyState>((set, get) => ({
   locationSource: 'default',
 
   // Másik kultúrában ugyanaz az azonosító mást jelent, ezért a kiválasztás megszűnik.
-  setCulture: (cultureId) => set({ cultureId, selectedConstellationId: null }),
+  setCulture: (cultureId) => {
+    log.debug('Égi kultúra váltás', { from: get().cultureId, to: cultureId });
+    set({ cultureId, selectedConstellationId: null });
+  },
   toggleLines: () => set({ showLines: !get().showLines }),
   toggleLabels: () => set({ showLabels: !get().showLabels }),
   selectConstellation: (selectedConstellationId) => set({ selectedConstellationId }),

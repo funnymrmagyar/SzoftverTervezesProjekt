@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { PRESET_LOCATIONS } from '@/core/locations';
 import { getDeviceLocation } from '@/services/location/deviceLocation';
+import { createLogger } from '@/services/logger';
 import { useSkyStore } from '@/state/useSkyStore';
 import { compassPoint } from '@/core/astronomy';
 import { useViewStore } from '@/state/useViewStore';
@@ -11,6 +12,8 @@ import { Select } from '@/ui/Select';
 import type { SelectOption } from '@/ui/Select';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
+
+const log = createLogger('location');
 
 const GPS_LOCATION = 'gps';
 const locationOptions: SelectOption<string>[] = [
@@ -46,12 +49,15 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
       try {
         const result = await getDeviceLocation();
         if (result.status === 'permission-denied') {
+          log.info('A helymeghatározási engedélyt a felhasználó nem adta meg');
           setGpsMessage('A helymeghatározási engedélyt nem adtad meg.');
           return;
         }
+        // A koordinátákat szándékosan nem naplózzuk: az személyes adat.
+        log.info('Hely beállítva GPS alapján');
         setLocation(result.location, 'gps');
       } catch (error) {
-        console.error('A GPS-hely meghatározása nem sikerült.', error);
+        log.warn('A GPS-hely meghatározása nem sikerült', { error });
         setGpsMessage('Nem sikerült meghatározni a helyed. Próbáld újra, vagy válassz várost.');
       }
       return;
