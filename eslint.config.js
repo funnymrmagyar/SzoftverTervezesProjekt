@@ -12,6 +12,12 @@ module.exports = defineConfig([
     rules: { 'react/no-unknown-property': 'off' },
   },
   {
+    // Naplózni a központi loggerrel kell (src/services/logger), nem közvetlen console.* hívással.
+    // Az egyetlen kivétel a logger konzolra író része (consoleTransport.ts, eslint-disable-lel).
+    files: ['src/**'],
+    rules: { 'no-console': 'error' },
+  },
+  {
     // A React Three Fiber szándékosan, imperatívan módosítja a three.js objektumokat
     // (kamera, uniformok) — ez a React Compiler „immutability” szabályával ütközik.
     files: ['src/render/**'],

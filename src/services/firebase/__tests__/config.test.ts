@@ -1,14 +1,19 @@
 import { parseOptionalPort } from '@/config/env';
+import type * as EnvModule from '@/config/env';
 import type * as ConfigModule from '../config';
 
 const ORIGINAL_ENV = process.env;
 
 /** A config (és az env.ts) betöltéskor olvassa a process.env-et: minden esethez újratöltjük. */
-function loadConfig(vars: Record<string, string> = {}): typeof ConfigModule {
+function loadConfig(
+  vars: Record<string, string> = {},
+): typeof ConfigModule & Pick<typeof EnvModule, 'configWarnings'> {
   process.env = { ...ORIGINAL_ENV, ...vars };
-  let mod!: typeof ConfigModule;
+  let mod!: typeof ConfigModule & Pick<typeof EnvModule, 'configWarnings'>;
   jest.isolateModules(() => {
-    mod = jest.requireActual<typeof ConfigModule>('../config');
+    const config = jest.requireActual<typeof ConfigModule>('../config');
+    const { configWarnings } = jest.requireActual<typeof EnvModule>('@/config/env');
+    mod = { ...config, configWarnings };
   });
   return mod;
 }
@@ -62,13 +67,16 @@ describe('Firebase-config a .env alapján', () => {
   });
 
   it('hibás portnál figyelmeztet, és az alapértéket használja', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { authEmulatorUrl } = loadConfig({
+    const { authEmulatorUrl, configWarnings } = loadConfig({
       EXPO_PUBLIC_USE_FIREBASE_EMULATOR: 'true',
       EXPO_PUBLIC_FIREBASE_EMULATOR_PORT: 'abc',
     });
     expect(authEmulatorUrl()).toBe('http://127.0.0.1:9099');
-    expect(warn).toHaveBeenCalled();
+    // A figyelmeztetést induláskor a logger írja ki (services/bootstrap.ts).
+    expect(configWarnings).toContainEqual({
+      message: 'Érvénytelen port a .env-ben',
+      meta: { value: 'abc', fallback: 9099 },
+    });
   });
 
   it('API-kulccsal a valódi Firebase-projektet használja, a .env értékeivel', () => {

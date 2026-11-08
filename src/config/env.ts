@@ -24,6 +24,31 @@ export const DEFAULT_AUTH_EMULATOR_PORT = 9099;
 /** Ezen a gépen keressük az emulátort, ha másképp nem derül ki a fejlesztői gép címe. */
 export const DEFAULT_EMULATOR_HOST = '127.0.0.1';
 
+/** A naplózás szintjei, a legrészletesebbtől; „silent” = semmit nem naplóz. */
+export const LOG_LEVELS = ['debug', 'info', 'warn', 'error', 'silent'] as const;
+export type LogLevelSetting = (typeof LOG_LEVELS)[number];
+
+export interface LogConfig {
+  /** Az ennél alacsonyabb szintű bejegyzések nem jelennek meg. */
+  level: LogLevelSetting;
+  /** pretty = olvasható sor fejlesztéshez, json = egy JSON-objektum soronként (éles). */
+  format: 'pretty' | 'json';
+}
+
+/** Hibás beállítás a .env-ben. Az app indulásakor a logger írja ki (ld. services/bootstrap.ts). */
+export interface ConfigWarning {
+  message: string;
+  meta: Record<string, unknown>;
+}
+
+const warnings: ConfigWarning[] = [];
+
+/**
+ * A beolvasás közben talált hibás értékek. Itt még nem naplózhatunk, mert a logger is ebből
+ * a fájlból olvassa a beállításait; ezért gyűjtjük őket, és induláskor írjuk ki.
+ */
+export const configWarnings: readonly ConfigWarning[] = warnings;
+
 export interface AppEnv {
   firebase: {
     apiKey?: string;
@@ -41,6 +66,7 @@ export interface AppEnv {
     authPort: number;
     firestorePort?: number;
   };
+  log: LogConfig;
 }
 
 /** Üres vagy csak szóközből álló érték → undefined (a .env.example üres sorai így nem számítanak). */
@@ -55,7 +81,7 @@ export function parsePort(value: string | undefined, fallback: number): number {
   if (!trimmed) return fallback;
   const port = Number(trimmed);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    console.warn(`Érvénytelen port a .env-ben: „${value}”. Helyette: ${fallback}.`);
+    warnings.push({ message: 'Érvénytelen port a .env-ben', meta: { value, fallback } });
     return fallback;
   }
   return port;
@@ -66,10 +92,42 @@ export function parseOptionalPort(value: string | undefined): number | undefined
   if (!trimmed) return undefined;
   const port = Number(trimmed);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    console.warn(`Érvénytelen Firestore-emulátor port a .env-ben: „${value}”.`);
+    warnings.push({ message: 'Érvénytelen Firestore-emulátor port a .env-ben', meta: { value } });
     return undefined;
   }
   return port;
+}
+
+/**
+ * A naplózás beállítása a környezetből:
+ *  - fejlesztés (npx expo start): minden szint, olvasható formában;
+ *  - éles build (NODE_ENV=production): csak warn és error, JSON-ban;
+ *  - tesztek (NODE_ENV=test): csend, hogy ne szemetelje a teszt kimenetét.
+ * Az EXPO_PUBLIC_LOG_LEVEL bármelyik környezetben felülírja a szintet.
+ */
+export function resolveLogConfig(
+  nodeEnv: string | undefined,
+  levelSetting: string | undefined,
+): LogConfig {
+  const production = nodeEnv === 'production';
+  const defaultLevel: LogLevelSetting = production
+    ? 'warn'
+    : nodeEnv === 'test'
+      ? 'silent'
+      : 'debug';
+  const requested = optionalText(levelSetting)?.toLowerCase();
+  let level: LogLevelSetting = defaultLevel;
+  if (requested) {
+    if ((LOG_LEVELS as readonly string[]).includes(requested)) {
+      level = requested as LogLevelSetting;
+    } else {
+      warnings.push({
+        message: 'Érvénytelen naplózási szint a .env-ben',
+        meta: { value: levelSetting, allowed: LOG_LEVELS.join(', '), fallback: defaultLevel },
+      });
+    }
+  }
+  return { level, format: production ? 'json' : 'pretty' };
 }
 
 export const env: AppEnv = {
@@ -87,6 +145,7 @@ export const env: AppEnv = {
     authPort: parsePort(process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_PORT, DEFAULT_AUTH_EMULATOR_PORT),
     firestorePort: parseOptionalPort(process.env.EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT),
   },
+  log: resolveLogConfig(process.env.NODE_ENV, process.env.EXPO_PUBLIC_LOG_LEVEL),
 };
 
 /** Az Auth emulátor címe, pl. „http://192.168.1.20:9099”. */
