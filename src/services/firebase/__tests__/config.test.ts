@@ -1,19 +1,18 @@
-import { parseOptionalPort } from '@/config/env';
 import type * as EnvModule from '@/config/env';
 import type * as ConfigModule from '../config';
 
 const ORIGINAL_ENV = process.env;
 
+type Loaded = typeof ConfigModule & Pick<typeof EnvModule, 'configWarnings' | 'env'>;
+
 /** A config (és az env.ts) betöltéskor olvassa a process.env-et: minden esethez újratöltjük. */
-function loadConfig(
-  vars: Record<string, string> = {},
-): typeof ConfigModule & Pick<typeof EnvModule, 'configWarnings'> {
+function loadConfig(vars: Record<string, string> = {}): Loaded {
   process.env = { ...ORIGINAL_ENV, ...vars };
-  let mod!: typeof ConfigModule & Pick<typeof EnvModule, 'configWarnings'>;
+  let mod!: Loaded;
   jest.isolateModules(() => {
     const config = jest.requireActual<typeof ConfigModule>('../config');
-    const { configWarnings } = jest.requireActual<typeof EnvModule>('@/config/env');
-    mod = { ...config, configWarnings };
+    const { configWarnings, env } = jest.requireActual<typeof EnvModule>('@/config/env');
+    mod = { ...config, configWarnings, env };
   });
   return mod;
 }
@@ -56,9 +55,10 @@ describe('Firebase-config a .env alapján', () => {
     expect(authEmulatorUrl()).toBe('http://192.168.0.134:9199');
   });
 
-  it('Firestore-emulátor portjának környezeti változós formátumát ellenőrzi', () => {
-    expect(parseOptionalPort('8181')).toBe(8181);
-    expect(parseOptionalPort(undefined)).toBeUndefined();
+  it('a Firestore-emulátor portja alapból 8080, a .env-ben felülírható', () => {
+    expect(loadConfig().env.emulator.firestorePort).toBe(8080);
+    const custom = loadConfig({ EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT: '8181' });
+    expect(custom.env.emulator.firestorePort).toBe(8181);
   });
 
   it('emulátor módban gép és port nélkül az alapértékeket használja', () => {
