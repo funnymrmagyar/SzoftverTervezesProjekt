@@ -17,10 +17,12 @@ const winnerShadow: ViewStyle =
 
 export interface LeaderboardEntry {
   name: string;
-  culture: string;
   initials: string;
   points: number;
-  cultureColor: string;
+  /** Kiegészítő statisztika a név alatt, pl. „3 trófea · 2 játék”. */
+  detail: string;
+  /** A bejelentkezett játékos saját sora: kiemelve jelenik meg. */
+  isMe?: boolean;
 }
 
 export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1 | 2 | 3 }) {
@@ -28,12 +30,16 @@ export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1
   const winner = place === 1;
 
   return (
-    <GlassCard style={[styles.podiumCard, winner && styles.winnerCard]}>
+    <GlassCard style={[styles.podiumCard, winner && styles.winnerCard]} testID="leaderboard-podium">
       {winner ? (
         <Ionicons name="ribbon" size={sizing.icon} color={medalColor} style={styles.crown} />
       ) : null}
       <View style={[styles.avatarRing, { borderColor: medalColor }]}>
-        <Avatar initials={entry.initials} size={winner ? sizing.avatarLarge : sizing.avatar} />
+        <Avatar
+          initials={entry.initials}
+          size={winner ? sizing.avatarLarge : sizing.avatar}
+          highlighted={entry.isMe}
+        />
       </View>
       <View style={[styles.place, { backgroundColor: `${medalColor}22`, borderColor: medalColor }]}>
         <Text style={[styles.placeText, { color: medalColor }]}>{place}</Text>
@@ -48,19 +54,16 @@ export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1
 
 export function RankRow({ entry, place }: { entry: LeaderboardEntry; place: number }) {
   return (
-    <View style={styles.rankRow}>
+    <View style={styles.rankRow} testID="leaderboard-row">
       <Text style={styles.rankNumber}>{String(place).padStart(2, '0')}</Text>
-      <Avatar initials={entry.initials} size={sizing.touch} />
+      <Avatar initials={entry.initials} size={sizing.touch} highlighted={entry.isMe} />
       <View style={styles.rankCopy}>
         <Text style={styles.rankName} numberOfLines={1}>
           {entry.name}
         </Text>
-        <View style={styles.cultureLine}>
-          <View style={[styles.cultureDot, { backgroundColor: entry.cultureColor }]} />
-          <Text style={styles.rankCulture} numberOfLines={1}>
-            {entry.culture}
-          </Text>
-        </View>
+        <Text style={styles.rankDetail} numberOfLines={1}>
+          {entry.detail}
+        </Text>
       </View>
       <Text style={styles.rankScore}>{entry.points.toLocaleString('hu-HU')} XP</Text>
     </View>
@@ -111,8 +114,6 @@ const styles = StyleSheet.create({
   rankNumber: { width: spacing.xl, ...font.mono, ...font.caption, color: colors.textMuted },
   rankCopy: { flex: 1, gap: spacing.xs },
   rankName: { ...font.small, color: colors.text, fontWeight: '600' },
-  cultureLine: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  cultureDot: { width: spacing.sm, height: spacing.sm, borderRadius: radius.pill },
-  rankCulture: { ...font.caption, color: colors.textMuted },
+  rankDetail: { ...font.caption, color: colors.textMuted },
   rankScore: { ...font.small, ...font.mono, color: colors.text, fontWeight: '600' },
 });

@@ -24,6 +24,10 @@ import {
   removeTrophyIds,
   saveTrophyIds as saveLocalTrophyIds,
 } from '@/services/player/localPlayerData';
+import {
+  deleteLocalPlayerProfile,
+  syncLocalPlayerProfile,
+} from '@/services/player/localPlayerProfiles';
 import { useSkyStore } from './useSkyStore';
 import { useViewStore } from './useViewStore';
 
@@ -92,7 +96,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
     const displayName = user.email?.split('@')[0]?.slice(0, 24) || 'Csillagnéző';
     const trophyIds = await loadTrophyIds(user.uid);
     const profile = createPlayerProfile(user.uid, displayName, scores, trophyIds);
-    const synced = authMode === 'local' ? profile : await syncPlayerProfile(profile);
+    // Helyi módban a profil az eszközön marad (ebből készül a helyi ranglista is).
+    const synced =
+      authMode === 'local'
+        ? await syncLocalPlayerProfile(profile)
+        : await syncPlayerProfile(profile);
     await Promise.all([
       saveBestScores(synced.scores, user.uid),
       saveLocalTrophyIds(user.uid, synced.trophyIds),
@@ -240,6 +248,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
         if (authMode !== 'local') {
           await flushQueuedResults(user.uid, () => get().user?.uid === user.uid);
           await deletePlayerProfile(user.uid);
+        } else {
+          await deleteLocalPlayerProfile(user.uid);
         }
         await getAuthService().deleteAccount();
         await Promise.all([

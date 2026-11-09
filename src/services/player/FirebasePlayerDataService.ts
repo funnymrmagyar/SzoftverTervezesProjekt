@@ -1,26 +1,15 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  runTransaction,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import {
   mergePlayerProfiles,
   parsePlayerProfile,
   totalPlayerPoints,
-  type LeaderboardPlayer,
   type PlayerProfile,
 } from '@/core/models/PlayerProfile';
 import { getFirebaseFirestore } from '@/services/firebase/firestore';
 import { createLogger } from '@/services/logger';
 
-const LEADERBOARD_SIZE = 50;
+// A ranglista olvasása: services/leaderboard/FirebaseLeaderboardService.ts.
 
 const log = createLogger('player');
 
@@ -83,23 +72,3 @@ export async function deletePlayerProfile(uid: string): Promise<void> {
 }
 
 /** A későbbi online ranglista felület számára lekéri a legmagasabb összpontszámokat. */
-export async function loadLeaderboard(): Promise<LeaderboardPlayer[]> {
-  const db = getFirebaseFirestore();
-  const rankingQuery = query(
-    collection(db, 'leaderboard'),
-    orderBy('points', 'desc'),
-    limit(LEADERBOARD_SIZE),
-  );
-  const snapshot = await getDocs(rankingQuery);
-
-  return snapshot.docs.map((entry) => {
-    const profile = parsePlayerProfile(entry.data(), entry.id);
-    return {
-      uid: profile.uid,
-      displayName: profile.displayName,
-      scores: profile.scores,
-      points: totalPlayerPoints(profile.scores),
-      trophyCount: typeof entry.data().trophyCount === 'number' ? entry.data().trophyCount : 0,
-    };
-  });
-}

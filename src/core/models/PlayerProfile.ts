@@ -71,6 +71,26 @@ export function mergePlayerProfiles(
   };
 }
 
+/** Ha egy játékosnak nincs megjeleníthető neve. */
+export const DEFAULT_DISPLAY_NAME = 'Csillagnéző';
+
+/** Egy ranglista-bejegyzés beolvasása (Firestore-ból vagy a helyi tárolóból), ellenőrzött mezőkkel. */
+export function parseLeaderboardPlayer(value: unknown, uid: string): LeaderboardPlayer {
+  const profile = parsePlayerProfile(value, uid);
+  const trophyCount = (value as { trophyCount?: unknown } | null)?.trophyCount;
+  return {
+    uid: profile.uid,
+    displayName: profile.displayName || DEFAULT_DISPLAY_NAME,
+    scores: profile.scores,
+    // Az összpontszámot mindig a játékonkénti pontokból számoljuk, nem a tárolt mezőből.
+    points: totalPlayerPoints(profile.scores),
+    trophyCount:
+      typeof trophyCount === 'number' && Number.isSafeInteger(trophyCount) && trophyCount > 0
+        ? trophyCount
+        : 0,
+  };
+}
+
 export function totalPlayerPoints(scores: PlayerScores): number {
   return Object.values(scores).reduce((total, score) => total + (score ?? 0), 0);
 }
