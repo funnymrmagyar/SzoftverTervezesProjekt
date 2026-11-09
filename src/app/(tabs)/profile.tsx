@@ -23,105 +23,13 @@ import { Avatar, SettingsRow, TrophyBadge } from '@/ui/components';
 import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
+import { TROPHIES, TROPHY_TIER_LABELS } from '@/features/trophies/trophies';
 
-const TROPHIES = [
-  {
-    id: 'first-light',
-    icon: 'star-outline',
-    title: 'Első fény',
-    description: 'Nézd meg első alkalommal az égboltot.',
-    difficulty: 'Kezdő',
-    color: colors.success,
-  },
-  {
-    id: 'explorer',
-    icon: 'telescope-outline',
-    title: 'Felfedező',
-    description: 'Fedezz fel öt különböző csillagképet.',
-    difficulty: 'Kezdő',
-    color: colors.success,
-  },
-  {
-    id: 'moon-walker',
-    icon: 'moon-outline',
-    title: 'Holdjáró',
-    description: 'Látogasd meg az égboltot három különböző éjszakán.',
-    difficulty: 'Haladó',
-    color: colors.info,
-  },
-  {
-    id: 'compass',
-    icon: 'compass-outline',
-    title: 'Iránytű',
-    description: 'Fedezd fel az égbolt mind a négy égtáját.',
-    difficulty: 'Haladó',
-    color: colors.info,
-  },
-  {
-    id: 'streak',
-    icon: 'flame-outline',
-    title: 'Sorozat',
-    description: 'Térj vissza hét egymást követő napon.',
-    difficulty: 'Nehéz',
-    color: colors.bronze,
-  },
-  {
-    id: 'stargazer',
-    icon: 'ribbon-outline',
-    title: 'Csillagnéző',
-    description: 'Teljesíts tíz csillagászati kihívást.',
-    difficulty: 'Nehéz',
-    color: colors.bronze,
-  },
-  {
-    id: 'world-traveler',
-    icon: 'planet-outline',
-    title: 'Világjáró',
-    description: 'Próbálj ki öt különböző égikultúrát.',
-    difficulty: 'Haladó',
-    color: colors.info,
-  },
-  {
-    id: 'night-owl',
-    icon: 'eye-outline',
-    title: 'Éjjeli bagoly',
-    description: 'Fedezd fel az eget éjfél után.',
-    difficulty: 'Kezdő',
-    color: colors.success,
-  },
-  {
-    id: 'milky-way',
-    icon: 'sparkles-outline',
-    title: 'Tejút',
-    description: 'Ismerj fel húsz csillagképet.',
-    difficulty: 'Nehéz',
-    color: colors.bronze,
-  },
-  {
-    id: 'regular',
-    icon: 'calendar-outline',
-    title: 'Állandó vendég',
-    description: 'Gyűjts össze harminc megfigyelési alkalmat.',
-    difficulty: 'Nehéz',
-    color: colors.bronze,
-  },
-  {
-    id: 'culture-keeper',
-    icon: 'planet-outline',
-    title: 'Kultúrák őre',
-    description: 'Ismerj meg minden elérhető égikultúrát.',
-    difficulty: 'Haladó',
-    color: colors.info,
-  },
-  {
-    id: 'master-observer',
-    icon: 'trophy-outline',
-    title: 'Mestermegfigyelő',
-    description: 'Érj el kiemelkedő eredményt egy játékban.',
-    difficulty: 'Nehéz',
-    color: colors.bronze,
-  },
-] as const;
+const TIER_COLORS = {
+  beginner: colors.success,
+  advanced: colors.info,
+  hard: colors.bronze,
+} as const;
 
 const AUTH_LABELS = {
   local: 'Helyi mód',
@@ -158,8 +66,8 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
             icon={trophy.icon}
             title={trophy.title}
             description={trophy.description}
-            difficulty={trophy.difficulty}
-            difficultyColor={trophy.color}
+            difficulty={TROPHY_TIER_LABELS[trophy.tier]}
+            difficultyColor={TIER_COLORS[trophy.tier]}
             locked={!unlockedIds.includes(trophy.id)}
           />
         ))}
@@ -191,6 +99,7 @@ export default function ProfileScreen() {
   const authError = useAuthStore((state) => state.error);
   const clearAuthError = useAuthStore((state) => state.clearError);
   const initials = user?.email?.slice(0, 1) ?? '?';
+  const earnedCount = TROPHIES.filter((trophy) => trophyIds.includes(trophy.id)).length;
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
 
@@ -252,7 +161,9 @@ export default function ProfileScreen() {
 
         <View style={styles.section}>
           <View style={styles.sectionHeading}>
-            <Text style={styles.sectionTitle}>{t('profile.trophies')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('profile.trophies')} · {earnedCount}/{TROPHIES.length}
+            </Text>
             <Ionicons name="trophy-outline" size={sizing.icon} color={colors.accent} />
           </View>
           <TrophyCarousel unlockedIds={trophyIds} />

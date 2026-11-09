@@ -5,6 +5,7 @@ import { loadPlayerProfile, syncPlayerProfile } from '@/services/player/Firebase
 import { loadBestScores } from '../scoreStorage';
 import { loadMergedBestScores, recordGameResult } from '../results';
 import { flushQueuedResults } from '../resultQueue';
+import { loadPlayerStats, loadTrophyIds } from '@/services/player/localPlayerData';
 
 jest.mock('@/services/firebase/config', () => ({ authMode: 'firebase' }));
 jest.mock('@/state/useAuthStore', () => ({ useAuthStore: { getState: jest.fn() } }));
@@ -16,15 +17,23 @@ jest.mock('@/services/player/FirebasePlayerDataService', () => ({
 const getStateMock = jest.mocked(useAuthStore.getState);
 const loadProfileMock = jest.mocked(loadPlayerProfile);
 const syncProfileMock = jest.mocked(syncPlayerProfile);
+const saveTrophyIdsMock = jest.fn().mockResolvedValue(true);
+
+function signedIn(uid: string, email: string, trophyIds: string[] = []) {
+  getStateMock.mockReturnValue({
+    user: { uid, email },
+    trophyIds,
+    saveTrophyIds: saveTrophyIdsMock,
+  } as unknown as ReturnType<typeof useAuthStore.getState>);
+}
 
 describe('game results service', () => {
   beforeEach(async () => {
     await AsyncStorage.clear();
     loadProfileMock.mockReset();
     syncProfileMock.mockReset();
-    getStateMock.mockReturnValue({
-      user: { uid: 'user-1', email: 'one@example.com' },
-    } as ReturnType<typeof useAuthStore.getState>);
+    saveTrophyIdsMock.mockClear();
+    signedIn('user-1', 'one@example.com');
     loadProfileMock.mockResolvedValue(null);
     syncProfileMock.mockImplementation(async (profile) => profile);
   });
@@ -37,7 +46,7 @@ describe('game results service', () => {
     });
     await flushQueuedResults('user-1');
 
-    expect(result).toEqual({ best: 300, isNewBest: true });
+    expect(result).toMatchObject({ best: 300, isNewBest: true });
     expect(await loadBestScores('user-1')).toEqual({ 'constellation-finder': 300 });
     expect(syncProfileMock).toHaveBeenCalledTimes(1);
     expect(syncProfileMock).toHaveBeenCalledWith(
@@ -62,7 +71,7 @@ describe('game results service', () => {
     });
 
     expect(await loadMergedBestScores('user-1')).toEqual({ 'star-connection': 700 });
-    expect(await recordGameResult('star-connection', 600)).toEqual({
+    expect(await recordGameResult('star-connection', 600)).toMatchObject({
       best: 700,
       isNewBest: false,
     });
@@ -72,14 +81,49 @@ describe('game results service', () => {
   it('keeps results isolated when the active account changes', async () => {
     await recordGameResult('constellation-finder', 350, {});
     await flushQueuedResults('user-1');
-    getStateMock.mockReturnValue({
-      user: { uid: 'user-2', email: 'two@example.com' },
-    } as ReturnType<typeof useAuthStore.getState>);
+    signedIn('user-2', 'two@example.com');
     await recordGameResult('constellation-finder', 90, {});
     await flushQueuedResults('user-2');
 
     expect(await loadBestScores('user-1')).toEqual({ 'constellation-finder': 350 });
     expect(await loadBestScores('user-2')).toEqual({ 'constellation-finder': 90 });
-    expect(syncProfileMock.mock.calls.map(([profile]) => profile.uid)).toEqual(['user-1', 'user-2']);
+    expect(syncProfileMock.mock.calls.map(([profile]) => profile.uid)).toEqual([
+      'user-1',
+      'user-2',
+    ]);
+  });
+
+  it('az első játék után megadja és elmenti az Első fény trófeát', async () => {
+    const result = await recordGameResult('belief-guess', 120, {
+      difficulty: 'easy',
+      correctCount: 6,
+      rounds: 8,
+    });
+
+    expect(result.newTrophies.map((trophy) => trophy.id)).toEqual(['first-light', 'sharp-eye']);
+    expect(await loadTrophyIds('user-1')).toEqual(['first-light', 'sharp-eye']);
+    expect(saveTrophyIdsMock).toHaveBeenCalledWith(['first-light', 'sharp-eye']);
+  });
+
+  it('a már megszerzett trófeát nem jelzi újra a következő körben', async () => {
+    await recordGameResult('belief-guess', 120, { correctCount: 6, rounds: 8 });
+    signedIn('user-1', 'one@example.com', ['first-light', 'sharp-eye']);
+    const second = await recordGameResult('belief-guess', 130, { correctCount: 6, rounds: 8 });
+
+    expect(second.newTrophies).toEqual([]);
+    expect(await loadPlayerStats('user-1')).toMatchObject({
+      gamesPlayed: 2,
+      plays: { 'belief-guess': 2 },
+    });
+  });
+
+  it('a trófeák kiértékelése a fiókhoz kötött, vendégnél nem fut', async () => {
+    getStateMock.mockReturnValue({ user: null } as unknown as ReturnType<
+      typeof useAuthStore.getState
+    >);
+    const result = await recordGameResult('belief-guess', 120);
+
+    expect(result.newTrophies).toEqual([]);
+    expect(saveTrophyIdsMock).not.toHaveBeenCalled();
   });
 });

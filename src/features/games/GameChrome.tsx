@@ -116,6 +116,7 @@ export function GameSummary({
   best,
   isNewBest,
   rows,
+  newTrophies = [],
   onAgain,
   onLeaderboard,
   onExit,
@@ -125,6 +126,8 @@ export function GameSummary({
   best: number;
   isNewBest: boolean;
   rows: readonly { label: string; value: string }[];
+  /** Az ebben a körben megszerzett trófeák. */
+  newTrophies?: readonly { id: string; title: string }[];
   onAgain: () => void;
   onLeaderboard: () => void;
   onExit: () => void;
@@ -146,6 +149,14 @@ export function GameSummary({
             icon="trophy-outline"
           />
         )}
+        {newTrophies.map((trophy) => (
+          <Badge
+            key={trophy.id}
+            label={`${t('games.newTrophy')}: ${trophy.title}`}
+            icon="ribbon"
+            tone="gold"
+          />
+        ))}
         <View style={[styles.rows, compact && styles.compactRows]}>
           {rows.map((row) => (
             <View key={row.label} style={styles.row}>

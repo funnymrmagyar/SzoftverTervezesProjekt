@@ -8,18 +8,10 @@ let firestore: Firestore | undefined;
 
 export function getFirebaseFirestore(): Firestore {
   if (!firestore) {
-    const app = getFirebaseApp();
+    firestore = getFirestore(getFirebaseApp());
     if (isUsingEmulator) {
-      const port = env.emulator.firestorePort;
-      if (port === undefined) {
-        throw new Error(
-          'Add meg az EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT értékét a .env.local fájlban.',
-        );
-      }
-      firestore = getFirestore(app);
-      connectFirestoreEmulator(firestore, emulatorHost(), port);
-    } else {
-      firestore = getFirestore(app);
+      // A port alapból 8080 (a Firestore emulátoré), a .env-ben felülírható.
+      connectFirestoreEmulator(firestore, emulatorHost(), env.emulator.firestorePort);
     }
   }
   return firestore;

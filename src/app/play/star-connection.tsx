@@ -19,7 +19,7 @@ import { getPlayableCultures } from '@/features/games/gamePools';
 import type { Difficulty } from '@/features/games/gameOptions';
 import { MAX_CONNECT_SEGMENTS, segmentKey, type GameConstellation } from '@/features/games/pool';
 import { createRng, sample } from '@/features/games/random';
-import { recordGameResult } from '@/features/games/results';
+import { recordGameResult, type RecordedGameResult } from '@/features/games/results';
 import { SkyChart, type ChartLine } from '@/features/games/SkyChart';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Button } from '@/ui/Button';
@@ -74,7 +74,7 @@ export default function StarConnectionScreen() {
   );
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [run, setRun] = useState<Run | null>(null);
-  const [result, setResult] = useState<{ best: number; isNewBest: boolean } | null>(null);
+  const [result, setResult] = useState<RecordedGameResult | null>(null);
 
   const culture = cultures.find((c) => c.id === cultureId);
   const conn = run?.conn;
@@ -266,6 +266,7 @@ export default function StarConnectionScreen() {
             score={run.banked}
             best={result?.best ?? run.banked}
             isNewBest={result?.isNewBest ?? false}
+            newTrophies={result?.newTrophies}
             rows={[
               { label: t('games.round'), value: `${run.rounds.length}` },
               { label: t('games.difficulty'), value: difficultyLabel },
