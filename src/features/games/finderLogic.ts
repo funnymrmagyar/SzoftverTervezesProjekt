@@ -47,9 +47,12 @@ export function finderPoints(args: {
   elapsedMs: number;
   streak: number;
   difficulty: Difficulty;
+  /** Eddig számít gyorsasági bónusz (ms); alapértelmezés: FINDER_TIME_WINDOW_MS. */
+  timeWindowMs?: number;
 }): number {
   if (!args.correct) return 0;
-  const timeBonus = Math.round(50 * Math.max(0, 1 - args.elapsedMs / FINDER_TIME_WINDOW_MS));
+  const window = args.timeWindowMs ?? FINDER_TIME_WINDOW_MS;
+  const timeBonus = Math.round(50 * Math.max(0, 1 - args.elapsedMs / window));
   const streakBonus = 10 * Math.min(Math.max(args.streak - 1, 0), 5);
   return (100 + timeBonus + streakBonus) * difficultyMultiplier(args.difficulty);
 }

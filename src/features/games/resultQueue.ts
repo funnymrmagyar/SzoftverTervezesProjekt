@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { createPlayerProfile } from '@/core/models/PlayerProfile';
 import { loadBestScores, saveBestScores } from './scoreStorage';
-import type { GameId } from './gameOptions';
+import { isGameId, type GameId } from './gameOptions';
 import { createLogger } from '@/services/logger';
 import { syncPlayerProfile } from '@/services/player/FirebasePlayerDataService';
 import { loadTrophyIds } from '@/services/player/localPlayerData';
@@ -55,7 +55,7 @@ function parseQueue(raw: string | null): QueuedGameResult[] {
     return (
       typeof record.id === 'string' &&
       typeof record.uid === 'string' &&
-      (record.game === 'constellation-finder' || record.game === 'star-connection') &&
+      isGameId(record.game) &&
       typeof record.score === 'number' &&
       Number.isSafeInteger(record.score) &&
       record.score >= 0 &&

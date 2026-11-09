@@ -34,8 +34,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'hungarian',
     initials: 'S',
     scores: {
-      weekly: { 'constellation-finder': 340, 'star-connection': 500 },
-      allTime: { 'constellation-finder': 1140, 'star-connection': 1700 },
+      weekly: { 'constellation-finder': 340, 'star-connection': 500, 'belief-guess': 410 },
+      allTime: { 'constellation-finder': 1140, 'star-connection': 1700, 'belief-guess': 1390 },
     },
   },
   {
@@ -43,8 +43,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'western',
     initials: 'O',
     scores: {
-      weekly: { 'constellation-finder': 610, 'star-connection': 300 },
-      allTime: { 'constellation-finder': 1680, 'star-connection': 830 },
+      weekly: { 'constellation-finder': 610, 'star-connection': 300, 'belief-guess': 430 },
+      allTime: { 'constellation-finder': 1680, 'star-connection': 830, 'belief-guess': 1180 },
     },
   },
   {
@@ -52,8 +52,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'hawaiian',
     initials: 'H',
     scores: {
-      weekly: { 'constellation-finder': 270, 'star-connection': 420 },
-      allTime: { 'constellation-finder': 860, 'star-connection': 1330 },
+      weekly: { 'constellation-finder': 270, 'star-connection': 420, 'belief-guess': 340 },
+      allTime: { 'constellation-finder': 860, 'star-connection': 1330, 'belief-guess': 1070 },
     },
   },
   {
@@ -61,8 +61,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'hungarian',
     initials: 'E',
     scores: {
-      weekly: { 'constellation-finder': 390, 'star-connection': 230 },
-      allTime: { 'constellation-finder': 1230, 'star-connection': 710 },
+      weekly: { 'constellation-finder': 390, 'star-connection': 230, 'belief-guess': 300 },
+      allTime: { 'constellation-finder': 1230, 'star-connection': 710, 'belief-guess': 930 },
     },
   },
   {
@@ -70,8 +70,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'western',
     initials: 'A',
     scores: {
-      weekly: { 'constellation-finder': 210, 'star-connection': 360 },
-      allTime: { 'constellation-finder': 650, 'star-connection': 1070 },
+      weekly: { 'constellation-finder': 210, 'star-connection': 360, 'belief-guess': 270 },
+      allTime: { 'constellation-finder': 650, 'star-connection': 1070, 'belief-guess': 830 },
     },
   },
   {
@@ -79,8 +79,8 @@ const DEMO_RANKINGS: DemoRanking[] = [
     culture: 'hawaiian',
     initials: 'T',
     scores: {
-      weekly: { 'constellation-finder': 180, 'star-connection': 330 },
-      allTime: { 'constellation-finder': 560, 'star-connection': 1020 },
+      weekly: { 'constellation-finder': 180, 'star-connection': 330, 'belief-guess': 240 },
+      allTime: { 'constellation-finder': 560, 'star-connection': 1020, 'belief-guess': 760 },
     },
   },
 ];
@@ -150,7 +150,7 @@ export default function LeaderboardScreen() {
     },
     ...GAME_OPTIONS.map((game) => ({
       value: game.id,
-      label: t(game.id === 'constellation-finder' ? 'leaderboard.identify' : 'leaderboard.connect'),
+      label: t(game.leaderboardKey),
       icon: game.icon,
     })),
   ];
