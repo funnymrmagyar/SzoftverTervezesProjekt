@@ -28,6 +28,7 @@ const messages = {
     'games.toLeaderboard': 'Ranglista',
     'games.exit': 'Kilépés',
     'games.newBest': 'Új rekord!',
+    'games.newTrophy': 'Új trófea',
     'games.finished': 'Vége a játéknak',
     'games.finalScore': 'Összpontszám',
     'games.identify.intro':

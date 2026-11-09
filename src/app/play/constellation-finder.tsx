@@ -17,7 +17,7 @@ import { getPlayableCultures } from '@/features/games/gamePools';
 import type { Difficulty } from '@/features/games/gameOptions';
 import { segmentKey } from '@/features/games/pool';
 import { createRng } from '@/features/games/random';
-import { recordGameResult } from '@/features/games/results';
+import { recordGameResult, type RecordedGameResult } from '@/features/games/results';
 import { SkyChart, type ChartLine } from '@/features/games/SkyChart';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Button } from '@/ui/Button';
@@ -53,7 +53,7 @@ export default function ConstellationFinderScreen() {
   );
   const [difficulty, setDifficulty] = useState<Difficulty>('easy');
   const [run, setRun] = useState<Run | null>(null);
-  const [result, setResult] = useState<{ best: number; isNewBest: boolean } | null>(null);
+  const [result, setResult] = useState<RecordedGameResult | null>(null);
   const [feedbackMotion] = useState(() => new Animated.Value(0));
 
   const culture = cultures.find((c) => c.id === cultureId);
@@ -281,6 +281,7 @@ export default function ConstellationFinderScreen() {
             score={run.score}
             best={result?.best ?? run.score}
             isNewBest={result?.isNewBest ?? false}
+            newTrophies={result?.newTrophies}
             rows={[
               {
                 label: t('games.identify.correctCount'),

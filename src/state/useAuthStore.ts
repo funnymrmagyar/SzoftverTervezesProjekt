@@ -21,6 +21,7 @@ import {
 } from '@/services/player/FirebasePlayerDataService';
 import {
   loadTrophyIds,
+  removePlayerStats,
   removeTrophyIds,
   saveTrophyIds as saveLocalTrophyIds,
 } from '@/services/player/localPlayerData';
@@ -81,7 +82,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
   }
 
   async function clearLocalAccountData(uid: string) {
-    await Promise.all([removeBestScores(uid), removeTrophyIds(uid)]);
+    await Promise.all([removeBestScores(uid), removeTrophyIds(uid), removePlayerStats(uid)]);
   }
 
   async function synchronizePlayerData(user: AuthUser) {

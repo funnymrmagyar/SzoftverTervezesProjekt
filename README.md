@@ -147,10 +147,41 @@ Helyi fejlesztéshez másold az `.env.example`-et `.env.local`-ként, állítsd
 
 Az online ranglista Firestore-olvasása és a profilok szinkronizálása elő van
 készítve, de a jelenlegi ranglista képernyő továbbra is demóadatokat jelenít meg.
-A trófeaazonosítók tárolása és megjelenítése elő van készítve; a trófeák megszerzési
-feltételei nincsenek még implementálva. A kliensoldali szabályok kizárólag a saját fiók dokumentumának írását engedélyezik,
+A kliensoldali szabályok kizárólag a saját fiók dokumentumának írását engedélyezik,
 de szerveroldali pontszám-hitelesítés nélkül a kliens által küldött pontszámok nem
 tekinthetők csalásbiztosnak.
+
+## Trófeák
+
+A trófeákat játékkal lehet megszerezni. A katalógus és a feltételek a
+`src/features/trophies/trophies.ts` fájlban vannak (12 trófea, három nehézségi szinten):
+
+| Trófea | Feltétel |
+| --- | --- |
+| Első fény | egy játék végigjátszása |
+| Felfedező | mindhárom játék kipróbálása |
+| Éles szem | a kérdések legalább felének eltalálása egy játékban |
+| Hibátlan | minden kérdés helyes egy játékban |
+| Nehéz terep | legalább 500 pont egy nehéz fokozatú játékban |
+| Holdjáró | játék három különböző napon |
+| Csillagnéző | tíz végigjátszott játék |
+| Mestermegfigyelő | legalább 1000 pont egyetlen játékban |
+| Sorozat | játék hét egymást követő napon |
+| Állandó vendég | harminc végigjátszott játék |
+| Sokoldalú | legalább 500 pont mindhárom játékban |
+| Csillagász | legalább 5000 összpont a játékok legjobb eredményeiből |
+
+Működés: a `recordGameResult` minden játék végén frissíti az eszközön tárolt
+játékstatisztikát (`playerStats.ts`: játékszám, játékonkénti darabszám, játéknapok),
+kiértékeli a feltételeket, és az újonnan megszerzett trófeákat elmenti helyben, majd a
+háttérben a Firestore-ba is szinkronizálja (a megszerzett trófea sosem vész el, a
+szinkron egyesíti a készülékeket). A játék végi összegzés „Új trófea” jelvénnyel
+mutatja őket, a Profil képernyő pedig a megszerzett/zárolt állapotot és az `x/12`
+számlálót. Új trófea felvételéhez egy elemet kell hozzáadni a `TROPHIES` listához
+(és egy tesztesetet a `trophies.test.ts`-be); a Firestore-szabályokon nem kell változtatni.
+
+Korlát: a statisztika (játékszám, napok) csak azon az eszközön él, és kijelentkezéskor
+törlődik a helyi adatokkal együtt; a már megszerzett trófeák ettől függetlenül megmaradnak.
 
 ## Élő égbolt idővonala
 
