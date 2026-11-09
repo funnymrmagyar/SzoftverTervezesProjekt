@@ -9,6 +9,10 @@ export interface GameConstellation {
   id: string;
   name: string;
   nativeName?: string;
+  /** A csillagkép leírása (markdown), ha van. */
+  description?: string;
+  /** A leírás nyelve (ISO 639-1), ha nem magyar. */
+  descriptionLang?: string;
   stars: Star[];
   /** Egyedi, irányítatlan vonalszakaszok (HIP-párok). */
   segments: [number, number][];
@@ -67,6 +71,8 @@ export function buildPool(culture: SkyCulture, catalog: Pick<StarCatalog, 'get'>
       id: constellation.id,
       name: constellation.name,
       nativeName: constellation.nativeName,
+      description: constellation.description,
+      descriptionLang: constellation.descriptionLang,
       stars: starList,
       segments: [...segments.values()],
     });

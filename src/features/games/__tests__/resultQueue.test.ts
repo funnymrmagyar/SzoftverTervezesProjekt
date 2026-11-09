@@ -76,4 +76,15 @@ describe('offline game result queue', () => {
     expect(await loadQueuedResults('user-1')).toEqual([]);
     expect(await loadQueuedResults('user-2')).toHaveLength(1);
   });
+
+  it('accepts and syncs results of the belief game', async () => {
+    syncMock.mockImplementation(async (profile) => profile);
+    await enqueueGameResult('user-1', 'belief-guess', 410, { rounds: 8 });
+
+    expect(await loadQueuedResults('user-1')).toHaveLength(1);
+    expect(await flushQueuedResults('user-1')).toEqual({ sent: 1, dropped: 0, pending: 0 });
+    expect(syncMock).toHaveBeenCalledWith(
+      expect.objectContaining({ scores: { 'belief-guess': 410 } }),
+    );
+  });
 });

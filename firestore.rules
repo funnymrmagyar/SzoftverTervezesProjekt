@@ -11,9 +11,10 @@ service cloud.firestore {
 
     function validScores(scores) {
       return scores is map
-        && scores.keys().hasOnly(['constellation-finder', 'star-connection'])
+        && scores.keys().hasOnly(['constellation-finder', 'star-connection', 'belief-guess'])
         && (!('constellation-finder' in scores) || validScore(scores['constellation-finder']))
-        && (!('star-connection' in scores) || validScore(scores['star-connection']));
+        && (!('star-connection' in scores) || validScore(scores['star-connection']))
+        && (!('belief-guess' in scores) || validScore(scores['belief-guess']));
     }
 
     match /users/{userId} {

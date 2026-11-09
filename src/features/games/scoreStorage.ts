@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { PlayerScores } from '@/core/models/PlayerProfile';
 import { createLogger } from '@/services/logger';
-import type { GameId } from './gameOptions';
+import { GAME_IDS, isGameId, type GameId } from './gameOptions';
 
 const log = createLogger('games');
 
@@ -25,7 +25,7 @@ export async function loadBestScores(uid?: string): Promise<BestScores> {
     const scores: BestScores = {};
     for (const [game, score] of Object.entries(parsed)) {
       if (
-        (game === 'constellation-finder' || game === 'star-connection') &&
+        isGameId(game) &&
         typeof score === 'number' &&
         Number.isSafeInteger(score) &&
         score >= 0
@@ -60,7 +60,7 @@ export async function migrateLegacyBestScores(uid: string): Promise<BestScores> 
   }
 
   const migrated: BestScores = { ...guestScores, ...scopedScores };
-  for (const game of ['constellation-finder', 'star-connection'] as const) {
+  for (const game of GAME_IDS) {
     const best = Math.max(guestScores[game] ?? 0, scopedScores[game] ?? 0);
     if (best > 0) migrated[game] = best;
     else delete migrated[game];
