@@ -63,11 +63,14 @@ export async function deletePlayerProfile(uid: string): Promise<void> {
   const db = getFirebaseFirestore();
   const userRef = doc(db, 'users', uid);
   const leaderboardRef = doc(db, 'leaderboard', uid);
+  const friendsRef = doc(db, 'friends', uid);
   await runTransaction(db, async (transaction) => {
     const user = await transaction.get(userRef);
     const leaderboard = await transaction.get(leaderboardRef);
+    const friends = await transaction.get(friendsRef);
     if (user.exists()) transaction.delete(userRef);
     if (leaderboard.exists()) transaction.delete(leaderboardRef);
+    if (friends.exists()) transaction.delete(friendsRef);
   });
 }
 

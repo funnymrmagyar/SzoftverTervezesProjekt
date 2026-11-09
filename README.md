@@ -183,6 +183,22 @@ számlálót. Új trófea felvételéhez egy elemet kell hozzáadni a `TROPHIES`
 Korlát: a statisztika (játékszám, napok) csak azon az eszközön él, és kijelentkezéskor
 törlődik a helyi adatokkal együtt; a már megszerzett trófeák ettől függetlenül megmaradnak.
 
+## Barátlista
+
+A Profil képernyő „Barátok” szekciójában megjelenik a saját **barátkód** (a felhasználó
+azonosítója, kijelölhető és másolható). A barát kódját beillesztve és a „Hozzáadás” gombot
+megnyomva a játékos felkerül a listára, ahol a neve, az összpontja, a trófeáinak száma és a
+játékonkénti legjobb pontszáma látszik. A lista a Profil fül megnyitásakor frissül (legfeljebb
+30 másodpercenként), illetve a frissítés gombbal azonnal; a törölt fiókú barátot a lista jelzi,
+és eltávolíthatod. Legfeljebb 50 barát vehető fel. Helyi módban a funkció nem érhető el.
+
+Adatmodell: a `friends/{uid}` dokumentum csak a barátok azonosítóit tartalmazza, és csak a
+tulajdonosa olvashatja. A barátok megjelenített adatai a nyilvános `leaderboard/{uid}`
+rekordból jönnek, ezért e-mail-cím nem látszik. A `firestore.rules` bővült a `friends`
+szabállyal, ezért a szabályokat **újra kell telepíteni**
+(`npx firebase-tools@15 deploy --only firestore:rules --project <firebase-project-id>`).
+A barátság egyoldalú (követés jellegű): a másik félnek nem kell jóváhagynia.
+
 ## Élő égbolt idővonala
 
 Az élő égbolt dokkolójában húzással állítható az időpont. A `−` / `+` vezérlőkkel hét

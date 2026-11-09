@@ -24,6 +24,7 @@ import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
 import { TROPHIES, TROPHY_TIER_LABELS } from '@/features/trophies/trophies';
+import { FriendsSection } from '@/features/friends/FriendsSection';
 
 const TIER_COLORS = {
   beginner: colors.success,
@@ -168,6 +169,8 @@ export default function ProfileScreen() {
           </View>
           <TrophyCarousel unlockedIds={trophyIds} />
         </View>
+
+        <FriendsSection />
 
         <Button
           title={t('profile.signOut')}

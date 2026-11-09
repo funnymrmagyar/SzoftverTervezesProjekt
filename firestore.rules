@@ -21,6 +21,16 @@ service cloud.firestore {
       allow read, write: if owns(userId);
     }
 
+    match /friends/{userId} {
+      allow read, delete: if owns(userId);
+      allow create, update: if owns(userId)
+        && request.resource.data.keys().hasOnly(['friendIds', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['friendIds', 'updatedAt'])
+        && request.resource.data.friendIds is list
+        && request.resource.data.friendIds.size() <= 50
+        && request.resource.data.updatedAt == request.time;
+    }
+
     match /leaderboard/{userId} {
       allow read: if true;
       allow create, update: if owns(userId)
