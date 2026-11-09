@@ -129,6 +129,9 @@ export async function recordGameResult(
       });
     }
     void flushQueuedResults(uid, () => useAuthStore.getState().user?.uid === uid);
+  } else if (uid && isNewBest) {
+    // Helyi mód: az új rekord a helyi profilba (és így a helyi ranglistára) is bekerül.
+    await useAuthStore.getState().syncPlayerData();
   }
 
   const newTrophies = uid

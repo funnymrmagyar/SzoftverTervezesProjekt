@@ -1,15 +1,19 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
-import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useMemo } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import type { LeaderboardPlayer } from '@/core/models/PlayerProfile';
 import { GAME_OPTIONS, type GameFilter } from '@/features/games/gameOptions';
 import {
   PodiumCard,
   RankRow,
   type LeaderboardEntry,
 } from '@/features/leaderboard/LeaderboardComponents';
+import type { RankedPlayer } from '@/features/leaderboard/ranking';
+import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
+import { authMode } from '@/services/firebase/config';
 import { useAuthStore } from '@/state/useAuthStore';
 import { Avatar, Badge, GlassCard, SegmentedControl } from '@/ui/components';
 import { ScreenContainer } from '@/ui/ScreenContainer';
@@ -17,97 +21,40 @@ import { t } from '@/ui/i18n';
 import { colors, font, navigation, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
-type Period = 'weekly' | 'allTime';
-type DemoCulture = 'hungarian' | 'western' | 'hawaiian';
-type GameScores = Record<Exclude<GameFilter, 'all'>, number>;
-type DemoScores = Record<Period, GameScores>;
-type DemoRanking = {
-  name: string;
-  culture: DemoCulture;
-  initials: string;
-  scores: DemoScores;
-};
-
-const DEMO_RANKINGS: DemoRanking[] = [
-  {
-    name: 'SarkiFény',
-    culture: 'hungarian',
-    initials: 'S',
-    scores: {
-      weekly: { 'constellation-finder': 340, 'star-connection': 500, 'belief-guess': 410 },
-      allTime: { 'constellation-finder': 1140, 'star-connection': 1700, 'belief-guess': 1390 },
-    },
-  },
-  {
-    name: 'OrionVándor',
-    culture: 'western',
-    initials: 'O',
-    scores: {
-      weekly: { 'constellation-finder': 610, 'star-connection': 300, 'belief-guess': 430 },
-      allTime: { 'constellation-finder': 1680, 'star-connection': 830, 'belief-guess': 1180 },
-    },
-  },
-  {
-    name: 'Holdjáró',
-    culture: 'hawaiian',
-    initials: 'H',
-    scores: {
-      weekly: { 'constellation-finder': 270, 'star-connection': 420, 'belief-guess': 340 },
-      allTime: { 'constellation-finder': 860, 'star-connection': 1330, 'belief-guess': 1070 },
-    },
-  },
-  {
-    name: 'Esthajnal',
-    culture: 'hungarian',
-    initials: 'E',
-    scores: {
-      weekly: { 'constellation-finder': 390, 'star-connection': 230, 'belief-guess': 300 },
-      allTime: { 'constellation-finder': 1230, 'star-connection': 710, 'belief-guess': 930 },
-    },
-  },
-  {
-    name: 'Altair',
-    culture: 'western',
-    initials: 'A',
-    scores: {
-      weekly: { 'constellation-finder': 210, 'star-connection': 360, 'belief-guess': 270 },
-      allTime: { 'constellation-finder': 650, 'star-connection': 1070, 'belief-guess': 830 },
-    },
-  },
-  {
-    name: 'TejútTérképész',
-    culture: 'hawaiian',
-    initials: 'T',
-    scores: {
-      weekly: { 'constellation-finder': 180, 'star-connection': 330, 'belief-guess': 240 },
-      allTime: { 'constellation-finder': 560, 'star-connection': 1020, 'belief-guess': 760 },
-    },
-  },
-];
-
-const CULTURE_LABELS: Record<DemoCulture, string> = {
-  hungarian: 'Magyar',
-  western: 'Nyugati',
-  hawaiian: 'Hawaii',
-};
+const MODE_BADGE =
+  authMode === 'local'
+    ? { label: t('leaderboard.device'), icon: 'phone-portrait-outline' as const }
+    : { label: t('leaderboard.live'), icon: 'pulse-outline' as const };
 
 function isGameFilter(value: string | undefined): value is Exclude<GameFilter, 'all'> {
   return GAME_OPTIONS.some((game) => game.id === value);
 }
 
-function cultureColor(culture: DemoCulture): string {
-  return culture === 'hungarian'
-    ? colors.accent
-    : culture === 'western'
-      ? colors.silver
-      : colors.constellationLine;
+function initialsOf(name: string): string {
+  return name.trim().slice(0, 1).toUpperCase() || '?';
 }
 
-function pointsFor(scores: DemoScores, period: Period, game: GameFilter): number {
-  const periodScores = scores[period];
-  return game === 'all'
-    ? Object.values(periodScores).reduce((total, points) => total + points, 0)
-    : periodScores[game];
+/** A név alatti statisztika: összesítettnél trófeák és játékok, játékonként az összpontszám. */
+function detailFor(player: LeaderboardPlayer, scope: GameFilter): string {
+  if (scope !== 'all') {
+    return `${t('leaderboard.total')}: ${player.points.toLocaleString('hu-HU')} XP`;
+  }
+  const games = Object.values(player.scores).filter((score) => (score ?? 0) > 0).length;
+  return `${player.trophyCount} ${t('leaderboard.trophies')} · ${games} ${t('leaderboard.games')}`;
+}
+
+function toEntry(
+  player: RankedPlayer,
+  scope: GameFilter,
+  uid: string | undefined,
+): LeaderboardEntry {
+  return {
+    name: player.displayName,
+    initials: initialsOf(player.displayName),
+    points: player.score,
+    detail: detailFor(player, scope),
+    isMe: player.uid === uid,
+  };
 }
 
 export default function LeaderboardScreen() {
@@ -115,7 +62,6 @@ export default function LeaderboardScreen() {
   const { game: routeGame } = useLocalSearchParams<{ game?: string }>();
   const routeGameValue = Array.isArray(routeGame) ? routeGame[0] : routeGame;
   const selectedGame: GameFilter = isGameFilter(routeGameValue) ? routeGameValue : 'all';
-  const [period, setPeriod] = useState<Period>('weekly');
   const layout = useBreakpoint();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -130,17 +76,14 @@ export default function LeaderboardScreen() {
     ? insets.bottom + spacing.md
     : insets.bottom + navigation.bottomClearance - spacing.sm;
 
+  const leaderboard = useLeaderboard(selectedGame, user?.uid);
   const rankings = useMemo(
-    () =>
-      DEMO_RANKINGS.map((entry): LeaderboardEntry => ({
-        name: entry.name,
-        culture: CULTURE_LABELS[entry.culture],
-        cultureColor: cultureColor(entry.culture),
-        initials: entry.initials,
-        points: pointsFor(entry.scores, period, selectedGame),
-      })).sort((left, right) => right.points - left.points),
-    [period, selectedGame],
+    () => leaderboard.players.map((player) => toEntry(player, selectedGame, user?.uid)),
+    [leaderboard.players, selectedGame, user?.uid],
   );
+  const ranked = leaderboard.players;
+  const me = leaderboard.me;
+  const myName = me?.player?.displayName ?? user?.email?.split('@')[0] ?? '';
 
   const gameOptions = [
     {
@@ -154,12 +97,17 @@ export default function LeaderboardScreen() {
       icon: game.icon,
     })),
   ];
-  const podiumOrder: { entry: LeaderboardEntry | undefined; place: 2 | 1 | 3 }[] = [
-    { entry: rankings[1], place: 2 },
-    { entry: rankings[0], place: 1 },
-    { entry: rankings[2], place: 3 },
-  ];
-  const additionalRankings = rankings.slice(3);
+  // A dobogón a megjelenítési sorrend 2–1–3; a kiírt helyezés holtversenyben azonos lehet.
+  const podiumOrder = [1, 0, 2].map((index) => ({
+    index,
+    entry: rankings[index] as LeaderboardEntry | undefined,
+    place: (ranked[index]?.rank ?? index + 1) as 1 | 2 | 3,
+  }));
+  const additionalRankings = rankings.slice(3).map((entry, offset) => ({
+    entry,
+    key: ranked[offset + 3].uid,
+    place: ranked[offset + 3].rank,
+  }));
 
   function selectGame(game: GameFilter) {
     router.setParams({ game: game === 'all' ? undefined : game });
@@ -176,7 +124,7 @@ export default function LeaderboardScreen() {
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>{t('nav.leaderboard')}</Text>
-            <Badge label={t('leaderboard.demo')} icon="sparkles-outline" tone="gold" />
+            <Badge label={MODE_BADGE.label} icon={MODE_BADGE.icon} tone="gold" />
           </View>
 
           <View style={[styles.filtersTop, width < sizing.contentCompact && styles.filtersNarrow]}>
@@ -188,27 +136,43 @@ export default function LeaderboardScreen() {
               compactSelection
               testID="leaderboard-game-filter"
             />
-            <SegmentedControl
-              options={[
-                { value: 'weekly', label: t('leaderboard.week') },
-                { value: 'allTime', label: t('leaderboard.allTime') },
-              ]}
-              value={period}
-              onChange={setPeriod}
-              accessibilityLabel="Időszak szűrése"
-            />
           </View>
 
-          {rankings.length ? (
-            <View style={styles.podium}>
-              {podiumOrder.map(({ entry, place }) => {
-                if (!entry)
-                  return <View key={`empty-place-${place}`} style={styles.podiumPlaceholder} />;
-                return <PodiumCard key={entry.name} entry={entry} place={place} />;
-              })}
-            </View>
+          {leaderboard.status === 'loading' ? (
+            <GlassCard style={styles.emptyCard} testID="leaderboard-loading">
+              <ActivityIndicator color={colors.accent} />
+              <Text style={styles.emptyText}>{t('leaderboard.loading')}</Text>
+            </GlassCard>
+          ) : leaderboard.status === 'error' ? (
+            <GlassCard style={styles.emptyCard} testID="leaderboard-error">
+              <Ionicons
+                name="cloud-offline-outline"
+                size={sizing.icon + spacing.md}
+                color={colors.textMuted}
+              />
+              <Text style={styles.emptyText}>{t('leaderboard.error')}</Text>
+            </GlassCard>
+          ) : rankings.length ? (
+            <>
+              <View style={styles.podium}>
+                {podiumOrder.map(({ index, entry, place }) =>
+                  entry ? (
+                    <PodiumCard key={ranked[index].uid} entry={entry} place={place} />
+                  ) : (
+                    <View key={`empty-place-${index}`} style={styles.podiumPlaceholder} />
+                  ),
+                )}
+              </View>
+              {additionalRankings.length ? (
+                <GlassCard style={styles.rankList}>
+                  {additionalRankings.map(({ entry, key, place }) => (
+                    <RankRow key={key} entry={entry} place={place} />
+                  ))}
+                </GlassCard>
+              ) : null}
+            </>
           ) : (
-            <GlassCard style={styles.emptyCard}>
+            <GlassCard style={styles.emptyCard} testID="leaderboard-empty">
               <Ionicons
                 name="trophy-outline"
                 size={sizing.icon + spacing.md}
@@ -217,16 +181,6 @@ export default function LeaderboardScreen() {
               <Text style={styles.emptyText}>{t('leaderboard.noResults')}</Text>
             </GlassCard>
           )}
-
-          <GlassCard style={styles.rankList}>
-            {additionalRankings.length ? (
-              additionalRankings.map((entry, index) => (
-                <RankRow key={entry.name} entry={entry} place={index + 4} />
-              ))
-            ) : (
-              <Text style={styles.emptyText}>{t('leaderboard.noResults')}</Text>
-            )}
-          </GlassCard>
         </View>
       </ScreenContainer>
 
@@ -241,15 +195,23 @@ export default function LeaderboardScreen() {
           },
         ]}
       >
-        <GlassCard style={styles.pinnedRow}>
-          <Avatar initials={user?.email?.slice(0, 1) ?? '?'} highlighted size={sizing.touch} />
+        <GlassCard style={styles.pinnedRow} testID="leaderboard-me">
+          <Avatar initials={initialsOf(myName)} highlighted size={sizing.touch} />
           <View style={styles.pinnedCopy}>
-            <Text style={styles.pinnedTitle}>{t('leaderboard.personal')}</Text>
+            <Text style={styles.pinnedTitle}>
+              {me?.rank ? `${me.rank}. ${t('leaderboard.place')}` : t('leaderboard.personal')}
+            </Text>
             <Text style={styles.pinnedSubtitle} numberOfLines={1}>
-              {user?.email ?? t('leaderboard.noScore')}
+              {me?.score
+                ? me.rank
+                  ? myName
+                  : t('leaderboard.calculating')
+                : t('leaderboard.playToRank')}
             </Text>
           </View>
-          <Text style={styles.pinnedScore}>— XP</Text>
+          <Text style={[styles.pinnedScore, Boolean(me?.score) && styles.pinnedScoreActive]}>
+            {me?.score ? `${me.score.toLocaleString('hu-HU')} XP` : '— XP'}
+          </Text>
         </GlassCard>
       </View>
     </View>
@@ -300,4 +262,5 @@ const styles = StyleSheet.create({
   pinnedTitle: { ...font.small, color: colors.text, fontWeight: '600' },
   pinnedSubtitle: { ...font.caption, color: colors.textMuted },
   pinnedScore: { ...font.small, ...font.mono, color: colors.textMuted, fontWeight: '600' },
+  pinnedScoreActive: { color: colors.accent },
 });

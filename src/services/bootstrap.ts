@@ -7,6 +7,10 @@ import { FirebaseAuthService } from './auth/FirebaseAuthService';
 import { LocalAuthService } from './auth/LocalAuthService';
 import { getFirebaseAuth } from './firebase/auth';
 import { authMode } from './firebase/config';
+import { getFirebaseFirestore } from './firebase/firestore';
+import { setLeaderboardService } from './leaderboard';
+import { FirebaseLeaderboardService } from './leaderboard/FirebaseLeaderboardService';
+import { LocalLeaderboardService } from './leaderboard/LocalLeaderboardService';
 import { createLogger, getLogLevel } from './logger';
 import { installGlobalErrorHandlers } from './logger/globalErrorHandlers';
 
@@ -31,6 +35,11 @@ export function configureServices(): void {
 
   setAuthService(
     authMode === 'local' ? new LocalAuthService() : new FirebaseAuthService(getFirebaseAuth()),
+  );
+  setLeaderboardService(
+    authMode === 'local'
+      ? new LocalLeaderboardService()
+      : new FirebaseLeaderboardService(getFirebaseFirestore()),
   );
   configured = true;
   log.info('Az alkalmazás elindult', { platform: Platform.OS, authMode, logLevel: getLogLevel() });

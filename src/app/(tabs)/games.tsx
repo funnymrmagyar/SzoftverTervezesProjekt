@@ -51,7 +51,7 @@ export default function GamesScreen() {
         </View>
 
         <View style={styles.note}>
-          <Badge label={t('leaderboard.demo')} icon="sparkles-outline" />
+          <Badge label={t('nav.leaderboard')} icon="trophy-outline" />
           <Text style={styles.noteText}>{t('games.note')}</Text>
         </View>
       </View>

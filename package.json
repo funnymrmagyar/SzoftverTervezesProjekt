@@ -48,7 +48,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:auth": "npx --yes firebase-tools@15 emulators:exec --only auth \"jest --config jest.integration.config.js\"",
+    "test:auth": "npx --yes firebase-tools@15 emulators:exec --only auth,firestore \"jest --config jest.integration.config.js\"",
     "emulators": "npx --yes firebase-tools@15 emulators:start --only auth,firestore",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

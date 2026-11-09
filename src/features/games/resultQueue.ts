@@ -184,4 +184,4 @@ export async function removeQueuedResults(uid: string): Promise<void> {
 export async function loadQueuedResults(uid?: string): Promise<QueuedGameResult[]> {
   const queue = await readQueue();
   return uid ? queue.filter((item) => item.uid === uid) : queue;
-}
+}
