@@ -21,6 +21,9 @@ export const DEMO_API_KEY = 'demo-api-key';
 /** Az Auth emulátor alapértelmezett portja. Egyezzen a firebase.json „emulators.auth.port” értékével. */
 export const DEFAULT_AUTH_EMULATOR_PORT = 9099;
 
+/** A Firestore emulátor alapértelmezett portja. Egyezzen a firebase.json „emulators.firestore.port” értékével. */
+export const DEFAULT_FIRESTORE_EMULATOR_PORT = 8080;
+
 /** Ezen a gépen keressük az emulátort, ha másképp nem derül ki a fejlesztői gép címe. */
 export const DEFAULT_EMULATOR_HOST = '127.0.0.1';
 
@@ -64,7 +67,7 @@ export interface AppEnv {
     /** A gép címe, amin az emulátor fut; ha nincs megadva, a Firebase-config kitalálja. */
     host?: string;
     authPort: number;
-    firestorePort?: number;
+    firestorePort: number;
   };
   log: LogConfig;
 }
@@ -83,17 +86,6 @@ export function parsePort(value: string | undefined, fallback: number): number {
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     warnings.push({ message: 'Érvénytelen port a .env-ben', meta: { value, fallback } });
     return fallback;
-  }
-  return port;
-}
-
-export function parseOptionalPort(value: string | undefined): number | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed) return undefined;
-  const port = Number(trimmed);
-  if (!Number.isInteger(port) || port < 1 || port > 65535) {
-    warnings.push({ message: 'Érvénytelen Firestore-emulátor port a .env-ben', meta: { value } });
-    return undefined;
   }
   return port;
 }
@@ -143,7 +135,10 @@ export const env: AppEnv = {
     enabled: process.env.EXPO_PUBLIC_USE_FIREBASE_EMULATOR?.trim() === 'true',
     host: optionalText(process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_HOST),
     authPort: parsePort(process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_PORT, DEFAULT_AUTH_EMULATOR_PORT),
-    firestorePort: parseOptionalPort(process.env.EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT),
+    firestorePort: parsePort(
+      process.env.EXPO_PUBLIC_FIRESTORE_EMULATOR_PORT,
+      DEFAULT_FIRESTORE_EMULATOR_PORT,
+    ),
   },
   log: resolveLogConfig(process.env.NODE_ENV, process.env.EXPO_PUBLIC_LOG_LEVEL),
 };
