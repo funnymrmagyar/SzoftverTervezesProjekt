@@ -8,11 +8,10 @@ import { colors, spacing } from '@/ui/theme';
 export function ViewControls({
   side = 'all',
   compact = false,
-  moreOpen = false,
-  onToggleMore,
 }: {
   side?: 'left' | 'right' | 'all';
   compact?: boolean;
+  /** Kompatibilitás: a hárompontos gomb megszűnt. */
   moreOpen?: boolean;
   onToggleMore?: () => void;
 }) {
@@ -42,20 +41,11 @@ export function ViewControls({
             onPress={toggleLabels}
             testID="toggle-labels"
           />
-          {onToggleMore ? (
-            <IconButton
-              icon="ellipsis-horizontal"
-              label={moreOpen ? 'Kevesebb vezérlő' : 'További vezérlők'}
-              active={moreOpen}
-              onPress={onToggleMore}
-              testID="more-view-controls"
-            />
-          ) : null}
         </View>
       ) : null}
       {side !== 'left' ? (
         <View style={styles.rightGroup}>
-          {moreOpen ? <Text style={styles.fov}>Látómező · {fov}°</Text> : null}
+          <Text style={styles.fov}>Látómező · {fov}°</Text>
           <View style={[styles.row, compact && styles.column]}>
             <IconButton
               icon="remove"

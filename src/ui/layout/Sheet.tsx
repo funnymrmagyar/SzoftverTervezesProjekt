@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ComponentProps,
   type ReactNode,
@@ -79,6 +80,9 @@ export function Sheet({
       }
     );
   });
+  const positionRef = useRef(position);
+  positionRef.current = position;
+
   const initialSnap =
     mobile && maxMobileSnap === 'half' && session.snap === 'full'
       ? 'half'
@@ -133,8 +137,9 @@ export function Sheet({
         Animated.spring(sheetHeight, {
           toValue: target,
           useNativeDriver: false,
-          damping: 28,
-          stiffness: 260,
+          damping: 24,
+          stiffness: 200,
+          mass: 0.9,
         }).start();
       }
       if (boundedSnap === 'closed') onClose();
@@ -185,25 +190,40 @@ export function Sheet({
 
   const floatingPan = useMemo(() => {
     return PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (_event, gesture) =>
-        Math.abs(gesture.dx) > 3 || Math.abs(gesture.dy) > 3,
-      onPanResponderMove: (_event, gesture) => {
-        floatingDrag.setValue({ x: gesture.dx, y: gesture.dy });
+        Math.abs(gesture.dx) > 2 || Math.abs(gesture.dy) > 2,
+      onPanResponderGrant: () => {
+        floatingDrag.stopAnimation();
+        floatingDrag.extractOffset();
       },
+      onPanResponderMove: Animated.event([null, { dx: floatingDrag.x, dy: floatingDrag.y }], {
+        useNativeDriver: false,
+      }),
       onPanResponderRelease: (_event, gesture) => {
-        const next = boundedPosition(position.x + gesture.dx, position.y + gesture.dy);
+        floatingDrag.flattenOffset();
+        const current = positionRef.current;
+        const next = boundedPosition(current.x + gesture.dx, current.y + gesture.dy);
         saveSessionPosition(session, next);
         setPosition(next);
-        floatingDrag.setValue({ x: 0, y: 0 });
+        Animated.spring(floatingDrag, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false,
+          damping: 22,
+          stiffness: 220,
+          mass: 0.85,
+        }).start();
       },
       onPanResponderTerminate: (_event, gesture) => {
-        const next = boundedPosition(position.x + gesture.dx, position.y + gesture.dy);
+        floatingDrag.flattenOffset();
+        const current = positionRef.current;
+        const next = boundedPosition(current.x + gesture.dx, current.y + gesture.dy);
         saveSessionPosition(session, next);
         setPosition(next);
         floatingDrag.setValue({ x: 0, y: 0 });
       },
     });
-  }, [boundedPosition, floatingDrag, position, session]);
+  }, [boundedPosition, floatingDrag, session]);
 
   useEffect(() => {
     if (!mobile || viewport.height <= 0) return;
