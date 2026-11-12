@@ -53,7 +53,6 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
           setGpsMessage('A helymeghatározási engedélyt nem adtad meg.');
           return;
         }
-        // A koordinátákat szándékosan nem naplózzuk: az személyes adat.
         log.info('Hely beállítva GPS alapján');
         setLocation(result.location, 'gps');
       } catch (error) {
@@ -69,7 +68,7 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
   }
 
   return (
-    <View style={[styles.wrapper, !compactTrigger && styles.wrapperWide]}>
+    <View style={styles.wrapper}>
       <Select
         value={selectedLocation}
         options={locationOptions}
@@ -102,17 +101,22 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
 }
 
 const styles = StyleSheet.create({
-  wrapper: { alignItems: 'flex-end', gap: spacing.xs },
-  wrapperWide: { width: '100%', alignItems: 'stretch' },
+  wrapper: {
+    width: '100%',
+    alignItems: 'stretch',
+    gap: spacing.xs,
+  },
   direction: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
+    minHeight: sizing.iconSmall + spacing.xs,
   },
   directionText: { ...font.caption, color: colors.textMuted },
   error: {
-    maxWidth: sizing.contentCompact,
+    maxWidth: '100%',
     padding: spacing.sm,
     borderRadius: radius.sm,
     color: colors.text,

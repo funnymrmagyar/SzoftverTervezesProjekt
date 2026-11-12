@@ -24,7 +24,6 @@ const MemoSkyScene = memo(SkyScene);
 
 export default function LiveScreen() {
   const [timeTravelOpen, setTimeTravelOpen] = useState(false);
-  const [moreControlsOpen, setMoreControlsOpen] = useState(false);
   const date = useSkyTime();
   const location = useSkyStore((state) => state.location);
   const cultureId = useSkyStore((state) => state.cultureId);
@@ -96,13 +95,13 @@ export default function LiveScreen() {
             sideSize={Math.min(240, Math.max(148, (layout.width - spacing.xxl) / 2))}
             style={styles.topZones}
             left={
-              <View style={styles.topSlot}>
+              <View style={[styles.topSlot, styles.topSlotLeft]}>
                 <CulturePicker />
               </View>
             }
             center={<View />}
             right={
-              <View style={styles.topSlot}>
+              <View style={[styles.topSlot, styles.topSlotRight]}>
                 <LocationPicker compactTrigger={false} />
               </View>
             }
@@ -115,18 +114,9 @@ export default function LiveScreen() {
                 layout.compact ? sizing.touch + spacing.xs : sizing.touch * 3 + spacing.xs * 2
               }
               style={styles.dockZones}
-              left={
-                <ViewControls
-                  side="left"
-                  compact={layout.compact}
-                  moreOpen={moreControlsOpen}
-                  onToggleMore={() => setMoreControlsOpen((open) => !open)}
-                />
-              }
+              left={<ViewControls side="left" compact={layout.compact} />}
               center={<TimeControls date={date} onOpenTimeTravel={() => setTimeTravelOpen(true)} />}
-              right={
-                <ViewControls side="right" compact={layout.compact} moreOpen={moreControlsOpen} />
-              }
+              right={<ViewControls side="right" compact={layout.compact} />}
             />
           </GlassSurface>
         </View>
@@ -143,8 +133,6 @@ export default function LiveScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.sky },
-  // A rétegek átengedik az érintést az égboltnak, csak a gyerekeik (gombok, panel) kapják el.
-  // (A pointerEvents a stílusban: a régi pointerEvents prop weben elavult.)
   overlay: {
     pointerEvents: 'box-none',
     flex: 1,
@@ -161,7 +149,16 @@ const styles = StyleSheet.create({
   overlayLandscape: { paddingTop: spacing.sm, paddingBottom: sizing.navHeight + spacing.sm },
   top: { pointerEvents: 'box-none', width: '100%' },
   topZones: { width: '100%' },
-  topSlot: { width: '100%', minWidth: 0 },
+  topSlot: {
+    width: '100%',
+    minWidth: 0,
+  },
+  topSlotLeft: {
+    alignItems: 'flex-start',
+  },
+  topSlotRight: {
+    alignItems: 'flex-end',
+  },
   dockPosition: { pointerEvents: 'box-none', alignItems: 'center', width: '100%' },
   dock: {
     width: '100%',

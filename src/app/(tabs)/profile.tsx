@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef, useState } from 'react';
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -43,9 +44,53 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
   const [viewportWidth, setViewportWidth] = useState(0);
   const [contentWidth, setContentWidth] = useState(0);
   const scrollRef = useRef<ScrollViewInstance>(null);
+  const draggingScrollbar = useRef(false);
+
+  // Egér-húzás weben (trackpad/görgő ettől függetlenül működik)
+  const mouseDrag = useRef<{
+    active: boolean;
+    startX: number;
+    startOffset: number;
+  }>({ active: false, startX: 0, startOffset: 0 });
 
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    if (draggingScrollbar.current || mouseDrag.current.active) return;
     setScrollOffset(event.nativeEvent.contentOffset.x);
+  }
+
+  function scrollToOffset(offset: number, animated = true) {
+    const maxOffset = Math.max(0, contentWidth - viewportWidth);
+    const next = Math.max(0, Math.min(maxOffset, offset));
+    scrollRef.current?.scrollTo({ x: next, animated });
+    setScrollOffset(next);
+  }
+
+  function onMouseDown(event: { clientX: number; preventDefault?: () => void; button?: number }) {
+    if (Platform.OS !== 'web') return;
+    // Csak bal gomb
+    if (event.button != null && event.button !== 0) return;
+    event.preventDefault?.();
+    mouseDrag.current = {
+      active: true,
+      startX: event.clientX,
+      startOffset: scrollOffset,
+    };
+
+    const onMove = (e: MouseEvent) => {
+      if (!mouseDrag.current.active) return;
+      const dx = e.clientX - mouseDrag.current.startX;
+      // Húzás irány: jobbra húzol → lista balra megy (természetes "megfogom" érzés)
+      scrollToOffset(mouseDrag.current.startOffset - dx, false);
+    };
+
+    const onUp = () => {
+      mouseDrag.current.active = false;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   }
 
   return (
@@ -53,6 +98,10 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
       <ScrollView
         ref={scrollRef}
         horizontal
+        nestedScrollEnabled
+        directionalLockEnabled
+        disableIntervalMomentum
+        decelerationRate={Platform.OS === 'ios' ? 'normal' : 0.92}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.trophyList}
         accessibilityLabel="Trófeák, oldalra görgethető lista"
@@ -60,6 +109,9 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
         onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
         onContentSizeChange={(width) => setContentWidth(width)}
         scrollEventThrottle={16}
+        style={styles.trophyScroll}
+        // @ts-expect-error RN Web: natív egéresemény
+        onMouseDown={onMouseDown}
       >
         {TROPHIES.map((trophy) => (
           <TrophyBadge
@@ -81,8 +133,11 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
           offset={scrollOffset}
           accessibilityLabel="Trófeák görgetősávja"
           onScrollTo={(offset) => {
-            scrollRef.current?.scrollTo({ x: offset, animated: false });
-            setScrollOffset(offset);
+            draggingScrollbar.current = true;
+            scrollToOffset(offset, false);
+            requestAnimationFrame(() => {
+              draggingScrollbar.current = false;
+            });
           }}
         />
       </View>
@@ -295,8 +350,22 @@ const styles = StyleSheet.create({
   },
   deleteError: { ...font.small, color: colors.danger },
   deleteActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.sm },
-  trophyList: { gap: spacing.sm, paddingVertical: spacing.xs, paddingRight: spacing.md },
-  trophyCarousel: { width: '100%' },
+  trophyList: {
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+    paddingRight: spacing.md,
+    // Kis extra, hogy az utolsó kártya ne vágódjon le
+    paddingLeft: spacing.xs,
+  },
+  trophyCarousel: {
+    width: '100%',
+    // Fix magasságú sáv → a szülő függőleges scroll kevésbé „lopja el” a gesztust
+    minHeight: 140,
+  },
+  trophyScroll: {
+    width: '100%',
+    flexGrow: 0,
+  },
   scrollbar: { marginTop: spacing.xs },
   meta: {
     ...font.caption,
