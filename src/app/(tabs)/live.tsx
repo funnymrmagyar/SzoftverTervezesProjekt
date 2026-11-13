@@ -22,6 +22,11 @@ import { useBreakpoint } from '@/ui/useBreakpoint';
 
 const MemoSkyScene = memo(SkyScene);
 
+// Széles nézetben ennyi helyet hagyunk balra az oldalsó menüsávnak.
+const RAIL_CLEARANCE = sizing.navWidth + spacing.xl;
+// Ennél alacsonyabb ablakban a függőlegesen középre igazított oldalsó menüsáv felérne a felső sávig.
+const MIN_HEIGHT_FOR_EDGE_TOP_BAR = 520;
+
 export default function LiveScreen() {
   const [timeTravelOpen, setTimeTravelOpen] = useState(false);
   const date = useSkyTime();
@@ -90,7 +95,12 @@ export default function LiveScreen() {
         ]}
         edges={['top', 'right', 'bottom', 'left']}
       >
-        <View style={styles.top}>
+        <View
+          style={[
+            styles.top,
+            layout.expanded && layout.height >= MIN_HEIGHT_FOR_EDGE_TOP_BAR && styles.topToEdge,
+          ]}
+        >
           <ThreeZoneBar
             sideSize={Math.min(240, Math.max(148, (layout.width - spacing.xxl) / 2))}
             style={styles.topZones}
@@ -143,11 +153,15 @@ const styles = StyleSheet.create({
   },
   overlayExpanded: {
     padding: spacing.xl,
-    paddingLeft: sizing.navWidth + spacing.xl,
+    paddingLeft: RAIL_CLEARANCE,
     paddingBottom: spacing.xl,
   },
   overlayLandscape: { paddingTop: spacing.sm, paddingBottom: sizing.navHeight + spacing.sm },
   top: { pointerEvents: 'box-none', width: '100%' },
+  // Széles nézetben az oldalsó menüsáv függőlegesen középen van, fent nem foglal helyet:
+  // a felső sáv kinyúlik a bal szélig, így a kultúraválasztó a képernyő szélétől spacing.md-re
+  // ül, ugyanannyira, mint jobb oldalt a helyválasztó (és egy vonalban a menüsávval).
+  topToEdge: { marginLeft: spacing.md - RAIL_CLEARANCE, width: 'auto' },
   topZones: { width: '100%' },
   topSlot: {
     width: '100%',
