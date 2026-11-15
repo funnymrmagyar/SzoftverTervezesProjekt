@@ -17,6 +17,7 @@ import { Sheet } from '@/ui/layout/Sheet';
 import { GlassSurface } from '@/ui/GlassSurface';
 import { suppressTextSelectionUntilRelease } from '@/ui/textSelection';
 import { colors, font, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
 import {
   DAY_MINUTES,
   formatClock,
@@ -51,6 +52,7 @@ export function TimeTravelPanel({
   const shiftDays = useSkyStore((state) => state.shiftDays);
   const shiftHours = useSkyStore((state) => state.shiftHours);
   const resetTimeToNow = useSkyStore((state) => state.resetTimeToNow);
+  const { compact } = useBreakpoint();
   const [preview, setPreview] = useState<PendingValue | null>(null);
   const [editingYear, setEditingYear] = useState(false);
   const [yearText, setYearText] = useState(String(date.getFullYear()));
@@ -145,6 +147,171 @@ export function TimeTravelPanel({
   const shownYear = previewDate.getFullYear();
   const shownMinute = minuteOfDay(previewDate);
 
+  const yearControl = editingYear ? (
+    <TextInput
+      autoFocus
+      value={yearText}
+      onChangeText={setYearText}
+      onSubmitEditing={applyYearInput}
+      onBlur={applyYearInput}
+      keyboardType="numbers-and-punctuation"
+      accessibilityLabel="Év megadása"
+      testID="time-year-input"
+      style={[styles.yearInput, compact && styles.yearInputCompact]}
+    />
+  ) : (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Év: ${formatYear(shownYear)}. Koppintással átírható.`}
+      onPress={() => {
+        setYearText(String(shownYear));
+        setEditingYear(true);
+      }}
+      testID="time-year-edit"
+      style={compact ? styles.yearPressCompact : undefined}
+    >
+      <Text style={compact ? styles.yearCompact : styles.dateText}>{formatYear(shownYear)}</Text>
+    </Pressable>
+  );
+
+  const nowButton = (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Most"
+      onPress={resetToNow}
+      testID="time-now"
+      style={styles.nowButton}
+    >
+      <Ionicons name="refresh" size={sizing.iconSmall} color={colors.accent} />
+      <Text style={styles.nowText}>Most</Text>
+    </Pressable>
+  );
+
+  const yearSlider = (
+    <TimeSlider
+      label="Év"
+      value={shownYear}
+      minimum={YEAR_MIN}
+      maximum={YEAR_MAX}
+      step={1}
+      ticks={
+        compact
+          ? yearTicks(YEAR_MIN, YEAR_MAX).filter((tick) => tick % 500 === 0)
+          : yearTicks(YEAR_MIN, YEAR_MAX)
+      }
+      tickLabel={(value) => (!compact && value % 500 === 0 ? String(value) : null)}
+      onValueChange={(value) => scheduleValue('year', value)}
+      onSlidingComplete={(value) => finishSlider('year', value)}
+      testID="time-year-track"
+    />
+  );
+
+  const timeSlider = (
+    <TimeSlider
+      label="Időpont"
+      value={shownMinute}
+      minimum={0}
+      maximum={DAY_MINUTES}
+      step={5}
+      ticks={[0, 360, 720, 1080, 1440]}
+      tickLabel={(value) => (compact ? null : formatClock(value).slice(0, 2))}
+      onValueChange={(value) => scheduleValue('time', value)}
+      onSlidingComplete={(value) => finishSlider('time', value)}
+      testID="timeline-track"
+    />
+  );
+
+  if (compact) {
+    /*
+     * Telefonos, tömör elrendezés: egy sorban a dátum (az év átírható, a nap két nyíllal
+     * léptethető), alatta a két csúszka; mindkettő két végén egy-egy nyíl lépteti egy évvel,
+     * illetve egy órával (nyomva tartva folyamatosan). A lap csak akkora, amekkora a tartalma.
+     */
+    return (
+      <Sheet
+        title="Időutazás"
+        visible={visible}
+        onClose={closePanel}
+        scrim={false}
+        bodyPadding={0}
+        sessionKey="time-travel"
+        fitContent
+      >
+        <View style={styles.compactCard} testID="time-travel-card">
+          <View style={styles.compactReadout}>
+            {yearControl}
+            <RepeatButton
+              label="Egy nappal korábban"
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => shiftDays(-1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <Text style={styles.compactDate} numberOfLines={1}>
+              {previewDate.toLocaleDateString('hu-HU', { month: 'short' })} {previewDate.getDate()}.
+            </Text>
+            <RepeatButton
+              label="Egy nappal később"
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => shiftDays(1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <Text style={styles.compactClock}>{formatClock(shownMinute)}</Text>
+            <View style={styles.spacer} />
+            {nowButton}
+          </View>
+
+          <View style={styles.compactRow}>
+            <Text style={styles.compactLabel}>Év</Text>
+            <RepeatButton
+              label="Egy évvel korábban"
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => stepYear(-1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <View style={styles.compactSlider}>{yearSlider}</View>
+            <RepeatButton
+              label="Egy évvel később"
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => stepYear(1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+          </View>
+
+          <View style={styles.compactRow}>
+            <Text style={styles.compactLabel}>Idő</Text>
+            <RepeatButton
+              label="Előző óra"
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => shiftHours(-1)}
+              testID="time-back"
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <View style={styles.compactSlider}>{timeSlider}</View>
+            <RepeatButton
+              label="Következő óra"
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => shiftHours(1)}
+              testID="time-forward"
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+          </View>
+        </View>
+      </Sheet>
+    );
+  }
+
   return (
     <Sheet
       title="Időutazás"
@@ -157,59 +324,15 @@ export function TimeTravelPanel({
     >
       <GlassSurface style={styles.card} testID="time-travel-card">
         <View style={styles.readout}>
-          {editingYear ? (
-            <TextInput
-              autoFocus
-              value={yearText}
-              onChangeText={setYearText}
-              onSubmitEditing={applyYearInput}
-              onBlur={applyYearInput}
-              keyboardType="numbers-and-punctuation"
-              accessibilityLabel="Év megadása"
-              testID="time-year-input"
-              style={styles.yearInput}
-            />
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Év: ${formatYear(shownYear)}. Koppintással átírható.`}
-              onPress={() => {
-                setYearText(String(shownYear));
-                setEditingYear(true);
-              }}
-              testID="time-year-edit"
-            >
-              <Text style={styles.dateText}>{formatYear(shownYear)}</Text>
-            </Pressable>
-          )}
+          {yearControl}
           <Text style={styles.dateDetails} numberOfLines={1}>
             {previewDate.toLocaleDateString('hu-HU', { month: 'short' })} {previewDate.getDate()}. ·{' '}
             {formatClock(shownMinute)}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Most"
-            onPress={resetToNow}
-            testID="time-now"
-            style={styles.nowButton}
-          >
-            <Ionicons name="refresh" size={sizing.iconSmall} color={colors.accent} />
-            <Text style={styles.nowText}>Most</Text>
-          </Pressable>
+          {nowButton}
         </View>
 
-        <TimeSlider
-          label="Év"
-          value={shownYear}
-          minimum={YEAR_MIN}
-          maximum={YEAR_MAX}
-          step={1}
-          ticks={yearTicks(YEAR_MIN, YEAR_MAX)}
-          tickLabel={(value) => (value % 500 === 0 ? String(value) : null)}
-          onValueChange={(value) => scheduleValue('year', value)}
-          onSlidingComplete={(value) => finishSlider('year', value)}
-          testID="time-year-track"
-        />
+        {yearSlider}
 
         <View style={styles.timeHeading}>
           <Text style={styles.sliderLabel}>Idő · {formatClock(shownMinute)}</Text>
@@ -232,18 +355,7 @@ export function TimeTravelPanel({
             />
           </View>
         </View>
-        <TimeSlider
-          label="Időpont"
-          value={shownMinute}
-          minimum={0}
-          maximum={DAY_MINUTES}
-          step={5}
-          ticks={[0, 360, 720, 1080, 1440]}
-          tickLabel={(value) => formatClock(value).slice(0, 2)}
-          onValueChange={(value) => scheduleValue('time', value)}
-          onSlidingComplete={(value) => finishSlider('time', value)}
-          testID="timeline-track"
-        />
+        {timeSlider}
 
         <View style={styles.stepButtons}>
           <RepeatButton
@@ -420,14 +532,17 @@ function RepeatButton({
   icon,
   text,
   testID,
+  variant = 'button',
 }: {
   label: string;
   onStep: () => void;
   startRepeat: (action: () => void) => void;
   stopRepeat: () => void;
-  icon?: 'play-back' | 'play-forward';
+  icon?: 'play-back' | 'play-forward' | 'chevron-back' | 'chevron-forward';
   text?: string;
   testID?: string;
+  /** „arrow”: kis, keret nélküli nyíl a csúszkák mellé (telefonos elrendezés). */
+  variant?: 'button' | 'arrow';
 }) {
   return (
     <Pressable
@@ -436,9 +551,19 @@ function RepeatButton({
       onPressIn={() => startRepeat(onStep)}
       onPressOut={stopRepeat}
       testID={testID}
-      style={styles.stepButton}
+      hitSlop={variant === 'arrow' ? { top: 4, bottom: 4 } : undefined}
+      style={({ pressed }) => [
+        variant === 'arrow' ? styles.arrowButton : styles.stepButton,
+        pressed && variant === 'arrow' && styles.arrowPressed,
+      ]}
     >
-      {icon ? <Ionicons name={icon} size={sizing.iconSmall} color={colors.textMuted} /> : null}
+      {icon ? (
+        <Ionicons
+          name={icon}
+          size={variant === 'arrow' ? sizing.icon : sizing.iconSmall}
+          color={colors.textMuted}
+        />
+      ) : null}
       {text ? <Text style={styles.stepButtonText}>{text}</Text> : null}
     </Pressable>
   );
@@ -486,6 +611,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceRaised,
   },
   stepButtonText: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
+  arrowButton: {
+    width: spacing.xxl,
+    height: sizing.touch,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  arrowPressed: { backgroundColor: colors.cardHighlight },
+  compactCard: { paddingHorizontal: spacing.sm, paddingBottom: spacing.sm, gap: 2 },
+  compactReadout: { minHeight: sizing.touch, flexDirection: 'row', alignItems: 'center' },
+  yearPressCompact: { minHeight: sizing.touch, justifyContent: 'center', paddingRight: spacing.xs },
+  yearCompact: { ...font.body, color: colors.text, fontWeight: '700' },
+  yearInputCompact: { flex: 0, width: 88 },
+  compactDate: { ...font.small, minWidth: 56, color: colors.textMuted, textAlign: 'center' },
+  compactClock: {
+    ...font.body,
+    ...font.mono,
+    marginLeft: spacing.sm,
+    color: colors.accent,
+    fontWeight: '700',
+  },
+  spacer: { flex: 1 },
+  compactRow: { flexDirection: 'row', alignItems: 'center' },
+  compactLabel: { ...font.caption, width: 28, color: colors.textMuted, fontWeight: '600' },
+  compactSlider: { flex: 1, minWidth: 0 },
   sliderHitArea: { height: sizing.touch, justifyContent: 'center' },
   sliderFocused: { borderWidth: 1, borderColor: colors.accent, borderRadius: 8 },
   sliderVisual: { ...StyleSheet.absoluteFill },

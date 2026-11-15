@@ -10,7 +10,8 @@ import { colors, font, radius, spacing } from '@/ui/theme';
 
 export default function WelcomeScreen() {
   const { width } = useWindowDimensions();
-  const wide = width >= 760;
+  // Két hasábot csak elég széles képernyőn: álló tableten egymás alatt jobban mutat.
+  const wide = width >= 900;
   const cultureCount = getSkyCultures().list().length;
 
   return (

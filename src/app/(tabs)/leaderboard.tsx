@@ -23,6 +23,7 @@ import type { RankedPlayer } from '@/features/leaderboard/ranking';
 import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
 import { useAuthStore } from '@/state/useAuthStore';
 import { GlassCard, SegmentedControl } from '@/ui/components';
+import { PageHeader } from '@/ui/layout/PageHeader';
 import { ScreenContainer } from '@/ui/ScreenContainer';
 import { t } from '@/ui/i18n';
 import { colors, font, navigation, sizing, spacing } from '@/ui/theme';
@@ -151,9 +152,7 @@ export default function LeaderboardScreen() {
         }}
       >
         <View ref={columnRef} style={styles.content} onLayout={measurePin}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{t('nav.leaderboard')}</Text>
-          </View>
+          <PageHeader title={t('nav.leaderboard')} subtitle={t('leaderboard.subtitle')} />
 
           <View style={[styles.filtersTop, width < sizing.contentCompact && styles.filtersNarrow]}>
             <SegmentedControl
@@ -161,7 +160,8 @@ export default function LeaderboardScreen() {
               value={selectedGame}
               onChange={selectGame}
               accessibilityLabel="Játék szűrése"
-              compactSelection
+              // Szűk kijelzőn csak a kiválasztott szűrő felirata látszik, szélesen mindegyiké.
+              compactSelection={layout.compact}
               testID="leaderboard-game-filter"
             />
           </View>
@@ -244,13 +244,6 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   content: { flexGrow: 1, gap: spacing.xl },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  title: { ...font.title, color: colors.text },
   filtersTop: {
     flexDirection: 'row',
     alignItems: 'center',

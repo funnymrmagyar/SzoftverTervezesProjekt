@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { focusRing } from './interaction';
 import { colors, motion, radius, sizing, spacing } from './theme';
 import { useReducedMotion } from './useReducedMotion';
 import { GlassSurface } from './GlassSurface';
@@ -41,6 +42,7 @@ export function Select<T extends string>({
   label,
   triggerIcon,
   compactTrigger = false,
+  fullWidth = false,
   searchable = false,
   testID,
 }: {
@@ -50,6 +52,8 @@ export function Select<T extends string>({
   label: string;
   triggerIcon: React.ComponentProps<typeof Ionicons>['name'];
   compactTrigger?: boolean;
+  /** Az egész sor szélességét kitölti (űrlapban), a nyíl a jobb szélre kerül. */
+  fullWidth?: boolean;
   searchable?: boolean;
   testID?: string;
 }) {
@@ -259,6 +263,7 @@ export function Select<T extends string>({
           style={({ pressed }) => [
             styles.trigger,
             compactTrigger && styles.triggerCompact,
+            fullWidth && styles.triggerFullWidth,
             focusedItem === 'trigger' && styles.focused,
             pressed && styles.pressed,
             styles.pointer,
@@ -270,7 +275,10 @@ export function Select<T extends string>({
             <Ionicons name={triggerIcon} size={sizing.icon} color={colors.accent} />
           )}
           {!compactTrigger || isMobile ? (
-            <Text style={styles.triggerLabel} numberOfLines={1}>
+            <Text
+              style={[styles.triggerLabel, fullWidth && styles.triggerLabelFill]}
+              numberOfLines={1}
+            >
               {selected?.label ?? label}
             </Text>
           ) : null}
@@ -314,7 +322,9 @@ const styles = StyleSheet.create({
   backgroundColor: colors.glass,
 },
   triggerCompact: { width: sizing.touch, justifyContent: 'center', paddingHorizontal: spacing.sm },
+  triggerFullWidth: { maxWidth: '100%' },
   triggerLabel: { flexShrink: 1, color: colors.text, fontSize: 14, fontWeight: '600' },
+  triggerLabelFill: { flex: 1 },
   triggerDot: { width: sizing.iconSmall, height: sizing.iconSmall },
   backdrop: { flex: 1, backgroundColor: colors.backdrop },
   backdropMobile: { justifyContent: 'flex-end' },
@@ -378,7 +388,7 @@ const styles = StyleSheet.create({
   optionDescription: { color: colors.textMuted, fontSize: 14 },
   empty: { padding: spacing.xl, color: colors.textMuted, textAlign: 'center' },
   pressed: { opacity: 0.82 },
-  focused: { borderWidth: 2, borderColor: colors.accent },
+  focused: focusRing,
   pointer: webPointer,
   disabled: { opacity: 0.56 },
 });

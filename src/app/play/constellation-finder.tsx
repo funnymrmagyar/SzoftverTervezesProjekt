@@ -307,7 +307,8 @@ export default function ConstellationFinderScreen() {
 }
 
 const styles = StyleSheet.create({
-  setupStage: { flex: 1, justifyContent: 'center' },
+  // A beállítások közvetlenül a fejléc alatt kezdődnek (korábban függőlegesen középen lebegtek).
+  setupStage: { flex: 1, paddingTop: spacing.lg },
   playing: { flex: 1, minHeight: 0 },
   summaryStage: { flex: 1, minHeight: 0, justifyContent: 'center' },
   question: { ...font.heading, color: colors.text, textAlign: 'center' },

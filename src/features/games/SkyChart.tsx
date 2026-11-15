@@ -44,6 +44,7 @@ export function SkyChart({
   isTappable,
   onStarPress,
   accessibilityLabel,
+  framed = true,
   testID,
 }: {
   model: ChartModel;
@@ -54,6 +55,8 @@ export function SkyChart({
   isTappable?: (star: PlacedStar) => boolean;
   onStarPress?: (star: PlacedStar) => void;
   accessibilityLabel: string;
+  /** Saját keret és lekerekítés; kikapcsolható, ha a térkép egy kártyába simul bele. */
+  framed?: boolean;
   testID?: string;
 }) {
   const [size, setSize] = useState({ width: 0, height: 0 });
@@ -76,7 +79,7 @@ export function SkyChart({
       accessible={!onStarPress}
       accessibilityRole={onStarPress ? undefined : 'image'}
       accessibilityLabel={accessibilityLabel}
-      style={styles.chart}
+      style={[styles.chart, !framed && styles.chartFrameless]}
       onLayout={(event) => {
         const { width: w, height: h } = event.nativeEvent.layout;
         setSize((prev) => (prev.width === w && prev.height === h ? prev : { width: w, height: h }));
@@ -193,6 +196,7 @@ const styles = StyleSheet.create({
     borderColor: colors.borderStrong,
     backgroundColor: colors.sky,
   },
+  chartFrameless: { borderWidth: 0, borderRadius: 0 },
   cell: {
     position: 'absolute',
     width: sizing.touch,

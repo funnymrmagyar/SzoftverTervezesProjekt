@@ -150,6 +150,8 @@ export function StyledScrollbar({
       onLayout={onLayout}
       onStartShouldSetResponder={() => true}
       onMoveShouldSetResponder={() => true}
+      // A görgetősáv húzását más (pl. az oldalak közötti húzásos váltás) ne vehesse át.
+      onResponderTerminationRequest={() => false}
       onResponderGrant={(event) => moveToPosition(positionFromEvent(event))}
       onResponderMove={(event) => moveToPosition(positionFromEvent(event))}
       // @ts-expect-error RN Web mouse

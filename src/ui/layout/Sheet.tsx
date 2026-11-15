@@ -1,8 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import {
   Animated,
   BackHandler,
+  Easing,
   PanResponder,
   Platform,
   Pressable,
@@ -18,7 +28,7 @@ import { suppressTextSelectionUntilRelease } from '../textSelection';
 import { colors, radius, sizing, spacing } from '../theme';
 import { useBreakpoint } from '../useBreakpoint';
 import { useReducedMotion } from '../useReducedMotion';
-import { getSheetSnapHeights, nearestSheetSnap, type SheetSnap } from './geometry';
+import { getSheetSnapHeights, type SheetSnap } from './geometry';
 
 interface Position {
   x: number;
@@ -34,6 +44,12 @@ interface FloatingDrag {
 
 /** Ennyi elmozdulás után számít húzásnak a lenyomás (addig a fejléc gombjai kattinthatók). */
 const DRAG_THRESHOLD = 3;
+/** Telefonon ennyi lefelé húzás után kezd el mozogni a lap (a véletlen remegést figyelmen kívül hagyjuk). */
+const DISMISS_DRAG_START = 8;
+/** Ha a lapot a magassága ennyi részénél lejjebb húzzák, elengedéskor bezárul. */
+const DISMISS_DISTANCE = 0.25;
+/** Ennél gyorsabb lefelé pöccintés (px/ms) a távolságtól függetlenül bezárja a lapot. */
+const DISMISS_VELOCITY = 0.5;
 
 const sheetSessions: Record<string, { position: Position | null; snap: SheetSnap }> = {
   default: { position: null, snap: 'half' },
@@ -55,6 +71,7 @@ export function Sheet({
   maxMobileSnap = 'full',
   bodyPadding = spacing.lg,
   sessionKey = 'default',
+  fitContent = false,
 }: {
   title: string;
   titleTestID?: string;
@@ -65,11 +82,19 @@ export function Sheet({
   maxMobileSnap?: SheetSnap;
   bodyPadding?: number;
   sessionKey?: string;
+  /**
+   * Telefonon a lap pontosan akkora, amekkora a tartalma (nem fél/teljes képernyő).
+   * Kis, tömör vezérlőpultokhoz (pl. időutazás), hogy ne takarja feleslegesen az eget.
+   */
+  fitContent?: boolean;
 }) {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const { compact } = useBreakpoint();
   const reducedMotion = useReducedMotion();
   const mobile = Platform.OS !== 'web' && compact;
+  // Telefonon a lap az alsó menüsáv fölött ér véget, különben a sáv eltakarná az alját.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
+  const bottomClearance = mobile ? tabBarHeight : 0;
   const session = sheetSessions[sessionKey] ?? sheetSessions.default;
   const [viewport, setViewport] = useState({ width: windowWidth, height: windowHeight });
   const [panelSize, setPanelSize] = useState({ width: 0, height: 0 });
@@ -96,6 +121,8 @@ export function Sheet({
   const [sheetHeight] = useState(
     () => new Animated.Value(getSheetSnapHeights(windowHeight)[activeSnap]),
   );
+  /** Telefonon a lap függőleges eltolása: lefelé húzáskor követi az ujjat, nyitáskor alulról csúszik be. */
+  const [dismissY] = useState(() => new Animated.Value(0));
 
   const boundedPosition = useCallback(
     (x: number, y: number, bounds = viewport, size = panelSize): Position => {
@@ -148,6 +175,42 @@ export function Sheet({
     [maxMobileSnap, mobile, onClose, reducedMotion, session, sheetHeight, viewport.height],
   );
 
+  /**
+   * Telefonon a lap bezárása: lecsúszik a képernyő aljára (a menüsáv mögé), és csak utána
+   * tűnik el. Böngészőben / nagy kijelzőn azonnal bezár.
+   */
+  const dismiss = useCallback(
+    (velocity = 0) => {
+      if (!mobile || reducedMotion) {
+        onClose();
+        return;
+      }
+      const height =
+        fitContent && panelSize.height > 0
+          ? panelSize.height
+          : getSheetSnapHeights(viewport.height)[activeSnap];
+      Animated.timing(dismissY, {
+        toValue: height + spacing.xl,
+        // Gyors pöccintésnél rövidebb, hogy a lap ne lassuljon le a mozdulathoz képest.
+        duration: velocity > 1 ? 160 : 220,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      }).start(({ finished }) => {
+        if (finished) onClose();
+      });
+    },
+    [
+      activeSnap,
+      dismissY,
+      fitContent,
+      mobile,
+      onClose,
+      panelSize.height,
+      reducedMotion,
+      viewport.height,
+    ],
+  );
+
   const adjustSnap = useCallback(
     (direction: -1 | 1) => {
       const snaps: SheetSnap[] = mobile
@@ -158,36 +221,64 @@ export function Sheet({
         : ['closed', 'half', 'full'];
       const currentIndex = snaps.indexOf(activeSnap);
       const nextIndex = Math.max(0, Math.min(snaps.length - 1, currentIndex + direction));
-      animateToSnap(snaps[nextIndex]);
+      if (snaps[nextIndex] === 'closed') dismiss();
+      else animateToSnap(snaps[nextIndex]);
     },
-    [activeSnap, animateToSnap, maxMobileSnap, mobile],
+    [activeSnap, animateToSnap, dismiss, maxMobileSnap, mobile],
   );
 
+  /*
+   * Telefonon a lap a helyén marad: csak lefelé lehet húzni, és ha elég messzire vagy elég
+   * gyorsan húzták, bezárul; különben visszaugrik. Felfelé és oldalra húzásra nem reagál.
+   */
   const mobilePan = useMemo(() => {
-    const heightForDrag = (deltaY: number) =>
-      Math.min(
-        viewport.height,
-        Math.max(
-          48,
-          Math.min(
-            getSheetSnapHeights(viewport.height)[maxMobileSnap],
-            getSheetSnapHeights(viewport.height)[activeSnap] - deltaY,
-          ),
-        ),
-      );
+    const springBack = () =>
+      Animated.spring(dismissY, {
+        toValue: 0,
+        damping: 26,
+        stiffness: 300,
+        mass: 0.8,
+        useNativeDriver: false,
+      }).start();
     return PanResponder.create({
-      onMoveShouldSetPanResponder: (_event, gesture) => Math.abs(gesture.dy) > 3,
+      onMoveShouldSetPanResponder: (_event, gesture) =>
+        gesture.dy > DISMISS_DRAG_START && gesture.dy > Math.abs(gesture.dx) * 1.2,
+      onPanResponderGrant: () => dismissY.stopAnimation(),
       onPanResponderMove: (_event, gesture) => {
-        sheetHeight.setValue(heightForDrag(gesture.dy));
+        dismissY.setValue(Math.max(0, gesture.dy - DISMISS_DRAG_START));
       },
       onPanResponderRelease: (_event, gesture) => {
-        animateToSnap(nearestSheetSnap(heightForDrag(gesture.dy), viewport.height, maxMobileSnap));
+        const height =
+          fitContent && panelSize.height > 0
+            ? panelSize.height
+            : getSheetSnapHeights(viewport.height)[activeSnap];
+        if (gesture.dy > height * DISMISS_DISTANCE || gesture.vy > DISMISS_VELOCITY) {
+          dismiss(gesture.vy);
+        } else {
+          springBack();
+        }
       },
-      onPanResponderTerminate: (_event, gesture) => {
-        animateToSnap(nearestSheetSnap(heightForDrag(gesture.dy), viewport.height, maxMobileSnap));
-      },
+      onPanResponderTerminate: springBack,
+      onPanResponderTerminationRequest: () => false,
     });
-  }, [activeSnap, animateToSnap, maxMobileSnap, sheetHeight, viewport.height]);
+  }, [activeSnap, dismiss, dismissY, fitContent, panelSize.height, viewport.height]);
+
+  // Telefonon megnyitáskor a lap alulról csúszik be.
+  useEffect(() => {
+    if (!visible || !mobile) return;
+    if (reducedMotion) {
+      dismissY.setValue(0);
+      return;
+    }
+    dismissY.setValue(windowHeight);
+    Animated.spring(dismissY, {
+      toValue: 0,
+      damping: 28,
+      stiffness: 260,
+      mass: 0.9,
+      useNativeDriver: false,
+    }).start();
+  }, [dismissY, mobile, reducedMotion, visible, windowHeight]);
 
   useEffect(() => {
     if (!mobile || viewport.height <= 0) return;
@@ -205,11 +296,11 @@ export function Sheet({
     }
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (activeSnap === 'closed') return false;
-      onClose();
+      dismiss();
       return true;
     });
     return () => subscription.remove();
-  }, [activeSnap, visible, onClose]);
+  }, [activeSnap, dismiss, visible, onClose]);
 
   function onPanelLayout(event: LayoutChangeEvent) {
     const { width, height } = event.nativeEvent.layout;
@@ -296,12 +387,16 @@ export function Sheet({
 
   const floatingWidth = Math.max(0, Math.min(420, viewport.width - spacing.xxl));
   return (
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFill} onLayout={onViewportLayout}>
+    <View
+      pointerEvents="box-none"
+      style={[StyleSheet.absoluteFill, { bottom: bottomClearance }]}
+      onLayout={onViewportLayout}
+    >
       {mobile && scrim && activeSnap !== 'closed' ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Bezárás"
-          onPress={() => animateToSnap('closed')}
+          onPress={() => dismiss()}
           style={styles.backdrop}
         />
       ) : null}
@@ -310,7 +405,12 @@ export function Sheet({
         style={[
           styles.panel,
           mobile
-            ? [styles.mobilePanel, { height: sheetHeight }]
+            ? [
+                styles.mobilePanel,
+                fitContent
+                  ? { maxHeight: viewport.height, transform: [{ translateY: dismissY }] }
+                  : { height: sheetHeight, transform: [{ translateY: dismissY }] },
+              ]
             : [
                 styles.floatingPanel,
                 {
@@ -337,11 +437,7 @@ export function Sheet({
             }
           >
             <View style={styles.handle} />
-            <Header
-              title={title}
-              titleTestID={titleTestID}
-              onClose={() => animateToSnap('closed')}
-            />
+            <Header title={title} titleTestID={titleTestID} onClose={() => dismiss()} />
           </View>
         ) : (
           <View
@@ -368,7 +464,11 @@ export function Sheet({
             <Header title={title} titleTestID={titleTestID} onClose={onClose} />
           </View>
         )}
-        <View style={[styles.body, { padding: bodyPadding }]}>{children}</View>
+        <View
+          style={[styles.body, mobile && fitContent && styles.bodyFit, { padding: bodyPadding }]}
+        >
+          {children}
+        </View>
       </Animated.View>
     </View>
   );
@@ -414,6 +514,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
+    // Telefonon a lap teljesen fedő: az alatta lévő vezérlősáv ne derengjen át rajta.
+    backgroundColor: colors.surface,
     borderBottomWidth: 0,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
@@ -446,4 +548,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   body: { flex: 1, minHeight: 0, padding: spacing.lg },
+  // Tartalomhoz igazodó lapnál a törzs nem nyúlik, csak akkora, amekkora kell.
+  bodyFit: { flex: 0, flexShrink: 1 },
 });

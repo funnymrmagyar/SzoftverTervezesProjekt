@@ -1,6 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import type { ComponentProps } from 'react';
+import { useState, type ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+
+import { focusRing, hoverTransition, pointerCursor } from './interaction';
 
 import { colors, font, motion, radius, sizing, spacing } from './theme';
 
@@ -29,6 +31,8 @@ export function Button({
   icon,
 }: ButtonProps) {
   const inactive = disabled || loading;
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   return (
     <Pressable
       accessibilityRole="button"
@@ -36,9 +40,17 @@ export function Button({
       testID={testID}
       onPress={onPress}
       disabled={inactive}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       style={({ pressed }) => [
         styles.base,
         styles[variant],
+        hoverTransition,
+        !inactive && pointerCursor,
+        hovered && !inactive && hoverStyles[variant],
+        focused && focusRing,
         pressed && !inactive && styles.pressed,
         inactive && styles.inactive,
         style,
@@ -61,6 +73,13 @@ export function Button({
     </Pressable>
   );
 }
+
+/** Rámutatáskor (böngészőben) egy árnyalattal világosabb lesz a gomb. */
+const hoverStyles = StyleSheet.create({
+  primary: { backgroundColor: colors.accentHover },
+  secondary: { backgroundColor: colors.surfaceHover, borderColor: colors.borderStrong },
+  ghost: { backgroundColor: colors.glassHighlight },
+});
 
 const styles = StyleSheet.create({
   base: {

@@ -1,13 +1,26 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import type { BottomTabBarProps } from 'expo-router/js-tabs';
-import { useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { BottomTabBarHeightCallbackContext, type BottomTabBarProps } from 'expo-router/js-tabs';
+import { useContext, useEffect, useState } from 'react';
+import { Animated, Platform, Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { focusRing } from './interaction';
 import { colors, radius, sizing, spacing } from './theme';
 import { t } from './i18n';
 import { useBreakpoint } from './useBreakpoint';
+import { useReducedMotion } from './useReducedMotion';
 import { ThreeZoneBar } from './layout/ThreeZoneBar';
+import { TabPagerContext } from './layout/useTabSwipe';
 import type { TranslationKey } from './i18n';
+
+/** A telefonos sáv magassága (az alsó biztonsági sáv fölött). */
+const PHONE_BAR_HEIGHT = sizing.navHeight - spacing.sm;
+/** Az aktív oldalt jelző kis arany vonal szélessége. */
+const INDICATOR_WIDTH = spacing.xl;
+
+const webBlur =
+  Platform.OS === 'web'
+    ? ({ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' } as ViewStyle)
+    : undefined;
 
 const barShadow: ViewStyle =
   Platform.OS === 'web'
@@ -27,13 +40,122 @@ const LABEL_KEYS: Record<string, TranslationKey> = {
   profile: 'nav.profile',
 };
 
-export function AppTabBar({
-  state,
-  descriptors,
-  emitter,
-  navigateToTab,
-  insets,
-}: BottomTabBarProps) {
+function tabLabel(routeName: string, title: string | undefined): string {
+  const labelKey = LABEL_KEYS[routeName];
+  return labelKey ? t(labelKey) : (title ?? routeName);
+}
+
+/**
+ * Telefonon: az egész szélességet kitöltő, alulra simuló sáv, csak ikonokkal. Az aktív
+ * oldalt egy kis arany vonal jelzi a sáv tetején, ami oldalváltáskor átcsúszik az új ikonhoz.
+ * (Oldalak között húzással is lehet váltani, az a (tabs)/_layout.tsx-ben van.)
+ */
+function PhoneTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
+  const [width, setWidth] = useState(0);
+  const [ownIndicator] = useState(() => new Animated.Value(state.index));
+  // Ha van lapozó, a vonal pontosan vele együtt halad (húzás közben is az ujjal mozog).
+  const pager = useContext(TabPagerContext);
+  // A sáv valódi magasságát jelentjük a navigátornak: ebből tudják az oldalak (pl. a
+  // csillagkép-leírás lapja), meddig érhetnek le, hogy a sáv ne takarja el őket.
+  const reportHeight = useContext(BottomTabBarHeightCallbackContext);
+  const indicator = pager ?? ownIndicator;
+  const reducedMotion = useReducedMotion();
+  const count = state.routes.length;
+  const itemWidth = count > 0 ? width / count : 0;
+
+  useEffect(() => {
+    if (pager) return;
+    if (reducedMotion) {
+      ownIndicator.setValue(state.index);
+      return;
+    }
+    Animated.spring(ownIndicator, {
+      toValue: state.index,
+      damping: 22,
+      stiffness: 260,
+      mass: 0.8,
+      useNativeDriver: Platform.OS !== 'web',
+    }).start();
+  }, [ownIndicator, pager, reducedMotion, state.index]);
+
+  return (
+    <View
+      style={[styles.phoneBar, webBlur, { paddingBottom: insets.bottom }]}
+      onLayout={(event) => {
+        setWidth(event.nativeEvent.layout.width);
+        reportHeight?.(event.nativeEvent.layout.height);
+      }}
+    >
+      {width > 0 && count > 1 ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.indicator,
+            {
+              transform: [
+                {
+                  translateX: indicator.interpolate({
+                    inputRange: [0, count - 1],
+                    extrapolate: 'clamp',
+                    outputRange: [
+                      itemWidth / 2 - INDICATOR_WIDTH / 2,
+                      (count - 1) * itemWidth + itemWidth / 2 - INDICATOR_WIDTH / 2,
+                    ],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      ) : null}
+      <View style={styles.phoneItems}>
+        {state.routes.map((route, index) => {
+          const focused = state.index === index;
+          const options = descriptors[route.key].options;
+          const label = tabLabel(route.name, options.title);
+          const color = focused ? colors.accent : colors.textMuted;
+          const onPress = () => {
+            const event = emitter.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!focused && !event.defaultPrevented) {
+              navigateToTab(route.key);
+            }
+          };
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityRole="button"
+              accessibilityLabel={label}
+              accessibilityState={{ selected: focused }}
+              onPress={onPress}
+              onLongPress={() => emitter.emit({ type: 'tabLongPress', target: route.key })}
+              testID={options.tabBarButtonTestID}
+              style={({ pressed }) => [styles.phoneItem, pressed && styles.phonePressed]}
+            >
+              {options.tabBarIcon ? (
+                options.tabBarIcon({ focused, color, size: sizing.icon + spacing.xs })
+              ) : (
+                <Ionicons name="ellipse-outline" size={sizing.icon} color={color} />
+              )}
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+export function AppTabBar(props: BottomTabBarProps) {
+  const layout = useBreakpoint();
+  if (layout.compact) return <PhoneTabBar {...props} />;
+  return <FloatingTabBar {...props} />;
+}
+
+/** Tableten lebegő „pirula”, széles kijelzőn bal oldali menüsáv. */
+function FloatingTabBar({ state, descriptors, emitter, navigateToTab, insets }: BottomTabBarProps) {
   const [focusedRoute, setFocusedRoute] = useState<string | null>(null);
   const layout = useBreakpoint();
   const expanded = layout.expanded;
@@ -68,8 +190,7 @@ export function AppTabBar({
             {state.routes.map((route, index) => {
               const focused = state.index === index;
               const options = descriptors[route.key].options;
-              const labelKey = LABEL_KEYS[route.name];
-              const label = labelKey ? t(labelKey) : (options.title ?? route.name);
+              const label = tabLabel(route.name, options.title);
               const color = focused ? colors.accent : colors.textMuted;
               const onPress = () => {
                 const event = emitter.emit({
@@ -109,14 +230,6 @@ export function AppTabBar({
                       <Ionicons name="ellipse-outline" size={sizing.icon} color={color} />
                     )}
                   </View>
-                  {!expanded && layout.compact ? (
-                    <Text
-                      style={[styles.activeLabel, focused && styles.itemActiveLabel]}
-                      numberOfLines={1}
-                    >
-                      {label}
-                    </Text>
-                  ) : null}
                 </Pressable>
               );
             })}
@@ -128,6 +241,29 @@ export function AppTabBar({
 }
 
 const styles = StyleSheet.create({
+  phoneBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.borderStrong,
+    backgroundColor: colors.glassStrong,
+  },
+  phoneItems: { height: PHONE_BAR_HEIGHT, flexDirection: 'row' },
+  phoneItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  phonePressed: { opacity: 0.6 },
+  indicator: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: INDICATOR_WIDTH,
+    height: 3,
+    borderBottomLeftRadius: radius.pill,
+    borderBottomRightRadius: radius.pill,
+    backgroundColor: colors.accent,
+  },
   positioner: {
     position: 'absolute',
     zIndex: 20,
@@ -182,17 +318,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   iconContainerActive: { backgroundColor: colors.cardHighlight },
-  activeLabel: {
-    maxWidth: '100%',
-    color: colors.textMuted,
-    fontSize: 12,
-    fontWeight: '400',
-    textAlign: 'center',
-  },
-  itemActiveLabel: {
-    color: colors.accent,
-    fontWeight: '600',
-  },
-  focused: { borderWidth: 2, borderColor: colors.accent },
+  focused: focusRing,
   pressed: { opacity: 0.82 },
 });

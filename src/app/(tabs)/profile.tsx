@@ -26,6 +26,7 @@ import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
 import { TROPHIES, TROPHY_TIER_LABELS } from '@/features/trophies/trophies';
 import { FriendsSection } from '@/features/friends/FriendsSection';
+import { PageHeader } from '@/ui/layout/PageHeader';
 
 const TIER_COLORS = {
   beginner: colors.success,
@@ -172,7 +173,7 @@ export default function ProfileScreen() {
   return (
     <ScreenContainer maxWidth={sizing.contentWide}>
       <View style={styles.content}>
-        <Text style={styles.title}>{t('nav.profile')}</Text>
+        <PageHeader title={t('nav.profile')} subtitle={t('profile.subtitle')} />
 
         <GlassSurface style={styles.profileCard}>
           <Avatar initials={initials} highlighted size={sizing.avatarLarge} />
@@ -295,7 +296,6 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   content: { flexGrow: 1, gap: spacing.xl },
-  title: { ...font.title, color: colors.text },
   profileCard: {
     minHeight: sizing.avatarLarge + spacing.xl,
     flexDirection: 'row',

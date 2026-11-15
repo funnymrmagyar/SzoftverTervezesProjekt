@@ -4,6 +4,7 @@ export const colors = {
   sky: '#050816',
   surface: '#0f1630',
   surfaceRaised: '#151e3a',
+  surfaceHover: '#1b2647',
   glass: 'rgba(15, 22, 48, 0.72)',
   glassStrong: 'rgba(15, 22, 48, 0.94)',
   border: 'rgba(233, 237, 249, 0.1)',
@@ -13,6 +14,7 @@ export const colors = {
   textMuted: '#b4bfd6',
   textSubtle: '#929fba',
   accent: '#f2b84b',
+  accentHover: '#f6c66a',
   accentText: '#1d1405',
   info: '#86b8ff',
   danger: '#ff8585',
@@ -74,11 +76,15 @@ export const motion = {
   pressScale: sizing.cardPressScale,
 } as const;
 
+/**
+ * Betűméret-skála sormagassággal. A nagyobb méreteknél enyhén szűkebb betűköz, hogy a
+ * címek tömörebbek, a kisebb szövegek pedig levegősebbek legyenek.
+ */
 export const font = {
-  title: { fontSize: 28, fontWeight: '600' as const, letterSpacing: 0.2 },
-  heading: { fontSize: 20, fontWeight: '600' as const },
-  body: { fontSize: 16, fontWeight: '400' as const },
-  small: { fontSize: 14, fontWeight: '400' as const },
-  caption: { fontSize: 12, fontWeight: '400' as const },
+  title: { fontSize: 28, lineHeight: 34, fontWeight: '700' as const, letterSpacing: -0.4 },
+  heading: { fontSize: 20, lineHeight: 26, fontWeight: '600' as const, letterSpacing: -0.2 },
+  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
+  small: { fontSize: 14, lineHeight: 20, fontWeight: '400' as const },
+  caption: { fontSize: 12, lineHeight: 16, fontWeight: '400' as const },
   mono: { fontVariant: ['tabular-nums' as const] },
 };
