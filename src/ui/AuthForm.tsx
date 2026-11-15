@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.cardHighlight,
   },
   brandName: { color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
-  title: { ...font.heading, fontSize: 26, color: colors.text },
+  title: { ...font.heading, fontSize: 26, lineHeight: 32, color: colors.text },
   subtitle: { color: colors.textMuted, fontSize: 15, marginTop: -spacing.sm },
   errorBox: {
     padding: spacing.md,

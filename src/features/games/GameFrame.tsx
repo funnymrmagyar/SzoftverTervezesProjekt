@@ -6,6 +6,7 @@ import { IconButton } from '@/ui/components';
 import { Screen } from '@/ui/layout/Screen';
 import { ThreeZoneBar } from '@/ui/layout/ThreeZoneBar';
 import { colors, font, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
 
 export function GameFrame({
   title,
@@ -24,6 +25,7 @@ export function GameFrame({
   overlay?: ReactNode;
   testID?: string;
 }) {
+  const { compact } = useBreakpoint();
   return (
     <Screen
       maxWidth={sizing.contentWide}
@@ -37,7 +39,11 @@ export function GameFrame({
           style={styles.header}
           left={<IconButton icon="arrow-back" label="Vissza" onPress={onBack} testID="game-back" />}
           center={
-            <Text style={styles.title} numberOfLines={1} accessibilityRole="header">
+            <Text
+              style={[styles.title, compact && styles.titleCompact]}
+              numberOfLines={1}
+              accessibilityRole="header"
+            >
               {title}
             </Text>
           }
@@ -79,6 +85,8 @@ const styles = StyleSheet.create({
   frame: { flex: 1, minHeight: 0, gap: spacing.sm },
   header: { flexShrink: 0, minHeight: sizing.touch },
   title: { ...font.heading, color: colors.text, textAlign: 'center' },
+  // Telefonon kisebb cím, hogy a jobb oldali jelvények mellett se vágódjon le.
+  titleCompact: { fontSize: 17, lineHeight: 22 },
   headerRight: {
     minWidth: sizing.touch * 2 + spacing.sm,
     flexDirection: 'row',

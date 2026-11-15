@@ -1,14 +1,14 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { GameCard } from '@/features/games/GameCard';
 import { GAME_OPTIONS } from '@/features/games/gameOptions';
 import { useBestScores } from '@/features/games/useBestScores';
+import { PageHeader } from '@/ui/layout/PageHeader';
 import { Screen } from '@/ui/layout/Screen';
 import { Badge } from '@/ui/components';
 import { t } from '@/ui/i18n';
-import { colors, font, radius, sizing, spacing } from '@/ui/theme';
+import { colors, font, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
 export default function GamesScreen() {
@@ -17,21 +17,13 @@ export default function GamesScreen() {
   const compactLandscape = layout.landscape && layout.height < 500;
 
   return (
-    <Screen maxWidth={sizing.contentCompact} scroll={false} contentStyle={styles.screenContent}>
+    <Screen
+      maxWidth={sizing.contentCompact}
+      scroll={false}
+      contentStyle={compactLandscape ? styles.screenContentLandscape : undefined}
+    >
       <View style={[styles.content, compactLandscape && styles.contentLandscape]}>
-        <View style={styles.header}>
-          <View style={styles.headingCopy}>
-            <Text style={styles.title}>{t('games.title')}</Text>
-            <Text style={styles.subtitle}>Fedezd fel az égbolt játékait.</Text>
-          </View>
-          <View style={styles.headerIcon}>
-            <Ionicons
-              name="game-controller-outline"
-              size={sizing.icon + spacing.xs}
-              color={colors.accent}
-            />
-          </View>
-        </View>
+        <PageHeader title={t('games.title')} subtitle={t('games.subtitle')} />
 
         <View style={[styles.cards, compactLandscape && styles.cardsLandscape]}>
           {GAME_OPTIONS.map((game) => (
@@ -60,28 +52,11 @@ export default function GamesScreen() {
 }
 
 const styles = StyleSheet.create({
-  screenContent: { paddingTop: spacing.sm, paddingBottom: spacing.sm },
-  content: { flex: 1, justifyContent: 'center', gap: spacing.xl },
-  contentLandscape: { gap: spacing.md },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.lg,
-  },
-  headingCopy: { flex: 1, gap: spacing.sm },
-  title: { ...font.title, color: colors.text },
-  subtitle: { ...font.small, color: colors.textMuted, lineHeight: spacing.xl },
-  headerIcon: {
-    width: sizing.gameIcon,
-    height: sizing.gameIcon,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.glass,
-  },
+  // Alacsony, fekvő telefonon kevesebb függőleges térköz, hogy minden kiférjen.
+  screenContentLandscape: { paddingTop: spacing.sm, paddingBottom: spacing.sm },
+  // A tartalom felülről indul, mint a többi oldalon (korábban függőlegesen középen volt).
+  content: { flex: 1, gap: spacing.xl },
+  contentLandscape: { justifyContent: 'center', gap: spacing.md },
   cards: { gap: spacing.md },
   cardsLandscape: { flexDirection: 'row', alignItems: 'stretch' },
   gameSlot: { flex: 1, minWidth: 0 },
