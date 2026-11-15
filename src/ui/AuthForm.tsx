@@ -18,7 +18,7 @@ interface AuthFormProps {
 export function AuthForm({ title, subtitle, error, children }: AuthFormProps) {
   return (
     <SafeAreaView style={styles.safe}>
-      <StarryBackdrop count={60} />
+      <StarryBackdrop />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

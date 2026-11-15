@@ -1,13 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ComponentProps,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Animated,
   BackHandler,
@@ -18,9 +10,11 @@ import {
   Text,
   View,
   useWindowDimensions,
+  type GestureResponderEvent,
   type LayoutChangeEvent,
 } from 'react-native';
 
+import { suppressTextSelectionUntilRelease } from '../textSelection';
 import { colors, radius, sizing, spacing } from '../theme';
 import { useBreakpoint } from '../useBreakpoint';
 import { useReducedMotion } from '../useReducedMotion';
@@ -31,6 +25,16 @@ interface Position {
   y: number;
 }
 
+/** Az asztali (lebegő) ablak húzása: honnan indult a mutató, és hol állt akkor az ablak. */
+interface FloatingDrag {
+  pageX: number;
+  pageY: number;
+  origin: Position;
+}
+
+/** Ennyi elmozdulás után számít húzásnak a lenyomás (addig a fejléc gombjai kattinthatók). */
+const DRAG_THRESHOLD = 3;
+
 const sheetSessions: Record<string, { position: Position | null; snap: SheetSnap }> = {
   default: { position: null, snap: 'half' },
   'time-travel': { position: null, snap: 'half' },
@@ -40,8 +44,6 @@ const sheetSessions: Record<string, { position: Position | null; snap: SheetSnap
 function saveSessionPosition(session: { position: Position | null }, position: Position) {
   session.position = position;
 }
-
-type IconName = ComponentProps<typeof Ionicons>['name'];
 
 export function Sheet({
   title,
@@ -80,8 +82,8 @@ export function Sheet({
       }
     );
   });
-  const positionRef = useRef(position);
-  positionRef.current = position;
+  const pressStart = useRef<{ pageX: number; pageY: number } | null>(null);
+  const floatingDrag = useRef<FloatingDrag | null>(null);
 
   const initialSnap =
     mobile && maxMobileSnap === 'half' && session.snap === 'full'
@@ -94,7 +96,6 @@ export function Sheet({
   const [sheetHeight] = useState(
     () => new Animated.Value(getSheetSnapHeights(windowHeight)[activeSnap]),
   );
-  const [floatingDrag] = useState(() => new Animated.ValueXY({ x: 0, y: 0 }));
 
   const boundedPosition = useCallback(
     (x: number, y: number, bounds = viewport, size = panelSize): Position => {
@@ -188,43 +189,6 @@ export function Sheet({
     });
   }, [activeSnap, animateToSnap, maxMobileSnap, sheetHeight, viewport.height]);
 
-  const floatingPan = useMemo(() => {
-    return PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_event, gesture) =>
-        Math.abs(gesture.dx) > 2 || Math.abs(gesture.dy) > 2,
-      onPanResponderGrant: () => {
-        floatingDrag.stopAnimation();
-        floatingDrag.extractOffset();
-      },
-      onPanResponderMove: Animated.event([null, { dx: floatingDrag.x, dy: floatingDrag.y }], {
-        useNativeDriver: false,
-      }),
-      onPanResponderRelease: (_event, gesture) => {
-        floatingDrag.flattenOffset();
-        const current = positionRef.current;
-        const next = boundedPosition(current.x + gesture.dx, current.y + gesture.dy);
-        saveSessionPosition(session, next);
-        setPosition(next);
-        Animated.spring(floatingDrag, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-          damping: 22,
-          stiffness: 220,
-          mass: 0.85,
-        }).start();
-      },
-      onPanResponderTerminate: (_event, gesture) => {
-        floatingDrag.flattenOffset();
-        const current = positionRef.current;
-        const next = boundedPosition(current.x + gesture.dx, current.y + gesture.dy);
-        saveSessionPosition(session, next);
-        setPosition(next);
-        floatingDrag.setValue({ x: 0, y: 0 });
-      },
-    });
-  }, [boundedPosition, floatingDrag, session]);
-
   useEffect(() => {
     if (!mobile || viewport.height <= 0) return;
     sheetHeight.setValue(getSheetSnapHeights(viewport.height)[activeSnap]);
@@ -249,6 +213,7 @@ export function Sheet({
 
   function onPanelLayout(event: LayoutChangeEvent) {
     const { width, height } = event.nativeEvent.layout;
+    if (width === panelSize.width && height === panelSize.height) return;
     const nextSize = { width, height };
     setPanelSize(nextSize);
     if (!mobile) {
@@ -263,6 +228,56 @@ export function Sheet({
     if (!mobile) {
       setPosition((current) => boundedPosition(current.x, current.y, nextViewport));
     }
+  }
+
+  /*
+   * A lebegő ablak húzása a fejlécnél. Közvetlenül a mutató helyéből számolunk (1:1 követés),
+   * és a lenyomástól az elengedésig tiltjuk a szövegkijelölést: a böngésző kijelölése
+   * korábban megszakította a húzást, ezért „akadt el” az ablak.
+   */
+  function rememberPressStart(event: GestureResponderEvent) {
+    pressStart.current = { pageX: event.nativeEvent.pageX, pageY: event.nativeEvent.pageY };
+    suppressTextSelectionUntilRelease();
+    return false;
+  }
+
+  function shouldStartFloatingDrag(event: GestureResponderEvent) {
+    const start = pressStart.current;
+    if (!start) return false;
+    return (
+      Math.abs(event.nativeEvent.pageX - start.pageX) > DRAG_THRESHOLD ||
+      Math.abs(event.nativeEvent.pageY - start.pageY) > DRAG_THRESHOLD
+    );
+  }
+
+  function draggedPosition(drag: FloatingDrag, event: GestureResponderEvent) {
+    return boundedPosition(
+      drag.origin.x + event.nativeEvent.pageX - drag.pageX,
+      drag.origin.y + event.nativeEvent.pageY - drag.pageY,
+    );
+  }
+
+  function startFloatingDrag(event: GestureResponderEvent) {
+    const start = pressStart.current ?? {
+      pageX: event.nativeEvent.pageX,
+      pageY: event.nativeEvent.pageY,
+    };
+    floatingDrag.current = { ...start, origin: position };
+  }
+
+  function moveFloatingDrag(event: GestureResponderEvent) {
+    const drag = floatingDrag.current;
+    if (drag) setPosition(draggedPosition(drag, event));
+  }
+
+  function endFloatingDrag(event: GestureResponderEvent) {
+    const drag = floatingDrag.current;
+    floatingDrag.current = null;
+    pressStart.current = null;
+    if (!drag) return;
+    const next = draggedPosition(drag, event);
+    saveSessionPosition(session, next);
+    setPosition(next);
   }
 
   function moveFloatingBy(dx: number, dy: number) {
@@ -303,7 +318,6 @@ export function Sheet({
                   maxHeight: Math.max(0, viewport.height - spacing.xxl),
                   left: position.x,
                   top: position.y,
-                  transform: floatingDrag.getTranslateTransform(),
                 },
               ],
         ]}
@@ -331,7 +345,13 @@ export function Sheet({
           </View>
         ) : (
           <View
-            {...floatingPan.panHandlers}
+            onStartShouldSetResponderCapture={rememberPressStart}
+            onMoveShouldSetResponder={shouldStartFloatingDrag}
+            onResponderGrant={startFloatingDrag}
+            onResponderMove={moveFloatingDrag}
+            onResponderRelease={endFloatingDrag}
+            onResponderTerminate={endFloatingDrag}
+            onResponderTerminationRequest={() => false}
             style={styles.floatingHeader}
             accessible
             accessibilityRole="adjustable"
@@ -345,12 +365,7 @@ export function Sheet({
               onRepositionAccessibilityAction(event.nativeEvent.actionName)
             }
           >
-            <Header
-              title={title}
-              titleTestID={titleTestID}
-              onClose={onClose}
-              onMove={moveFloatingBy}
-            />
+            <Header title={title} titleTestID={titleTestID} onClose={onClose} />
           </View>
         )}
         <View style={[styles.body, { padding: bodyPadding }]}>{children}</View>
@@ -363,26 +378,16 @@ function Header({
   title,
   titleTestID,
   onClose,
-  onMove,
 }: {
   title: string;
   titleTestID?: string;
   onClose: () => void;
-  onMove?: (dx: number, dy: number) => void;
 }) {
   return (
     <View style={styles.header}>
       <Text style={styles.title} numberOfLines={1} testID={titleTestID}>
         {title}
       </Text>
-      {onMove ? (
-        <View style={styles.moveButtons}>
-          <MoveButton icon="arrow-back" label="Mozgatás balra" onPress={() => onMove(-24, 0)} />
-          <MoveButton icon="arrow-forward" label="Mozgatás jobbra" onPress={() => onMove(24, 0)} />
-          <MoveButton icon="arrow-up" label="Mozgatás fel" onPress={() => onMove(0, -24)} />
-          <MoveButton icon="arrow-down" label="Mozgatás le" onPress={() => onMove(0, 24)} />
-        </View>
-      ) : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel="Bezárás"
@@ -393,27 +398,6 @@ function Header({
         <Ionicons name="close" size={sizing.icon} color={colors.textMuted} />
       </Pressable>
     </View>
-  );
-}
-
-function MoveButton({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: IconName;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      style={styles.moveButton}
-    >
-      <Ionicons name={icon} size={sizing.iconSmall} color={colors.textMuted} />
-    </Pressable>
   );
 }
 
@@ -455,13 +439,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   title: { flex: 1, color: colors.text, fontSize: 16, fontWeight: '600' },
-  moveButtons: { flexDirection: 'row', alignItems: 'center' },
-  moveButton: {
-    width: sizing.touch,
-    height: sizing.touch,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   closeButton: {
     width: sizing.touch,
     height: sizing.touch,

@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getStarCatalog } from '@/core/catalog';
 import { buildChartModel } from '@/features/games/chartModel';
@@ -66,7 +66,8 @@ export default function ConstellationFinderScreen() {
     if (!reducedMotion) {
       Animated.spring(feedbackMotion, {
         toValue: 1,
-        useNativeDriver: true,
+        // Böngészőben nincs natív animációs modul: ott JS-ből animálunk (különben figyelmeztet).
+        useNativeDriver: Platform.OS !== 'web',
         damping: 24,
         stiffness: 260,
       }).start();

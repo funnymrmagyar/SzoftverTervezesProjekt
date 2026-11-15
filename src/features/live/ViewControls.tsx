@@ -5,6 +5,10 @@ import { useViewStore } from '@/state/useViewStore';
 import { IconButton } from '@/ui/components';
 import { colors, spacing } from '@/ui/theme';
 
+/**
+ * Az alsó sáv két szélének gombjai. Telefonos (compact) nézetben a +/− nagyítógombok
+ * elmaradnak — ott két ujjal nagyít az ember —, így a sáv jóval alacsonyabb lehet.
+ */
 export function ViewControls({
   side = 'all',
   compact = false,
@@ -26,7 +30,7 @@ export function ViewControls({
   return (
     <View style={styles.wrap}>
       {side !== 'right' ? (
-        <View style={[styles.row, compact && styles.column]}>
+        <View style={styles.row}>
           <IconButton
             icon="git-network-outline"
             label="Csillagképvonalak"
@@ -46,14 +50,23 @@ export function ViewControls({
       {side !== 'left' ? (
         <View style={styles.rightGroup}>
           <Text style={styles.fov}>Látómező · {fov}°</Text>
-          <View style={[styles.row, compact && styles.column]}>
-            <IconButton
-              icon="remove"
-              label="Kicsinyítés"
-              onPress={() => zoom(1.25)}
-              testID="zoom-out"
-            />
-            <IconButton icon="add" label="Nagyítás" onPress={() => zoom(0.8)} testID="zoom-in" />
+          <View style={styles.row}>
+            {compact ? null : (
+              <>
+                <IconButton
+                  icon="remove"
+                  label="Kicsinyítés"
+                  onPress={() => zoom(1.25)}
+                  testID="zoom-out"
+                />
+                <IconButton
+                  icon="add"
+                  label="Nagyítás"
+                  onPress={() => zoom(0.8)}
+                  testID="zoom-in"
+                />
+              </>
+            )}
             <IconButton
               icon="compass-outline"
               label="Alaphelyzet"
@@ -70,7 +83,6 @@ export function ViewControls({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: spacing.sm },
   row: { flexDirection: 'row', justifyContent: 'center', gap: spacing.xs },
-  column: { flexDirection: 'column' },
   rightGroup: { alignItems: 'center', gap: spacing.xs },
   fov: { color: colors.textMuted, fontSize: 10 },
 });

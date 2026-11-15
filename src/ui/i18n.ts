@@ -34,7 +34,8 @@ const messages = {
     'games.identify.intro':
       'Egy csillagképet mutatunk, te pedig a négy lehetőség közül kiválasztod a helyes nevét. Minél gyorsabb vagy, és minél hosszabb a helyes válaszok sorozata, annál több pontot kapsz.',
     'games.identify.easy': 'A csillagkép vonalai látszanak.',
-    'games.identify.hard': 'Csak a csillagok látszanak, a vonalak a válasz után tűnnek fel. Dupla pont.',
+    'games.identify.hard':
+      'Csak a csillagok látszanak, a vonalak a válasz után tűnnek fel. Dupla pont.',
     'games.identify.question': 'Melyik csillagkép ez?',
     'games.identify.correct': 'Helyes!',
     'games.identify.wrong': 'Nem ez volt. A helyes válasz:',
@@ -64,8 +65,6 @@ const messages = {
     'games.belief.english': 'Angol nyelvű leírás',
     'games.belief.answerIs': 'A leírás ehhez tartozott:',
     'games.belief.wrong': 'Nem ez volt.',
-    'leaderboard.live': 'Élő',
-    'leaderboard.device': 'Ezen az eszközön',
     'leaderboard.allGames': 'Mind',
     'leaderboard.identify': 'Felismerő',
     'leaderboard.connect': 'Csillagról',
@@ -74,6 +73,7 @@ const messages = {
     'leaderboard.loading': 'A ranglista betöltése…',
     'leaderboard.error': 'A ranglista most nem tölthető be. Ellenőrizd a kapcsolatot.',
     'leaderboard.personal': 'Saját helyed',
+    'leaderboard.you': 'Te',
     'leaderboard.place': 'hely',
     'leaderboard.calculating': 'Helyezés számítása…',
     'leaderboard.playToRank': 'Még nincs pontod. Játssz egy kört, és felkerülsz!',

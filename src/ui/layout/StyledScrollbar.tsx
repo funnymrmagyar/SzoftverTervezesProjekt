@@ -47,7 +47,7 @@ export function StyledScrollbar({
         Animated.timing(opacity, {
           toValue: Platform.OS === 'web' ? 0.45 : 0,
           duration: reducedMotion ? 0 : 250,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }).start();
       }, 900);
     }
@@ -160,7 +160,7 @@ export function StyledScrollbar({
         Animated.timing(opacity, {
           toValue: 1,
           duration: reducedMotion ? 0 : 120,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         }).start();
       }}
       onHoverOut={() => {
