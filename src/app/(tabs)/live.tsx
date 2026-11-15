@@ -120,8 +120,9 @@ export default function LiveScreen() {
         <View style={styles.dockPosition}>
           <GlassSurface style={[styles.dock, layout.expanded && styles.dockExpanded]}>
             <ThreeZoneBar
+              // Telefonon két gomb fér egy sorba (a +/− ott elmarad), nagyobb kijelzőn három.
               sideSize={
-                layout.compact ? sizing.touch + spacing.xs : sizing.touch * 3 + spacing.xs * 2
+                layout.compact ? sizing.touch * 2 + spacing.xs : sizing.touch * 3 + spacing.xs * 2
               }
               style={styles.dockZones}
               left={<ViewControls side="left" compact={layout.compact} />}

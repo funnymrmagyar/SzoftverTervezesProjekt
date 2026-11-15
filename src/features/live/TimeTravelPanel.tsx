@@ -15,6 +15,7 @@ import { formatYear, withTimeOfDay, withYear, YEAR_MAX, YEAR_MIN } from '@/core/
 import { useSkyStore } from '@/state/useSkyStore';
 import { Sheet } from '@/ui/layout/Sheet';
 import { GlassSurface } from '@/ui/GlassSurface';
+import { suppressTextSelectionUntilRelease } from '@/ui/textSelection';
 import { colors, font, sizing, spacing } from '@/ui/theme';
 import {
   DAY_MINUTES,
@@ -26,6 +27,11 @@ import {
 } from './timeTravel';
 
 type SliderAxis = 'year' | 'time';
+
+/** A csúszkák fogantyújának (karikájának) átmérője; a megfogható terület ennél nagyobb. */
+const THUMB_SIZE = 24;
+/** A sín függőleges közepe a csúszka 44 pontos megfogható sávjában. */
+const RAIL_CENTER = 22;
 interface PendingValue {
   axis: SliderAxis;
   value: number;
@@ -199,7 +205,6 @@ export function TimeTravelPanel({
           maximum={YEAR_MAX}
           step={1}
           ticks={yearTicks(YEAR_MIN, YEAR_MAX)}
-          valueLabel={(value) => String(value)}
           tickLabel={(value) => (value % 500 === 0 ? String(value) : null)}
           onValueChange={(value) => scheduleValue('year', value)}
           onSlidingComplete={(value) => finishSlider('year', value)}
@@ -234,7 +239,6 @@ export function TimeTravelPanel({
           maximum={DAY_MINUTES}
           step={5}
           ticks={[0, 360, 720, 1080, 1440]}
-          valueLabel={formatClock}
           tickLabel={(value) => formatClock(value).slice(0, 2)}
           onValueChange={(value) => scheduleValue('time', value)}
           onSlidingComplete={(value) => finishSlider('time', value)}
@@ -283,7 +287,6 @@ function TimeSlider({
   maximum,
   step,
   ticks,
-  valueLabel,
   tickLabel,
   onValueChange,
   onSlidingComplete,
@@ -295,7 +298,6 @@ function TimeSlider({
   maximum: number;
   step: number;
   ticks: number[];
-  valueLabel: (value: number) => string;
   tickLabel: (value: number) => string | null;
   onValueChange: (value: number) => void;
   onSlidingComplete: (value: number) => void;
@@ -308,9 +310,6 @@ function TimeSlider({
   const innerWidth = Math.max(0, width - sizing.touch);
   const currentPosition = sliderPositionForValue(value, innerWidth, minimum, maximum);
   const thumbCenter = sizing.touch / 2 + currentPosition;
-  const labelText = valueLabel(value);
-  const bubbleWidth = Math.max(sizing.touch, labelText.length * 7 + spacing.md);
-  const bubbleLeft = Math.max(0, Math.min(width - bubbleWidth, thumbCenter - bubbleWidth / 2));
 
   function valueAt(x: number) {
     if (!Number.isFinite(x)) return value;
@@ -336,6 +335,8 @@ function TimeSlider({
   }
 
   function onPointerDown(event: PointerEvent) {
+    // Húzás közben ne jelölődjön ki a szöveg az oldalon (és a kijelölés ne szakítsa meg a húzást).
+    suppressTextSelectionUntilRelease();
     trackRef.current?.measureInWindow((left) => {
       dragLeft.current = left;
       onValueChange(valueAt(event.nativeEvent.clientX - left));
@@ -384,6 +385,7 @@ function TimeSlider({
         onResponderMove={(event) => onValueChange(valueAt(event.nativeEvent.locationX))}
         onResponderRelease={(event) => onSlidingComplete(valueAt(event.nativeEvent.locationX))}
         onResponderTerminate={(event) => onSlidingComplete(valueAt(event.nativeEvent.locationX))}
+        onResponderTerminationRequest={() => false}
         onPointerDown={Platform.OS === 'web' ? onPointerDown : undefined}
         onPointerMove={Platform.OS === 'web' ? onPointerMove : undefined}
         onPointerUp={Platform.OS === 'web' ? onPointerUp : undefined}
@@ -403,10 +405,7 @@ function TimeSlider({
               </View>
             );
           })}
-          <View style={[styles.valueBubble, { left: bubbleLeft, width: bubbleWidth }]}>
-            <Text style={styles.valueBubbleText}>{valueLabel(value)}</Text>
-          </View>
-          <View style={[styles.thumb, { left: thumbCenter - sizing.touch / 2 }]} />
+          <View style={[styles.thumb, { left: thumbCenter - THUMB_SIZE / 2 }]} />
         </View>
       </View>
     </View>
@@ -494,12 +493,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: sizing.touch / 2,
     right: sizing.touch / 2,
-    top: 20,
+    top: RAIL_CENTER - spacing.xs / 2,
     height: spacing.xs,
     borderRadius: 99,
     backgroundColor: colors.surfaceRaised,
   },
-  tick: { position: 'absolute', top: 20, alignItems: 'center', width: 1 },
+  tick: { position: 'absolute', top: RAIL_CENTER - spacing.xs / 2, alignItems: 'center', width: 1 },
   tickMark: { width: 1, height: spacing.sm, backgroundColor: colors.textSubtle },
   tickLabel: {
     position: 'absolute',
@@ -510,21 +509,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     transform: [{ translateX: -17 }],
   },
-  valueBubble: {
-    position: 'absolute',
-    top: -spacing.sm,
-    alignItems: 'center',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: 6,
-    backgroundColor: colors.accent,
-  },
-  valueBubbleText: { color: colors.accentText, fontSize: 10, fontWeight: '700' },
   thumb: {
     position: 'absolute',
-    top: 0,
-    width: sizing.touch,
-    height: sizing.touch,
+    top: RAIL_CENTER - THUMB_SIZE / 2,
+    width: THUMB_SIZE,
+    height: THUMB_SIZE,
     borderRadius: 99,
     borderWidth: 2,
     borderColor: colors.accent,

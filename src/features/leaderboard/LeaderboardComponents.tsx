@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Platform, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 import { Avatar, GlassCard } from '@/ui/components';
+import { t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 
 const winnerShadow: ViewStyle =
@@ -25,12 +26,24 @@ export interface LeaderboardEntry {
   isMe?: boolean;
 }
 
+/** Kis „Te” címke a saját név mellett. */
+function MeTag() {
+  return (
+    <View style={styles.meTag}>
+      <Text style={styles.meTagText}>{t('leaderboard.you')}</Text>
+    </View>
+  );
+}
+
 export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1 | 2 | 3 }) {
   const medalColor = place === 1 ? colors.accent : place === 2 ? colors.silver : colors.bronze;
   const winner = place === 1;
 
   return (
-    <GlassCard style={[styles.podiumCard, winner && styles.winnerCard]} testID="leaderboard-podium">
+    <GlassCard
+      style={[styles.podiumCard, entry.isMe && styles.meCard, winner && styles.winnerCard]}
+      testID="leaderboard-podium"
+    >
       {winner ? (
         <Ionicons name="ribbon" size={sizing.icon} color={medalColor} style={styles.crown} />
       ) : null}
@@ -44,9 +57,12 @@ export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1
       <View style={[styles.place, { backgroundColor: `${medalColor}22`, borderColor: medalColor }]}>
         <Text style={[styles.placeText, { color: medalColor }]}>{place}</Text>
       </View>
-      <Text style={styles.podiumName} numberOfLines={1}>
-        {entry.name}
-      </Text>
+      <View style={styles.nameRow}>
+        <Text style={styles.podiumName} numberOfLines={1}>
+          {entry.name}
+        </Text>
+        {entry.isMe ? <MeTag /> : null}
+      </View>
       <Text style={styles.podiumScore}>{entry.points.toLocaleString('hu-HU')} XP</Text>
     </GlassCard>
   );
@@ -54,19 +70,57 @@ export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1
 
 export function RankRow({ entry, place }: { entry: LeaderboardEntry; place: number }) {
   return (
-    <View style={styles.rankRow} testID="leaderboard-row">
+    <View style={[styles.rankRow, entry.isMe && styles.meRow]} testID="leaderboard-row">
       <Text style={styles.rankNumber}>{String(place).padStart(2, '0')}</Text>
       <Avatar initials={entry.initials} size={sizing.touch} highlighted={entry.isMe} />
       <View style={styles.rankCopy}>
-        <Text style={styles.rankName} numberOfLines={1}>
-          {entry.name}
-        </Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.rankName} numberOfLines={1}>
+            {entry.name}
+          </Text>
+          {entry.isMe ? <MeTag /> : null}
+        </View>
         <Text style={styles.rankDetail} numberOfLines={1}>
           {entry.detail}
         </Text>
       </View>
-      <Text style={styles.rankScore}>{entry.points.toLocaleString('hu-HU')} XP</Text>
+      <Text style={[styles.rankScore, entry.isMe && styles.meScore]}>
+        {entry.points.toLocaleString('hu-HU')} XP
+      </Text>
     </View>
+  );
+}
+
+/**
+ * A képernyő alján rögzített saját helyezés. Arany kerettel és halvány arany háttérrel
+ * kiemeljük, hogy elüssön a lista soraitól.
+ */
+export function MyRankCard({
+  initials,
+  title,
+  subtitle,
+  score,
+  ranked,
+}: {
+  initials: string;
+  title: string;
+  subtitle: string;
+  score: string;
+  /** Van-e már helyezése (ekkor a helyezés és a pontszám arany színű). */
+  ranked: boolean;
+}) {
+  return (
+    <GlassCard style={styles.myRankCard} testID="leaderboard-me">
+      <View pointerEvents="none" style={styles.myRankTint} />
+      <Avatar initials={initials} highlighted size={sizing.touch} />
+      <View style={styles.myRankCopy}>
+        <Text style={[styles.myRankTitle, ranked && styles.myRankTitleActive]}>{title}</Text>
+        <Text style={styles.myRankSubtitle} numberOfLines={1}>
+          {subtitle}
+        </Text>
+      </View>
+      <Text style={[styles.myRankScore, ranked && styles.myRankScoreActive]}>{score}</Text>
+    </GlassCard>
   );
 }
 
@@ -86,6 +140,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(242, 184, 75, 0.45)',
     ...winnerShadow,
   },
+  meCard: { borderColor: 'rgba(242, 184, 75, 0.45)', borderTopColor: 'rgba(242, 184, 75, 0.45)' },
   crown: { position: 'absolute', top: spacing.md },
   avatarRing: {
     padding: spacing.xs,
@@ -101,7 +156,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   placeText: { fontSize: 14, fontWeight: '600' },
-  podiumName: { maxWidth: '100%', ...font.small, color: colors.text, fontWeight: '600' },
+  nameRow: { maxWidth: '100%', flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  meTag: {
+    paddingHorizontal: spacing.xs + 2,
+    paddingVertical: 1,
+    borderRadius: radius.pill,
+    backgroundColor: colors.accent,
+  },
+  meTagText: { color: colors.accentText, fontSize: 10, fontWeight: '700' },
+  podiumName: { flexShrink: 1, ...font.small, color: colors.text, fontWeight: '600' },
   podiumScore: { ...font.caption, ...font.mono, color: colors.accent, fontWeight: '600' },
   rankRow: {
     minHeight: sizing.touch + spacing.lg,
@@ -111,9 +174,35 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  meRow: {
+    marginHorizontal: -spacing.sm,
+    paddingHorizontal: spacing.sm,
+    borderRadius: radius.sm,
+    borderBottomColor: colors.transparent,
+    backgroundColor: colors.cardHighlight,
+  },
   rankNumber: { width: spacing.xl, ...font.mono, ...font.caption, color: colors.textMuted },
   rankCopy: { flex: 1, gap: spacing.xs },
-  rankName: { ...font.small, color: colors.text, fontWeight: '600' },
+  rankName: { flexShrink: 1, ...font.small, color: colors.text, fontWeight: '600' },
   rankDetail: { ...font.caption, color: colors.textMuted },
   rankScore: { ...font.small, ...font.mono, color: colors.text, fontWeight: '600' },
+  meScore: { color: colors.accent },
+  myRankCard: {
+    minHeight: sizing.touch + spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    padding: spacing.sm,
+    paddingRight: spacing.md,
+    borderColor: 'rgba(242, 184, 75, 0.55)',
+    borderTopColor: 'rgba(242, 184, 75, 0.55)',
+    ...winnerShadow,
+  },
+  myRankTint: { ...StyleSheet.absoluteFill, backgroundColor: colors.cardHighlight },
+  myRankCopy: { flex: 1, gap: 2 },
+  myRankTitle: { ...font.small, color: colors.text, fontWeight: '700' },
+  myRankTitleActive: { color: colors.accent },
+  myRankSubtitle: { ...font.caption, color: colors.textMuted },
+  myRankScore: { ...font.small, ...font.mono, color: colors.textMuted, fontWeight: '700' },
+  myRankScoreActive: { color: colors.accent },
 });
