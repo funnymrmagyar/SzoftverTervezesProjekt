@@ -5,6 +5,7 @@ import { Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'rea
 import { Badge } from '@/ui/components';
 import { GlassSurface } from '@/ui/GlassSurface';
 import { formatNumber, t } from '@/ui/i18n';
+import { focusRing, hoverTransition } from '@/ui/interaction';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import type { GAME_OPTIONS } from './gameOptions';
 
@@ -30,9 +31,13 @@ export function GameCard({
 }) {
   const [playFocused, setPlayFocused] = useState(false);
   const [trophyFocused, setTrophyFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   return (
-    <GlassSurface style={styles.card} testID={`game-card-${game.id}`}>
+    <GlassSurface
+      style={[styles.card, hoverTransition, hovered && styles.cardHovered]}
+      testID={`game-card-${game.id}`}
+    >
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${title}: ${t('games.play')}`}
@@ -40,6 +45,8 @@ export function GameCard({
         onPress={onPlay}
         onFocus={() => setPlayFocused(true)}
         onBlur={() => setPlayFocused(false)}
+        onHoverIn={() => setHovered(true)}
+        onHoverOut={() => setHovered(false)}
         testID={`game-play-${game.id}`}
         style={({ pressed }) => [
           styles.play,
@@ -99,6 +106,12 @@ const styles = StyleSheet.create({
     minHeight: sizing.gameIcon + spacing.xl,
     padding: spacing.lg,
   },
+  // Rámutatáskor (böngészőben) erősebb keret és egy árnyalattal világosabb háttér.
+  cardHovered: {
+    borderColor: colors.borderStrong,
+    borderTopColor: colors.borderStrong,
+    backgroundColor: colors.glassStrong,
+  },
   play: {
     flex: 1,
     flexDirection: 'row',
@@ -132,5 +145,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceRaised,
   },
   pressed: { transform: [{ scale: sizing.cardPressScale }] },
-  focused: { borderWidth: 2, borderColor: colors.accent },
+  focused: focusRing,
 });

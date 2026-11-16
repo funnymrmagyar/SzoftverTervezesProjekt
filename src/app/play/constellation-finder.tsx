@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getStarCatalog } from '@/core/catalog';
 import { buildChartModel } from '@/features/games/chartModel';
@@ -67,7 +67,8 @@ export default function ConstellationFinderScreen() {
     if (!reducedMotion) {
       Animated.spring(feedbackMotion, {
         toValue: 1,
-        useNativeDriver: true,
+        // Böngészőben nincs natív animációs modul: ott JS-ből animálunk (különben figyelmeztet).
+        useNativeDriver: Platform.OS !== 'web',
         damping: 24,
         stiffness: 260,
       }).start();
@@ -307,7 +308,8 @@ export default function ConstellationFinderScreen() {
 }
 
 const styles = StyleSheet.create({
-  setupStage: { flex: 1, justifyContent: 'center' },
+  // A beállítások közvetlenül a fejléc alatt kezdődnek (korábban függőlegesen középen lebegtek).
+  setupStage: { flex: 1, paddingTop: spacing.lg },
   playing: { flex: 1, minHeight: 0 },
   summaryStage: { flex: 1, minHeight: 0, justifyContent: 'center' },
   question: { ...font.heading, color: colors.text, textAlign: 'center' },

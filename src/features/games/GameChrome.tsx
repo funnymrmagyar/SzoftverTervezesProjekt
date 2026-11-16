@@ -70,20 +70,21 @@ export function GameSetup({
       </GlassCard>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('games.culture')}</Text>
+        <Text style={styles.fieldLabel}>{t('games.culture')}</Text>
         <Select
           value={cultureId}
           options={cultures.map((culture) => ({ value: culture.id, label: culture.name }))}
           onChange={onCultureChange}
           label={t('games.culture')}
           triggerIcon="globe-outline"
+          fullWidth
           searchable
           testID="game-culture-select"
         />
       </View>
 
       <View style={[styles.section, compact && styles.compactSection]}>
-        <Text style={styles.sectionTitle}>{t('games.difficulty')}</Text>
+        <Text style={styles.fieldLabel}>{t('games.difficulty')}</Text>
         <SegmentedControl
           options={[
             { value: 'easy', label: t('games.easy') },
@@ -199,8 +200,10 @@ const styles = StyleSheet.create({
   headerTitle: { flex: 1, ...font.heading, color: colors.text },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   body: { ...font.body, color: colors.textMuted, lineHeight: spacing.xl },
-  section: { gap: spacing.md },
+  section: { gap: spacing.sm },
   sectionTitle: { ...font.heading, color: colors.text },
+  // Űrlapmező felirata: kisebb és halványabb, mint egy szakaszcím.
+  fieldLabel: { ...font.small, color: colors.textMuted, fontWeight: '600' },
   compactIntro: { padding: spacing.sm },
   compactBody: { fontSize: 13, lineHeight: 18 },
   compactSection: { gap: spacing.xs },

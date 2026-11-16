@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { getStarCatalog } from '@/core/catalog';
 import {
@@ -77,7 +77,8 @@ export default function BeliefGuessScreen() {
     if (!reducedMotion) {
       Animated.spring(feedbackMotion, {
         toValue: 1,
-        useNativeDriver: true,
+        // Böngészőben nincs natív animációs modul: ott JS-ből animálunk (különben figyelmeztet).
+        useNativeDriver: Platform.OS !== 'web',
         damping: 24,
         stiffness: 260,
       }).start();
@@ -206,6 +207,7 @@ export default function BeliefGuessScreen() {
             model={model}
             lines={lines}
             accessibilityLabel={`${t('games.belief.pattern')} ${index + 1}`}
+            framed={false}
           />
         </GameChartStage>
         {answered ? (
@@ -352,12 +354,14 @@ export default function BeliefGuessScreen() {
 }
 
 const styles = StyleSheet.create({
-  setupStage: { flex: 1, justifyContent: 'center' },
+  // A beállítások közvetlenül a fejléc alatt kezdődnek (korábban függőlegesen középen lebegtek).
+  setupStage: { flex: 1, paddingTop: spacing.lg },
   summaryStage: { flex: 1, minHeight: 0, justifyContent: 'center' },
   playing: { flex: 1, minHeight: 0, gap: spacing.sm },
   playingSideBySide: { flexDirection: 'row' },
   clue: { flexShrink: 0, gap: spacing.sm, alignItems: 'flex-start' },
-  clueSide: { flex: 1, flexShrink: 1, minWidth: 0, alignSelf: 'stretch' },
+  // Oldalt a leírás kártyája a szövegéhez igazodik (hosszú szövegnél görgethető).
+  clueSide: { flex: 1, flexShrink: 1, minWidth: 0, alignSelf: 'flex-start', maxHeight: '100%' },
   clueScroll: { alignSelf: 'stretch' },
   clueText: { ...font.body, color: colors.text, lineHeight: spacing.xl },
   clueTextSmall: { ...font.small, color: colors.text, lineHeight: 20 },
@@ -369,10 +373,12 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 0,
     padding: spacing.xs,
+    overflow: 'hidden',
     borderRadius: radius.md,
     borderWidth: 2,
     borderColor: colors.border,
-    backgroundColor: colors.surfaceRaised,
+    // A kártya háttere az égbolt színe, így a csillagminta egybeolvad vele (nincs kettős keret).
+    backgroundColor: colors.sky,
   },
   optionCorrect: { borderColor: colors.success },
   optionWrong: { borderColor: colors.danger },

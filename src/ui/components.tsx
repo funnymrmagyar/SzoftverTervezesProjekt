@@ -15,9 +15,19 @@ import {
 import { t } from './i18n';
 import { colors, font, radius, sizing, spacing } from './theme';
 import { GlassSurface } from './GlassSurface';
+import { focusRing, hoverTransition } from './interaction';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 const cursorStyle = Platform.OS === 'web' ? ({ cursor: 'pointer' } as ViewStyle) : undefined;
+
+/** #rrggbb színhez átlátszóságot fűz (pl. halványabb keret); más formátumot változatlanul hagy. */
+function withAlpha(color: string, alpha: number): string {
+  if (!/^#[0-9a-f]{6}$/i.test(color)) return color;
+  const hex = Math.round(Math.min(1, Math.max(0, alpha)) * 255)
+    .toString(16)
+    .padStart(2, '0');
+  return `${color}${hex}`;
+}
 
 export function IconButton({
   icon,
@@ -53,6 +63,7 @@ export function IconButton({
       testID={testID}
       style={({ pressed }) => [
         styles.iconButton,
+        hoverTransition,
         active && styles.iconButtonActive,
         hovered && styles.hovered,
         focused && styles.focused,
@@ -83,6 +94,7 @@ export function Chip({
   testID?: string;
 }) {
   const [focusedValue, setFocusedValue] = useState<string | null>(null);
+  const [hovered, setHovered] = useState(false);
   return (
     <Pressable
       accessibilityRole="button"
@@ -92,9 +104,13 @@ export function Chip({
       onPress={onPress}
       onFocus={() => setFocusedValue(label)}
       onBlur={() => setFocusedValue(null)}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       testID={testID}
       style={({ pressed }) => [
         styles.chip,
+        hoverTransition,
+        hovered && !selected && styles.hovered,
         selected && styles.chipSelected,
         focusedValue === label && styles.focused,
         pressed && styles.pressed,
@@ -131,6 +147,7 @@ export function SegmentedControl<T extends string>({
   testID?: string;
 }) {
   const [focusedOption, setFocusedOption] = useState<T | null>(null);
+  const [hoveredOption, setHoveredOption] = useState<T | null>(null);
   return (
     <View
       style={styles.segmented}
@@ -140,6 +157,7 @@ export function SegmentedControl<T extends string>({
     >
       {options.map((option) => {
         const selected = value === option.value;
+        const hovered = hoveredOption === option.value && !selected;
         return (
           <Pressable
             key={option.value}
@@ -150,8 +168,12 @@ export function SegmentedControl<T extends string>({
             onPress={() => onChange(option.value)}
             onFocus={() => setFocusedOption(option.value)}
             onBlur={() => setFocusedOption(null)}
+            onHoverIn={() => setHoveredOption(option.value)}
+            onHoverOut={() => setHoveredOption(null)}
             style={({ pressed }) => [
               styles.segment,
+              hoverTransition,
+              hovered && styles.segmentHovered,
               selected && styles.segmentSelected,
               focusedOption === option.value && styles.focused,
               pressed && styles.pressed,
@@ -162,11 +184,17 @@ export function SegmentedControl<T extends string>({
               <Ionicons
                 name={option.icon}
                 size={sizing.iconSmall}
-                color={selected ? colors.accent : colors.textMuted}
+                color={selected ? colors.accent : hovered ? colors.text : colors.textMuted}
               />
             ) : null}
             {(!compactSelection || selected || !option.icon) && (
-              <Text style={[styles.segmentText, selected && styles.segmentTextSelected]}>
+              <Text
+                style={[
+                  styles.segmentText,
+                  hovered && styles.segmentTextHovered,
+                  selected && styles.segmentTextSelected,
+                ]}
+              >
                 {option.label}
               </Text>
             )}
@@ -243,6 +271,7 @@ export function SettingsRow({
   testID?: string;
 }) {
   const [focused, setFocused] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const content = (
     <>
       <View style={styles.settingsIcon}>
@@ -274,9 +303,13 @@ export function SettingsRow({
       onPress={onPress}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       testID={testID}
       style={({ pressed }) => [
         styles.settingsRow,
+        hoverTransition,
+        hovered && styles.settingsRowHovered,
         focused && styles.focused,
         pressed && styles.pressed,
         cursorStyle,
@@ -315,20 +348,27 @@ export function TrophyBadge({
         onBlur={() => setFocused(false)}
         style={({ pressed }) => [
           styles.trophy,
+          hoverTransition,
+          // A zárolt trófea kerete halvány (a nehézség színe csak sejlik), a megszerzetté teljes.
+          locked
+            ? { borderColor: withAlpha(difficultyColor, 0.35) }
+            : [styles.trophyEarned, { borderColor: difficultyColor }],
           focused && styles.focused,
           pressed && styles.pressed,
-          locked && styles.trophyLocked,
-          { borderColor: difficultyColor },
           cursorStyle,
         ]}
       >
-        <Ionicons name={icon} size={sizing.icon} color={locked ? difficultyColor : colors.accent} />
+        <Ionicons
+          name={icon}
+          size={sizing.icon}
+          color={locked ? withAlpha(difficultyColor, 0.7) : colors.accent}
+        />
         {locked ? (
           <View style={styles.trophyLock}>
-            <Ionicons name="lock-closed" size={sizing.iconSmall} color={colors.textMuted} />
+            <Ionicons name="lock-closed" size={sizing.iconSmall - 4} color={colors.textSubtle} />
           </View>
         ) : null}
-        <Text numberOfLines={2} style={styles.trophyTitle}>
+        <Text numberOfLines={2} style={[styles.trophyTitle, locked && styles.trophyTitleLocked]}>
           {title}
         </Text>
       </Pressable>
@@ -401,7 +441,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glass,
   },
   iconButtonActive: { borderColor: colors.accent, backgroundColor: colors.cardHighlight },
-  hovered: { backgroundColor: colors.surfaceRaised },
+  hovered: { backgroundColor: colors.surfaceRaised, borderColor: colors.borderStrong },
   chip: {
     minHeight: sizing.touch,
     flexDirection: 'row',
@@ -437,8 +477,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     borderRadius: radius.pill,
   },
+  segmentHovered: { backgroundColor: colors.glassHighlight },
   segmentSelected: { backgroundColor: colors.cardHighlight },
   segmentText: { ...font.small, color: colors.textMuted },
+  segmentTextHovered: { color: colors.text },
   segmentTextSelected: { color: colors.accent, fontWeight: '600' },
   badge: {
     minHeight: sizing.touch - spacing.sm,
@@ -473,6 +515,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  settingsRowHovered: { backgroundColor: colors.glassHighlight },
   settingsIcon: {
     width: sizing.touch,
     height: sizing.touch,
@@ -495,9 +538,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.glass,
   },
-  trophyLocked: { opacity: 0.72 },
-  trophyLock: { position: 'absolute', top: spacing.xs, right: spacing.xs },
-  trophyTitle: { ...font.caption, color: colors.text, textAlign: 'center' },
+  trophyEarned: { backgroundColor: colors.cardHighlight },
+  trophyLock: { position: 'absolute', top: spacing.sm, right: spacing.sm },
+  trophyTitle: { ...font.caption, color: colors.text, fontWeight: '600', textAlign: 'center' },
+  trophyTitleLocked: { color: colors.textMuted, fontWeight: '400' },
   trophyModal: {
     flex: 1,
     alignItems: 'center',
@@ -548,7 +592,7 @@ const styles = StyleSheet.create({
   },
   trophyCloseText: { ...font.small, color: colors.text },
   glassCard: { padding: spacing.lg, borderRadius: radius.lg },
-  focused: { borderColor: colors.accent, borderWidth: 2 },
+  focused: focusRing,
   pressed: { transform: [{ scale: sizing.cardPressScale }] },
   disabled: { opacity: 0.6 },
 });

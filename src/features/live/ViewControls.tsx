@@ -6,14 +6,17 @@ import { IconButton } from '@/ui/components';
 import { t, useLocale } from '@/ui/i18n';
 import { colors, spacing } from '@/ui/theme';
 
+/**
+ * Az alsó sáv két szélének gombjai. Telefonos (compact) nézetben a +/− nagyítógombok
+ * elmaradnak — ott két ujjal nagyít az ember —, így a sáv jóval alacsonyabb lehet.
+ */
 export function ViewControls({
   side = 'all',
   compact = false,
-  moreOpen = false,
-  onToggleMore,
 }: {
   side?: 'left' | 'right' | 'all';
   compact?: boolean;
+  /** Kompatibilitás: a hárompontos gomb megszűnt. */
   moreOpen?: boolean;
   onToggleMore?: () => void;
 }) {
@@ -29,7 +32,7 @@ export function ViewControls({
   return (
     <View style={styles.wrap}>
       {side !== 'right' ? (
-        <View style={[styles.row, compact && styles.column]}>
+        <View style={styles.row}>
           <IconButton
             icon="git-network-outline"
             label={t('view.lines')}
@@ -44,28 +47,28 @@ export function ViewControls({
             onPress={toggleLabels}
             testID="toggle-labels"
           />
-          {onToggleMore ? (
-            <IconButton
-              icon="ellipsis-horizontal"
-              label={t(moreOpen ? 'view.fewer' : 'view.more')}
-              active={moreOpen}
-              onPress={onToggleMore}
-              testID="more-view-controls"
-            />
-          ) : null}
         </View>
       ) : null}
       {side !== 'left' ? (
         <View style={styles.rightGroup}>
-          {moreOpen ? <Text style={styles.fov}>{t('view.fov', { fov })}</Text> : null}
-          <View style={[styles.row, compact && styles.column]}>
-            <IconButton
-              icon="remove"
-              label={t('view.zoomOut')}
-              onPress={() => zoom(1.25)}
-              testID="zoom-out"
-            />
-            <IconButton icon="add" label={t('view.zoomIn')} onPress={() => zoom(0.8)} testID="zoom-in" />
+          <Text style={styles.fov}>{t('view.fov', { fov })}</Text>
+          <View style={styles.row}>
+            {compact ? null : (
+              <>
+                <IconButton
+                  icon="remove"
+                  label={t('view.zoomOut')}
+                  onPress={() => zoom(1.25)}
+                  testID="zoom-out"
+                />
+                <IconButton
+                  icon="add"
+                  label={t('view.zoomIn')}
+                  onPress={() => zoom(0.8)}
+                  testID="zoom-in"
+                />
+              </>
+            )}
             <IconButton
               icon="compass-outline"
               label={t('view.reset')}
@@ -82,7 +85,6 @@ export function ViewControls({
 const styles = StyleSheet.create({
   wrap: { alignItems: 'center', gap: spacing.sm },
   row: { flexDirection: 'row', justifyContent: 'center', gap: spacing.xs },
-  column: { flexDirection: 'column' },
   rightGroup: { alignItems: 'center', gap: spacing.xs },
   fov: { color: colors.textMuted, fontSize: 10 },
 });

@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { StarryBackdrop } from '../StarryBackdrop';
 import { colors, sizing, spacing } from '../theme';
 import { useBreakpoint } from '../useBreakpoint';
 
@@ -40,6 +41,7 @@ export function Screen({
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'right', 'bottom', 'left']}>
+      <StarryBackdrop />
       {scroll ? (
         <ScrollView
           style={styles.flex}

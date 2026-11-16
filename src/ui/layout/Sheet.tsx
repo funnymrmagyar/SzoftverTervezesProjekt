@@ -1,15 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
-  type ComponentProps,
   type ReactNode,
 } from 'react';
 import {
   Animated,
   BackHandler,
+  Easing,
   PanResponder,
   Platform,
   Pressable,
@@ -17,19 +20,37 @@ import {
   Text,
   View,
   useWindowDimensions,
+  type GestureResponderEvent,
   type LayoutChangeEvent,
 } from 'react-native';
 
 import { t } from '../i18n';
+import { suppressTextSelectionUntilRelease } from '../textSelection';
 import { colors, radius, sizing, spacing } from '../theme';
 import { useBreakpoint } from '../useBreakpoint';
 import { useReducedMotion } from '../useReducedMotion';
-import { getSheetSnapHeights, nearestSheetSnap, type SheetSnap } from './geometry';
+import { getSheetSnapHeights, type SheetSnap } from './geometry';
 
 interface Position {
   x: number;
   y: number;
 }
+
+/** Az asztali (lebegő) ablak húzása: honnan indult a mutató, és hol állt akkor az ablak. */
+interface FloatingDrag {
+  pageX: number;
+  pageY: number;
+  origin: Position;
+}
+
+/** Ennyi elmozdulás után számít húzásnak a lenyomás (addig a fejléc gombjai kattinthatók). */
+const DRAG_THRESHOLD = 3;
+/** Telefonon ennyi lefelé húzás után kezd el mozogni a lap (a véletlen remegést figyelmen kívül hagyjuk). */
+const DISMISS_DRAG_START = 8;
+/** Ha a lapot a magassága ennyi részénél lejjebb húzzák, elengedéskor bezárul. */
+const DISMISS_DISTANCE = 0.25;
+/** Ennél gyorsabb lefelé pöccintés (px/ms) a távolságtól függetlenül bezárja a lapot. */
+const DISMISS_VELOCITY = 0.5;
 
 const sheetSessions: Record<string, { position: Position | null; snap: SheetSnap }> = {
   default: { position: null, snap: 'half' },
@@ -41,8 +62,6 @@ function saveSessionPosition(session: { position: Position | null }, position: P
   session.position = position;
 }
 
-type IconName = ComponentProps<typeof Ionicons>['name'];
-
 export function Sheet({
   title,
   titleTestID,
@@ -53,6 +72,7 @@ export function Sheet({
   maxMobileSnap = 'full',
   bodyPadding = spacing.lg,
   sessionKey = 'default',
+  fitContent = false,
 }: {
   title: string;
   titleTestID?: string;
@@ -63,11 +83,19 @@ export function Sheet({
   maxMobileSnap?: SheetSnap;
   bodyPadding?: number;
   sessionKey?: string;
+  /**
+   * Telefonon a lap pontosan akkora, amekkora a tartalma (nem fél/teljes képernyő).
+   * Kis, tömör vezérlőpultokhoz (pl. időutazás), hogy ne takarja feleslegesen az eget.
+   */
+  fitContent?: boolean;
 }) {
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const { compact } = useBreakpoint();
   const reducedMotion = useReducedMotion();
   const mobile = Platform.OS !== 'web' && compact;
+  // Telefonon a lap az alsó menüsáv fölött ér véget, különben a sáv eltakarná az alját.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
+  const bottomClearance = mobile ? tabBarHeight : 0;
   const session = sheetSessions[sessionKey] ?? sheetSessions.default;
   const [viewport, setViewport] = useState({ width: windowWidth, height: windowHeight });
   const [panelSize, setPanelSize] = useState({ width: 0, height: 0 });
@@ -80,6 +108,9 @@ export function Sheet({
       }
     );
   });
+  const pressStart = useRef<{ pageX: number; pageY: number } | null>(null);
+  const floatingDrag = useRef<FloatingDrag | null>(null);
+
   const initialSnap =
     mobile && maxMobileSnap === 'half' && session.snap === 'full'
       ? 'half'
@@ -91,7 +122,8 @@ export function Sheet({
   const [sheetHeight] = useState(
     () => new Animated.Value(getSheetSnapHeights(windowHeight)[activeSnap]),
   );
-  const [floatingDrag] = useState(() => new Animated.ValueXY({ x: 0, y: 0 }));
+  /** Telefonon a lap függőleges eltolása: lefelé húzáskor követi az ujjat, nyitáskor alulról csúszik be. */
+  const [dismissY] = useState(() => new Animated.Value(0));
 
   const boundedPosition = useCallback(
     (x: number, y: number, bounds = viewport, size = panelSize): Position => {
@@ -134,13 +166,50 @@ export function Sheet({
         Animated.spring(sheetHeight, {
           toValue: target,
           useNativeDriver: false,
-          damping: 28,
-          stiffness: 260,
+          damping: 24,
+          stiffness: 200,
+          mass: 0.9,
         }).start();
       }
       if (boundedSnap === 'closed') onClose();
     },
     [maxMobileSnap, mobile, onClose, reducedMotion, session, sheetHeight, viewport.height],
+  );
+
+  /**
+   * Telefonon a lap bezárása: lecsúszik a képernyő aljára (a menüsáv mögé), és csak utána
+   * tűnik el. Böngészőben / nagy kijelzőn azonnal bezár.
+   */
+  const dismiss = useCallback(
+    (velocity = 0) => {
+      if (!mobile || reducedMotion) {
+        onClose();
+        return;
+      }
+      const height =
+        fitContent && panelSize.height > 0
+          ? panelSize.height
+          : getSheetSnapHeights(viewport.height)[activeSnap];
+      Animated.timing(dismissY, {
+        toValue: height + spacing.xl,
+        // Gyors pöccintésnél rövidebb, hogy a lap ne lassuljon le a mozdulathoz képest.
+        duration: velocity > 1 ? 160 : 220,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      }).start(({ finished }) => {
+        if (finished) onClose();
+      });
+    },
+    [
+      activeSnap,
+      dismissY,
+      fitContent,
+      mobile,
+      onClose,
+      panelSize.height,
+      reducedMotion,
+      viewport.height,
+    ],
   );
 
   const adjustSnap = useCallback(
@@ -153,58 +222,64 @@ export function Sheet({
         : ['closed', 'half', 'full'];
       const currentIndex = snaps.indexOf(activeSnap);
       const nextIndex = Math.max(0, Math.min(snaps.length - 1, currentIndex + direction));
-      animateToSnap(snaps[nextIndex]);
+      if (snaps[nextIndex] === 'closed') dismiss();
+      else animateToSnap(snaps[nextIndex]);
     },
-    [activeSnap, animateToSnap, maxMobileSnap, mobile],
+    [activeSnap, animateToSnap, dismiss, maxMobileSnap, mobile],
   );
 
+  /*
+   * Telefonon a lap a helyén marad: csak lefelé lehet húzni, és ha elég messzire vagy elég
+   * gyorsan húzták, bezárul; különben visszaugrik. Felfelé és oldalra húzásra nem reagál.
+   */
   const mobilePan = useMemo(() => {
-    const heightForDrag = (deltaY: number) =>
-      Math.min(
-        viewport.height,
-        Math.max(
-          48,
-          Math.min(
-            getSheetSnapHeights(viewport.height)[maxMobileSnap],
-            getSheetSnapHeights(viewport.height)[activeSnap] - deltaY,
-          ),
-        ),
-      );
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (_event, gesture) => Math.abs(gesture.dy) > 3,
-      onPanResponderMove: (_event, gesture) => {
-        sheetHeight.setValue(heightForDrag(gesture.dy));
-      },
-      onPanResponderRelease: (_event, gesture) => {
-        animateToSnap(nearestSheetSnap(heightForDrag(gesture.dy), viewport.height, maxMobileSnap));
-      },
-      onPanResponderTerminate: (_event, gesture) => {
-        animateToSnap(nearestSheetSnap(heightForDrag(gesture.dy), viewport.height, maxMobileSnap));
-      },
-    });
-  }, [activeSnap, animateToSnap, maxMobileSnap, sheetHeight, viewport.height]);
-
-  const floatingPan = useMemo(() => {
+    const springBack = () =>
+      Animated.spring(dismissY, {
+        toValue: 0,
+        damping: 26,
+        stiffness: 300,
+        mass: 0.8,
+        useNativeDriver: false,
+      }).start();
     return PanResponder.create({
       onMoveShouldSetPanResponder: (_event, gesture) =>
-        Math.abs(gesture.dx) > 3 || Math.abs(gesture.dy) > 3,
+        gesture.dy > DISMISS_DRAG_START && gesture.dy > Math.abs(gesture.dx) * 1.2,
+      onPanResponderGrant: () => dismissY.stopAnimation(),
       onPanResponderMove: (_event, gesture) => {
-        floatingDrag.setValue({ x: gesture.dx, y: gesture.dy });
+        dismissY.setValue(Math.max(0, gesture.dy - DISMISS_DRAG_START));
       },
       onPanResponderRelease: (_event, gesture) => {
-        const next = boundedPosition(position.x + gesture.dx, position.y + gesture.dy);
-        saveSessionPosition(session, next);
-        setPosition(next);
-        floatingDrag.setValue({ x: 0, y: 0 });
+        const height =
+          fitContent && panelSize.height > 0
+            ? panelSize.height
+            : getSheetSnapHeights(viewport.height)[activeSnap];
+        if (gesture.dy > height * DISMISS_DISTANCE || gesture.vy > DISMISS_VELOCITY) {
+          dismiss(gesture.vy);
+        } else {
+          springBack();
+        }
       },
-      onPanResponderTerminate: (_event, gesture) => {
-        const next = boundedPosition(position.x + gesture.dx, position.y + gesture.dy);
-        saveSessionPosition(session, next);
-        setPosition(next);
-        floatingDrag.setValue({ x: 0, y: 0 });
-      },
+      onPanResponderTerminate: springBack,
+      onPanResponderTerminationRequest: () => false,
     });
-  }, [boundedPosition, floatingDrag, position, session]);
+  }, [activeSnap, dismiss, dismissY, fitContent, panelSize.height, viewport.height]);
+
+  // Telefonon megnyitáskor a lap alulról csúszik be.
+  useEffect(() => {
+    if (!visible || !mobile) return;
+    if (reducedMotion) {
+      dismissY.setValue(0);
+      return;
+    }
+    dismissY.setValue(windowHeight);
+    Animated.spring(dismissY, {
+      toValue: 0,
+      damping: 28,
+      stiffness: 260,
+      mass: 0.9,
+      useNativeDriver: false,
+    }).start();
+  }, [dismissY, mobile, reducedMotion, visible, windowHeight]);
 
   useEffect(() => {
     if (!mobile || viewport.height <= 0) return;
@@ -222,14 +297,15 @@ export function Sheet({
     }
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (activeSnap === 'closed') return false;
-      onClose();
+      dismiss();
       return true;
     });
     return () => subscription.remove();
-  }, [activeSnap, visible, onClose]);
+  }, [activeSnap, dismiss, visible, onClose]);
 
   function onPanelLayout(event: LayoutChangeEvent) {
     const { width, height } = event.nativeEvent.layout;
+    if (width === panelSize.width && height === panelSize.height) return;
     const nextSize = { width, height };
     setPanelSize(nextSize);
     if (!mobile) {
@@ -244,6 +320,56 @@ export function Sheet({
     if (!mobile) {
       setPosition((current) => boundedPosition(current.x, current.y, nextViewport));
     }
+  }
+
+  /*
+   * A lebegő ablak húzása a fejlécnél. Közvetlenül a mutató helyéből számolunk (1:1 követés),
+   * és a lenyomástól az elengedésig tiltjuk a szövegkijelölést: a böngésző kijelölése
+   * korábban megszakította a húzást, ezért „akadt el” az ablak.
+   */
+  function rememberPressStart(event: GestureResponderEvent) {
+    pressStart.current = { pageX: event.nativeEvent.pageX, pageY: event.nativeEvent.pageY };
+    suppressTextSelectionUntilRelease();
+    return false;
+  }
+
+  function shouldStartFloatingDrag(event: GestureResponderEvent) {
+    const start = pressStart.current;
+    if (!start) return false;
+    return (
+      Math.abs(event.nativeEvent.pageX - start.pageX) > DRAG_THRESHOLD ||
+      Math.abs(event.nativeEvent.pageY - start.pageY) > DRAG_THRESHOLD
+    );
+  }
+
+  function draggedPosition(drag: FloatingDrag, event: GestureResponderEvent) {
+    return boundedPosition(
+      drag.origin.x + event.nativeEvent.pageX - drag.pageX,
+      drag.origin.y + event.nativeEvent.pageY - drag.pageY,
+    );
+  }
+
+  function startFloatingDrag(event: GestureResponderEvent) {
+    const start = pressStart.current ?? {
+      pageX: event.nativeEvent.pageX,
+      pageY: event.nativeEvent.pageY,
+    };
+    floatingDrag.current = { ...start, origin: position };
+  }
+
+  function moveFloatingDrag(event: GestureResponderEvent) {
+    const drag = floatingDrag.current;
+    if (drag) setPosition(draggedPosition(drag, event));
+  }
+
+  function endFloatingDrag(event: GestureResponderEvent) {
+    const drag = floatingDrag.current;
+    floatingDrag.current = null;
+    pressStart.current = null;
+    if (!drag) return;
+    const next = draggedPosition(drag, event);
+    saveSessionPosition(session, next);
+    setPosition(next);
   }
 
   function moveFloatingBy(dx: number, dy: number) {
@@ -262,12 +388,16 @@ export function Sheet({
 
   const floatingWidth = Math.max(0, Math.min(420, viewport.width - spacing.xxl));
   return (
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFill} onLayout={onViewportLayout}>
+    <View
+      pointerEvents="box-none"
+      style={[StyleSheet.absoluteFill, { bottom: bottomClearance }]}
+      onLayout={onViewportLayout}
+    >
       {mobile && scrim && activeSnap !== 'closed' ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={t('common.close')}
-          onPress={() => animateToSnap('closed')}
+          onPress={() => dismiss()}
           style={styles.backdrop}
         />
       ) : null}
@@ -276,7 +406,12 @@ export function Sheet({
         style={[
           styles.panel,
           mobile
-            ? [styles.mobilePanel, { height: sheetHeight }]
+            ? [
+                styles.mobilePanel,
+                fitContent
+                  ? { maxHeight: viewport.height, transform: [{ translateY: dismissY }] }
+                  : { height: sheetHeight, transform: [{ translateY: dismissY }] },
+              ]
             : [
                 styles.floatingPanel,
                 {
@@ -284,7 +419,6 @@ export function Sheet({
                   maxHeight: Math.max(0, viewport.height - spacing.xxl),
                   left: position.x,
                   top: position.y,
-                  transform: floatingDrag.getTranslateTransform(),
                 },
               ],
         ]}
@@ -304,15 +438,17 @@ export function Sheet({
             }
           >
             <View style={styles.handle} />
-            <Header
-              title={title}
-              titleTestID={titleTestID}
-              onClose={() => animateToSnap('closed')}
-            />
+            <Header title={title} titleTestID={titleTestID} onClose={() => dismiss()} />
           </View>
         ) : (
           <View
-            {...floatingPan.panHandlers}
+            onStartShouldSetResponderCapture={rememberPressStart}
+            onMoveShouldSetResponder={shouldStartFloatingDrag}
+            onResponderGrant={startFloatingDrag}
+            onResponderMove={moveFloatingDrag}
+            onResponderRelease={endFloatingDrag}
+            onResponderTerminate={endFloatingDrag}
+            onResponderTerminationRequest={() => false}
             style={styles.floatingHeader}
             accessible
             accessibilityRole="adjustable"
@@ -326,15 +462,14 @@ export function Sheet({
               onRepositionAccessibilityAction(event.nativeEvent.actionName)
             }
           >
-            <Header
-              title={title}
-              titleTestID={titleTestID}
-              onClose={onClose}
-              onMove={moveFloatingBy}
-            />
+            <Header title={title} titleTestID={titleTestID} onClose={onClose} />
           </View>
         )}
-        <View style={[styles.body, { padding: bodyPadding }]}>{children}</View>
+        <View
+          style={[styles.body, mobile && fitContent && styles.bodyFit, { padding: bodyPadding }]}
+        >
+          {children}
+        </View>
       </Animated.View>
     </View>
   );
@@ -344,26 +479,16 @@ function Header({
   title,
   titleTestID,
   onClose,
-  onMove,
 }: {
   title: string;
   titleTestID?: string;
   onClose: () => void;
-  onMove?: (dx: number, dy: number) => void;
 }) {
   return (
     <View style={styles.header}>
       <Text style={styles.title} numberOfLines={1} testID={titleTestID}>
         {title}
       </Text>
-      {onMove ? (
-        <View style={styles.moveButtons}>
-          <MoveButton icon="arrow-back" label={t('sheet.moveLeft')} onPress={() => onMove(-24, 0)} />
-          <MoveButton icon="arrow-forward" label={t('sheet.moveRight')} onPress={() => onMove(24, 0)} />
-          <MoveButton icon="arrow-up" label={t('sheet.moveUp')} onPress={() => onMove(0, -24)} />
-          <MoveButton icon="arrow-down" label={t('sheet.moveDown')} onPress={() => onMove(0, 24)} />
-        </View>
-      ) : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={t('common.close')}
@@ -374,27 +499,6 @@ function Header({
         <Ionicons name="close" size={sizing.icon} color={colors.textMuted} />
       </Pressable>
     </View>
-  );
-}
-
-function MoveButton({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: IconName;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      onPress={onPress}
-      style={styles.moveButton}
-    >
-      <Ionicons name={icon} size={sizing.iconSmall} color={colors.textMuted} />
-    </Pressable>
   );
 }
 
@@ -411,6 +515,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
+    // Telefonon a lap teljesen fedő: az alatta lévő vezérlősáv ne derengjen át rajta.
+    backgroundColor: colors.surface,
     borderBottomWidth: 0,
     borderTopLeftRadius: radius.lg,
     borderTopRightRadius: radius.lg,
@@ -436,13 +542,6 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   title: { flex: 1, color: colors.text, fontSize: 16, fontWeight: '600' },
-  moveButtons: { flexDirection: 'row', alignItems: 'center' },
-  moveButton: {
-    width: sizing.touch,
-    height: sizing.touch,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   closeButton: {
     width: sizing.touch,
     height: sizing.touch,
@@ -450,4 +549,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   body: { flex: 1, minHeight: 0, padding: spacing.lg },
+  // Tartalomhoz igazodó lapnál a törzs nem nyúlik, csak akkora, amekkora kell.
+  bodyFit: { flex: 0, flexShrink: 1 },
 });

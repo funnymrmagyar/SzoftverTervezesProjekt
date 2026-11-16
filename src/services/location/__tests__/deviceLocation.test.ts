@@ -55,6 +55,7 @@ describe('getDeviceLocation', () => {
         latitude: 47.5,
         longitude: 19.04,
         label: 'Saját hely (GPS)',
+        labelKey: 'location.gpsLabel',
       },
     });
     expect(getCurrentPosition).toHaveBeenCalledWith({

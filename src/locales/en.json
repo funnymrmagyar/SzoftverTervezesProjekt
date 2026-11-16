@@ -289,5 +289,22 @@
   "friends.error.duplicate": "They are already in your friends list.",
   "friends.error.full": "You have reached the maximum number of friends.",
   "friends.error.notFound": "No such player. Check the code.",
-  "friends.error.network": "The operation failed. Check your connection and try again."
+  "friends.error.network": "The operation failed. Check your connection and try again.",
+  "leaderboard.subtitle": "Overall and per-game scores.",
+  "leaderboard.you": "You",
+  "profile.subtitle": "Account, settings and trophies.",
+  "live.compact.time": "Time",
+  "username.error.min": "Use at least {min} characters.",
+  "username.error.max": "Use at most {max} characters.",
+  "username.error.chars": "Only letters, numbers, underscores (_) and hyphens (-) are allowed, with no spaces.",
+  "username.error.taken": "This username is already taken.",
+  "username.error.invalid": "Invalid username.",
+  "username.error.saveFailed": "Could not save the username.",
+  "username.error.inProgress": "Choosing a username is already in progress.",
+  "username.prompt.title": "Choose a username",
+  "username.prompt.body": "You will appear on the leaderboard under this name. It cannot be changed later, and it must be unique.",
+  "username.prompt.label": "Username",
+  "username.prompt.placeholder": "e.g. Csillagnezo42",
+  "username.prompt.hint": "3–24 characters · letters, numbers, _ and - · no spaces",
+  "username.prompt.submit": "Save and continue"
 }

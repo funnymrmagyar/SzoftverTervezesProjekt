@@ -16,7 +16,9 @@ import { useSkyStore } from '@/state/useSkyStore';
 import { Sheet } from '@/ui/layout/Sheet';
 import { GlassSurface } from '@/ui/GlassSurface';
 import { t, useLocale } from '@/ui/i18n';
+import { suppressTextSelectionUntilRelease } from '@/ui/textSelection';
 import { colors, font, sizing, spacing } from '@/ui/theme';
+import { useBreakpoint } from '@/ui/useBreakpoint';
 import {
   DAY_MINUTES,
   formatClock,
@@ -29,6 +31,11 @@ import {
 } from './timeTravel';
 
 type SliderAxis = 'year' | 'time';
+
+/** A csúszkák fogantyújának (karikájának) átmérője; a megfogható terület ennél nagyobb. */
+const THUMB_SIZE = 24;
+/** A sín függőleges közepe a csúszka 44 pontos megfogható sávjában. */
+const RAIL_CENTER = 22;
 interface PendingValue {
   axis: SliderAxis;
   value: number;
@@ -49,6 +56,7 @@ export function TimeTravelPanel({
   const shiftDays = useSkyStore((state) => state.shiftDays);
   const shiftHours = useSkyStore((state) => state.shiftHours);
   const resetTimeToNow = useSkyStore((state) => state.resetTimeToNow);
+  const { compact } = useBreakpoint();
   const [preview, setPreview] = useState<PendingValue | null>(null);
   const [editingYear, setEditingYear] = useState(false);
   const [yearText, setYearText] = useState(String(date.getFullYear()));
@@ -143,6 +151,171 @@ export function TimeTravelPanel({
   const shownYear = previewDate.getFullYear();
   const shownMinute = minuteOfDay(previewDate);
 
+  const yearControl = editingYear ? (
+    <TextInput
+      autoFocus
+      value={yearText}
+      onChangeText={setYearText}
+      onSubmitEditing={applyYearInput}
+      onBlur={applyYearInput}
+      keyboardType="numbers-and-punctuation"
+      accessibilityLabel={t('live.year.input')}
+      testID="time-year-input"
+      style={[styles.yearInput, compact && styles.yearInputCompact]}
+    />
+  ) : (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('live.year.edit', { year: formatYearText(shownYear) })}
+      onPress={() => {
+        setYearText(String(shownYear));
+        setEditingYear(true);
+      }}
+      testID="time-year-edit"
+      style={compact ? styles.yearPressCompact : undefined}
+    >
+      <Text style={compact ? styles.yearCompact : styles.dateText}>{formatYearText(shownYear)}</Text>
+    </Pressable>
+  );
+
+  const nowButton = (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('live.now')}
+      onPress={resetToNow}
+      testID="time-now"
+      style={styles.nowButton}
+    >
+      <Ionicons name="refresh" size={sizing.iconSmall} color={colors.accent} />
+      <Text style={styles.nowText}>{t('live.now')}</Text>
+    </Pressable>
+  );
+
+  const yearSlider = (
+    <TimeSlider
+      label={t('live.slider.year')}
+      value={shownYear}
+      minimum={YEAR_MIN}
+      maximum={YEAR_MAX}
+      step={1}
+      ticks={
+        compact
+          ? yearTicks(YEAR_MIN, YEAR_MAX).filter((tick) => tick % 500 === 0)
+          : yearTicks(YEAR_MIN, YEAR_MAX)
+      }
+      tickLabel={(value) => (!compact && value % 500 === 0 ? String(value) : null)}
+      onValueChange={(value) => scheduleValue('year', value)}
+      onSlidingComplete={(value) => finishSlider('year', value)}
+      testID="time-year-track"
+    />
+  );
+
+  const timeSlider = (
+    <TimeSlider
+      label={t('live.slider.time')}
+      value={shownMinute}
+      minimum={0}
+      maximum={DAY_MINUTES}
+      step={5}
+      ticks={[0, 360, 720, 1080, 1440]}
+      tickLabel={(value) => (compact ? null : formatClock(value).slice(0, 2))}
+      onValueChange={(value) => scheduleValue('time', value)}
+      onSlidingComplete={(value) => finishSlider('time', value)}
+      testID="timeline-track"
+    />
+  );
+
+  if (compact) {
+    /*
+     * Telefonos, tömör elrendezés: egy sorban a dátum (az év átírható, a nap két nyíllal
+     * léptethető), alatta a két csúszka; mindkettő két végén egy-egy nyíl lépteti egy évvel,
+     * illetve egy órával (nyomva tartva folyamatosan). A lap csak akkora, amekkora a tartalma.
+     */
+    return (
+      <Sheet
+        title={t('live.timeTravel.title')}
+        visible={visible}
+        onClose={closePanel}
+        scrim={false}
+        bodyPadding={0}
+        sessionKey="time-travel"
+        fitContent
+      >
+        <View style={styles.compactCard} testID="time-travel-card">
+          <View style={styles.compactReadout}>
+            {yearControl}
+            <RepeatButton
+              label={t('live.step.dayBack')}
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => shiftDays(-1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <Text style={styles.compactDate} numberOfLines={1}>
+              {previewDate.toLocaleDateString('hu-HU', { month: 'short' })} {previewDate.getDate()}.
+            </Text>
+            <RepeatButton
+              label={t('live.step.dayForward')}
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => shiftDays(1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <Text style={styles.compactClock}>{formatClock(shownMinute)}</Text>
+            <View style={styles.spacer} />
+            {nowButton}
+          </View>
+
+          <View style={styles.compactRow}>
+            <Text style={styles.compactLabel}>{t('live.slider.year')}</Text>
+            <RepeatButton
+              label={t('live.step.yearBack')}
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => stepYear(-1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <View style={styles.compactSlider}>{yearSlider}</View>
+            <RepeatButton
+              label={t('live.step.yearForward')}
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => stepYear(1)}
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+          </View>
+
+          <View style={styles.compactRow}>
+            <Text style={styles.compactLabel}>{t('live.compact.time')}</Text>
+            <RepeatButton
+              label={t('live.hour.prev')}
+              icon="chevron-back"
+              variant="arrow"
+              onStep={() => shiftHours(-1)}
+              testID="time-back"
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+            <View style={styles.compactSlider}>{timeSlider}</View>
+            <RepeatButton
+              label={t('live.hour.next')}
+              icon="chevron-forward"
+              variant="arrow"
+              onStep={() => shiftHours(1)}
+              testID="time-forward"
+              startRepeat={startRepeat}
+              stopRepeat={stopRepeat}
+            />
+          </View>
+        </View>
+      </Sheet>
+    );
+  }
+
   return (
     <Sheet
       title={t('live.timeTravel.title')}
@@ -155,59 +328,14 @@ export function TimeTravelPanel({
     >
       <GlassSurface style={styles.card} testID="time-travel-card">
         <View style={styles.readout}>
-          {editingYear ? (
-            <TextInput
-              autoFocus
-              value={yearText}
-              onChangeText={setYearText}
-              onSubmitEditing={applyYearInput}
-              onBlur={applyYearInput}
-              keyboardType="numbers-and-punctuation"
-              accessibilityLabel={t('live.year.input')}
-              testID="time-year-input"
-              style={styles.yearInput}
-            />
-          ) : (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('live.year.edit', { year: formatYearText(shownYear) })}
-              onPress={() => {
-                setYearText(String(shownYear));
-                setEditingYear(true);
-              }}
-              testID="time-year-edit"
-            >
-              <Text style={styles.dateText}>{formatYearText(shownYear)}</Text>
-            </Pressable>
-          )}
+          {yearControl}
           <Text style={styles.dateDetails} numberOfLines={1}>
             {formatMonthDay(previewDate)} · {formatClock(shownMinute)}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('live.now')}
-            onPress={resetToNow}
-            testID="time-now"
-            style={styles.nowButton}
-          >
-            <Ionicons name="refresh" size={sizing.iconSmall} color={colors.accent} />
-            <Text style={styles.nowText}>{t('live.now')}</Text>
-          </Pressable>
+          {nowButton}
         </View>
 
-        <TimeSlider
-          label={t('live.slider.year')}
-          value={shownYear}
-          minimum={YEAR_MIN}
-          maximum={YEAR_MAX}
-          step={1}
-          ticks={yearTicks(YEAR_MIN, YEAR_MAX)}
-          valueLabel={(value) => String(value)}
-          tickLabel={(value) => (value % 500 === 0 ? String(value) : null)}
-          onValueChange={(value) => scheduleValue('year', value)}
-          onSlidingComplete={(value) => finishSlider('year', value)}
-          testID="time-year-track"
-        />
+        {yearSlider}
 
         <View style={styles.timeHeading}>
           <Text style={styles.sliderLabel}>
@@ -232,19 +360,7 @@ export function TimeTravelPanel({
             />
           </View>
         </View>
-        <TimeSlider
-          label={t('live.slider.time')}
-          value={shownMinute}
-          minimum={0}
-          maximum={DAY_MINUTES}
-          step={5}
-          ticks={[0, 360, 720, 1080, 1440]}
-          valueLabel={formatClock}
-          tickLabel={(value) => formatClock(value).slice(0, 2)}
-          onValueChange={(value) => scheduleValue('time', value)}
-          onSlidingComplete={(value) => finishSlider('time', value)}
-          testID="timeline-track"
-        />
+        {timeSlider}
 
         <View style={styles.stepButtons}>
           <RepeatButton
@@ -288,7 +404,6 @@ function TimeSlider({
   maximum,
   step,
   ticks,
-  valueLabel,
   tickLabel,
   onValueChange,
   onSlidingComplete,
@@ -300,7 +415,6 @@ function TimeSlider({
   maximum: number;
   step: number;
   ticks: number[];
-  valueLabel: (value: number) => string;
   tickLabel: (value: number) => string | null;
   onValueChange: (value: number) => void;
   onSlidingComplete: (value: number) => void;
@@ -313,9 +427,6 @@ function TimeSlider({
   const innerWidth = Math.max(0, width - sizing.touch);
   const currentPosition = sliderPositionForValue(value, innerWidth, minimum, maximum);
   const thumbCenter = sizing.touch / 2 + currentPosition;
-  const labelText = valueLabel(value);
-  const bubbleWidth = Math.max(sizing.touch, labelText.length * 7 + spacing.md);
-  const bubbleLeft = Math.max(0, Math.min(width - bubbleWidth, thumbCenter - bubbleWidth / 2));
 
   function valueAt(x: number) {
     if (!Number.isFinite(x)) return value;
@@ -341,6 +452,8 @@ function TimeSlider({
   }
 
   function onPointerDown(event: PointerEvent) {
+    // Húzás közben ne jelölődjön ki a szöveg az oldalon (és a kijelölés ne szakítsa meg a húzást).
+    suppressTextSelectionUntilRelease();
     trackRef.current?.measureInWindow((left) => {
       dragLeft.current = left;
       onValueChange(valueAt(event.nativeEvent.clientX - left));
@@ -389,6 +502,7 @@ function TimeSlider({
         onResponderMove={(event) => onValueChange(valueAt(event.nativeEvent.locationX))}
         onResponderRelease={(event) => onSlidingComplete(valueAt(event.nativeEvent.locationX))}
         onResponderTerminate={(event) => onSlidingComplete(valueAt(event.nativeEvent.locationX))}
+        onResponderTerminationRequest={() => false}
         onPointerDown={Platform.OS === 'web' ? onPointerDown : undefined}
         onPointerMove={Platform.OS === 'web' ? onPointerMove : undefined}
         onPointerUp={Platform.OS === 'web' ? onPointerUp : undefined}
@@ -408,10 +522,7 @@ function TimeSlider({
               </View>
             );
           })}
-          <View style={[styles.valueBubble, { left: bubbleLeft, width: bubbleWidth }]}>
-            <Text style={styles.valueBubbleText}>{valueLabel(value)}</Text>
-          </View>
-          <View style={[styles.thumb, { left: thumbCenter - sizing.touch / 2 }]} />
+          <View style={[styles.thumb, { left: thumbCenter - THUMB_SIZE / 2 }]} />
         </View>
       </View>
     </View>
@@ -426,14 +537,17 @@ function RepeatButton({
   icon,
   text,
   testID,
+  variant = 'button',
 }: {
   label: string;
   onStep: () => void;
   startRepeat: (action: () => void) => void;
   stopRepeat: () => void;
-  icon?: 'play-back' | 'play-forward';
+  icon?: 'play-back' | 'play-forward' | 'chevron-back' | 'chevron-forward';
   text?: string;
   testID?: string;
+  /** „arrow”: kis, keret nélküli nyíl a csúszkák mellé (telefonos elrendezés). */
+  variant?: 'button' | 'arrow';
 }) {
   return (
     <Pressable
@@ -442,9 +556,19 @@ function RepeatButton({
       onPressIn={() => startRepeat(onStep)}
       onPressOut={stopRepeat}
       testID={testID}
-      style={styles.stepButton}
+      hitSlop={variant === 'arrow' ? { top: 4, bottom: 4 } : undefined}
+      style={({ pressed }) => [
+        variant === 'arrow' ? styles.arrowButton : styles.stepButton,
+        pressed && variant === 'arrow' && styles.arrowPressed,
+      ]}
     >
-      {icon ? <Ionicons name={icon} size={sizing.iconSmall} color={colors.textMuted} /> : null}
+      {icon ? (
+        <Ionicons
+          name={icon}
+          size={variant === 'arrow' ? sizing.icon : sizing.iconSmall}
+          color={colors.textMuted}
+        />
+      ) : null}
       {text ? <Text style={styles.stepButtonText}>{text}</Text> : null}
     </Pressable>
   );
@@ -492,6 +616,31 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceRaised,
   },
   stepButtonText: { color: colors.textMuted, fontSize: 11, fontWeight: '600' },
+  arrowButton: {
+    width: spacing.xxl,
+    height: sizing.touch,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
+  arrowPressed: { backgroundColor: colors.cardHighlight },
+  compactCard: { paddingHorizontal: spacing.sm, paddingBottom: spacing.sm, gap: 2 },
+  compactReadout: { minHeight: sizing.touch, flexDirection: 'row', alignItems: 'center' },
+  yearPressCompact: { minHeight: sizing.touch, justifyContent: 'center', paddingRight: spacing.xs },
+  yearCompact: { ...font.body, color: colors.text, fontWeight: '700' },
+  yearInputCompact: { flex: 0, width: 88 },
+  compactDate: { ...font.small, minWidth: 56, color: colors.textMuted, textAlign: 'center' },
+  compactClock: {
+    ...font.body,
+    ...font.mono,
+    marginLeft: spacing.sm,
+    color: colors.accent,
+    fontWeight: '700',
+  },
+  spacer: { flex: 1 },
+  compactRow: { flexDirection: 'row', alignItems: 'center' },
+  compactLabel: { ...font.caption, width: 28, color: colors.textMuted, fontWeight: '600' },
+  compactSlider: { flex: 1, minWidth: 0 },
   sliderHitArea: { height: sizing.touch, justifyContent: 'center' },
   sliderFocused: { borderWidth: 1, borderColor: colors.accent, borderRadius: 8 },
   sliderVisual: { ...StyleSheet.absoluteFill },
@@ -499,12 +648,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: sizing.touch / 2,
     right: sizing.touch / 2,
-    top: 20,
+    top: RAIL_CENTER - spacing.xs / 2,
     height: spacing.xs,
     borderRadius: 99,
     backgroundColor: colors.surfaceRaised,
   },
-  tick: { position: 'absolute', top: 20, alignItems: 'center', width: 1 },
+  tick: { position: 'absolute', top: RAIL_CENTER - spacing.xs / 2, alignItems: 'center', width: 1 },
   tickMark: { width: 1, height: spacing.sm, backgroundColor: colors.textSubtle },
   tickLabel: {
     position: 'absolute',
@@ -515,21 +664,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     transform: [{ translateX: -17 }],
   },
-  valueBubble: {
-    position: 'absolute',
-    top: -spacing.sm,
-    alignItems: 'center',
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: 6,
-    backgroundColor: colors.accent,
-  },
-  valueBubbleText: { color: colors.accentText, fontSize: 10, fontWeight: '700' },
   thumb: {
     position: 'absolute',
-    top: 0,
-    width: sizing.touch,
-    height: sizing.touch,
+    top: RAIL_CENTER - THUMB_SIZE / 2,
+    width: THUMB_SIZE,
+    height: THUMB_SIZE,
     borderRadius: 99,
     borderWidth: 2,
     borderColor: colors.accent,

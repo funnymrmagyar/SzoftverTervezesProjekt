@@ -289,5 +289,22 @@
   "friends.error.duplicate": "Ő már a barátaid között van.",
   "friends.error.full": "Elérted a barátok maximális számát.",
   "friends.error.notFound": "Nincs ilyen játékos. Ellenőrizd a kódot.",
-  "friends.error.network": "A művelet nem sikerült. Ellenőrizd a kapcsolatot, majd próbáld újra."
+  "friends.error.network": "A művelet nem sikerült. Ellenőrizd a kapcsolatot, majd próbáld újra.",
+  "leaderboard.subtitle": "Összesített és játékonkénti pontszámok.",
+  "leaderboard.you": "Te",
+  "profile.subtitle": "Fiók, beállítások és trófeák.",
+  "live.compact.time": "Idő",
+  "username.error.min": "Legalább {min} karakter legyen.",
+  "username.error.max": "Legfeljebb {max} karakter lehet.",
+  "username.error.chars": "Csak betű, szám, aláhúzás (_) és kötőjel (-) használható, szóköz nélkül.",
+  "username.error.taken": "Ez a felhasználónév már foglalt.",
+  "username.error.invalid": "Érvénytelen felhasználónév.",
+  "username.error.saveFailed": "Nem sikerült menteni a felhasználónevet.",
+  "username.error.inProgress": "Már folyamatban van a felhasználónév megadása.",
+  "username.prompt.title": "Válassz felhasználónevet",
+  "username.prompt.body": "A ranglistán ezzel a névvel fogsz megjelenni. Később nem lehet megváltoztatni, és egyedi kell legyen.",
+  "username.prompt.label": "Felhasználónév",
+  "username.prompt.placeholder": "pl. Csillagnezo42",
+  "username.prompt.hint": "3–24 karakter · betű, szám, _ és - · szóköz nélkül",
+  "username.prompt.submit": "Mentés és folytatás"
 }

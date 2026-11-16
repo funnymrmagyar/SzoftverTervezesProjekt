@@ -286,7 +286,8 @@ export default function StarConnectionScreen() {
 }
 
 const styles = StyleSheet.create({
-  setupStage: { flex: 1, justifyContent: 'center' },
+  // A beállítások közvetlenül a fejléc alatt kezdődnek (korábban függőlegesen középen lebegtek).
+  setupStage: { flex: 1, paddingTop: spacing.lg },
   summaryStage: { flex: 1, minHeight: 0, justifyContent: 'center' },
   playFooter: { gap: spacing.xs },
   target: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm },

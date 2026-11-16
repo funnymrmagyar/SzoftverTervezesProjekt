@@ -22,6 +22,7 @@ const saveTrophyIdsMock = jest.fn().mockResolvedValue(true);
 function signedIn(uid: string, email: string, trophyIds: string[] = []) {
   getStateMock.mockReturnValue({
     user: { uid, email },
+    displayName: email.split('@')[0],
     trophyIds,
     saveTrophyIds: saveTrophyIdsMock,
   } as unknown as ReturnType<typeof useAuthStore.getState>);

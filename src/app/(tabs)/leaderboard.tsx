@@ -1,30 +1,33 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type ViewInstance,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { LeaderboardPlayer } from '@/core/models/PlayerProfile';
 import { GAME_OPTIONS, type GameFilter } from '@/features/games/gameOptions';
 import {
+  MyRankCard,
   PodiumCard,
   RankRow,
   type LeaderboardEntry,
 } from '@/features/leaderboard/LeaderboardComponents';
 import type { RankedPlayer } from '@/features/leaderboard/ranking';
 import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
-import { authMode } from '@/services/firebase/config';
 import { useAuthStore } from '@/state/useAuthStore';
-import { Avatar, Badge, GlassCard, SegmentedControl } from '@/ui/components';
+import { GlassCard, SegmentedControl } from '@/ui/components';
+import { PageHeader } from '@/ui/layout/PageHeader';
 import { ScreenContainer } from '@/ui/ScreenContainer';
 import { formatNumber, t, useLocale } from '@/ui/i18n';
 import { colors, font, navigation, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
-
-const MODE_BADGE =
-  authMode === 'local'
-    ? { label: t('leaderboard.device'), icon: 'phone-portrait-outline' as const }
-    : { label: t('leaderboard.live'), icon: 'pulse-outline' as const };
 
 function isGameFilter(value: string | undefined): value is Exclude<GameFilter, 'all'> {
   return GAME_OPTIONS.some((game) => game.id === value);
@@ -66,13 +69,40 @@ export default function LeaderboardScreen() {
   const layout = useBreakpoint();
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const pinWidth = Math.min(
-    sizing.contentWide,
-    width - layout.pagePadding * 2 - (layout.expanded ? sizing.navWidth : 0),
-  );
-  const pinLeft = layout.expanded
-    ? insets.left + sizing.navWidth + layout.pagePadding
-    : (width - pinWidth) / 2;
+  const rootRef = useRef<ViewInstance>(null);
+  const columnRef = useRef<ViewInstance>(null);
+  const [measuredPin, setMeasuredPin] = useState<{ left: number; width: number } | null>(null);
+
+  /*
+   * A saját helyezés kártyája a lista oszlopával egy vonalban legyen. A Screen ugyanígy számolja
+   * az oszlopot (bal oldalt széles nézetben a menüsáv helye is); ez az első rajzoláskor kell.
+   * Utána a tényleges oszlopot mérjük le, mert pl. egy megjelenő görgetősáv elcsúsztatja.
+   */
+  const pagePaddingLeft =
+    insets.left + (layout.expanded ? spacing.xxl + sizing.navWidth : layout.pagePadding);
+  const availableWidth = width - pagePaddingLeft - insets.right - layout.pagePadding;
+  const computedPinWidth = Math.max(0, Math.min(sizing.contentWide, availableWidth));
+  const pinWidth = measuredPin?.width ?? computedPinWidth;
+  const pinLeft =
+    measuredPin?.left ?? pagePaddingLeft + Math.max(0, availableWidth - computedPinWidth) / 2;
+
+  function measurePin() {
+    const root = rootRef.current;
+    const column = columnRef.current;
+    if (!root || !column) return;
+    root.measureInWindow((rootX) => {
+      column.measureInWindow((columnX, _columnY, columnWidth) => {
+        const left = Math.round(columnX - rootX);
+        const nextWidth = Math.round(columnWidth);
+        setMeasuredPin((current) =>
+          current?.left === left && current.width === nextWidth
+            ? current
+            : { left, width: nextWidth },
+        );
+      });
+    });
+  }
+
   const pinBottom = layout.expanded
     ? insets.bottom + spacing.md
     : insets.bottom + navigation.bottomClearance - spacing.sm;
@@ -115,18 +145,15 @@ export default function LeaderboardScreen() {
   }
 
   return (
-    <View style={styles.root}>
+    <View ref={rootRef} style={styles.root}>
       <ScreenContainer
         maxWidth={sizing.contentWide}
         contentStyle={{
           paddingBottom: layout.bottomClearance + sizing.touch + spacing.xl,
         }}
       >
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <Text style={styles.title}>{t('nav.leaderboard')}</Text>
-            <Badge label={MODE_BADGE.label} icon={MODE_BADGE.icon} tone="gold" />
-          </View>
+        <View ref={columnRef} style={styles.content} onLayout={measurePin}>
+          <PageHeader title={t('nav.leaderboard')} subtitle={t('leaderboard.subtitle')} />
 
           <View style={[styles.filtersTop, width < sizing.contentCompact && styles.filtersNarrow]}>
             <SegmentedControl
@@ -134,7 +161,8 @@ export default function LeaderboardScreen() {
               value={selectedGame}
               onChange={selectGame}
               accessibilityLabel={t('leaderboard.filterGames')}
-              compactSelection
+              // Szűk kijelzőn csak a kiválasztott szűrő felirata látszik, szélesen mindegyiké.
+              compactSelection={layout.compact}
               testID="leaderboard-game-filter"
             />
           </View>
@@ -191,29 +219,24 @@ export default function LeaderboardScreen() {
           {
             left: pinLeft,
             bottom: pinBottom,
-            width: Math.max(0, pinWidth),
+            width: pinWidth,
             pointerEvents: 'box-none',
           },
         ]}
       >
-        <GlassCard style={styles.pinnedRow} testID="leaderboard-me">
-          <Avatar initials={initialsOf(myName)} highlighted size={sizing.touch} />
-          <View style={styles.pinnedCopy}>
-            <Text style={styles.pinnedTitle}>
-              {me?.rank ? `${me.rank}. ${t('leaderboard.place')}` : t('leaderboard.personal')}
-            </Text>
-            <Text style={styles.pinnedSubtitle} numberOfLines={1}>
-              {me?.score
-                ? me.rank
-                  ? myName
-                  : t('leaderboard.calculating')
-                : t('leaderboard.playToRank')}
-            </Text>
-          </View>
-          <Text style={[styles.pinnedScore, Boolean(me?.score) && styles.pinnedScoreActive]}>
-            {me?.score ? `${formatNumber(me.score)} XP` : '— XP'}
-          </Text>
-        </GlassCard>
+        <MyRankCard
+          initials={initialsOf(myName)}
+          title={me?.rank ? `${me.rank}. ${t('leaderboard.place')}` : t('leaderboard.personal')}
+          subtitle={
+            me?.score
+              ? me.rank
+                ? myName
+                : t('leaderboard.calculating')
+              : t('leaderboard.playToRank')
+          }
+          score={me?.score ? `${me.score.toLocaleString('hu-HU')} XP` : '— XP'}
+          ranked={Boolean(me?.score && me.rank)}
+        />
       </View>
     </View>
   );
@@ -222,13 +245,6 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   content: { flexGrow: 1, gap: spacing.xl },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  title: { ...font.title, color: colors.text },
   filtersTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -252,16 +268,4 @@ const styles = StyleSheet.create({
   },
   emptyText: { ...font.small, color: colors.textMuted, textAlign: 'center' },
   pinnedPosition: { position: 'absolute', zIndex: 10 },
-  pinnedRow: {
-    minHeight: sizing.touch + spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.sm,
-  },
-  pinnedCopy: { flex: 1, gap: spacing.xs },
-  pinnedTitle: { ...font.small, color: colors.text, fontWeight: '600' },
-  pinnedSubtitle: { ...font.caption, color: colors.textMuted },
-  pinnedScore: { ...font.small, ...font.mono, color: colors.textMuted, fontWeight: '600' },
-  pinnedScoreActive: { color: colors.accent },
 });
