@@ -1,0 +1,86 @@
+{
+  "name": "Belarusian folk sky",
+  "summary": "Star lore still alive in Belarusian villages: Elijah’s Chariot, the Reapers, the Sieve and the Nail in the middle of the sky.",
+  "constellations": {
+    "001": {
+      "name": "Elijah’s Chariot",
+      "description": "The seven stars of the Plough (Big Dipper). The fiery chariot is driven by the prophet Elijah: this is the Christian version of an older figure that was simply seen as a “great cart”."
+    },
+    "002": {
+      "name": "The Bride",
+      "description": "The constellation Lyra, with the bright Vega in the middle."
+    },
+    "003": {
+      "name": "The Chicks",
+      "description": "The stars of the Pleiades, here chicks, just as in the Hungarian Brood Hen."
+    },
+    "004": {
+      "name": "Peter’s Cross",
+      "description": "The great cross of the constellation Cygnus: the cross of Saint Peter."
+    },
+    "005": {
+      "name": "The Crown",
+      "description": "The semicircle of Corona Borealis: the crown of thorns that was placed on Christ’s head."
+    },
+    "006": {
+      "name": "The Goat",
+      "description": "The bright Capella in the constellation Auriga. In Hungarian tradition it is also a goat: the Goat Kid."
+    },
+    "007": {
+      "name": "The Grass Snakes",
+      "description": "The V-shaped Hyades that form the head of Taurus, and Aldebaran: grass snakes."
+    },
+    "008": {
+      "name": "Poland and Lithuania",
+      "description": "The two bright stars of Gemini, Castor and Pollux, symbolising the two neighbouring states, the Grand Duchy of Lithuania and the Kingdom of Poland."
+    },
+    "009": {
+      "name": "The Reapers",
+      "description": "The three stars of Orion’s Belt stand one behind the other like reapers cutting a swath. In Hungarian tradition the same figure is the Reapers’ Star."
+    },
+    "010": {
+      "name": "The Nail",
+      "description": "The Pole Star: a nail around which the whole sky turns."
+    },
+    "011": {
+      "name": "The Ploughman",
+      "description": "The constellation Boötes with the bright Arcturus: a ploughing peasant."
+    },
+    "012": {
+      "name": "The Rake",
+      "description": "The fainter stars below Orion’s Belt: a rake."
+    },
+    "013": {
+      "name": "The Ram",
+      "description": "The four stars of the constellation Aries."
+    },
+    "014": {
+      "name": "The Serpent",
+      "description": "The constellation Draco. According to tradition, Saint George (Yuri) killed this serpent and hung it next to the star that always stays in one place, the Pole Star."
+    },
+    "015": {
+      "name": "The Sieve",
+      "description": "The faint star cluster of Coma Berenices. According to the saying, “God sifted the grain with this”."
+    },
+    "016": {
+      "name": "The Little Cart",
+      "description": "The stars of the Little Bear, the smaller copy of the great cart."
+    },
+    "017": {
+      "name": "The Throne of the Lord Jesus",
+      "description": "The bright stars of Orion: the throne of Jesus."
+    },
+    "018": {
+      "name": "The Twins",
+      "description": "The whole figure of the constellation Gemini."
+    },
+    "019": {
+      "name": "The Wild Goat",
+      "description": "The stars of the constellation Capricornus."
+    },
+    "020": {
+      "name": "The Road of the Geese",
+      "description": "Marked by one of the stars of Cassiopeia (Caph). The name refers to the route of migrating wild geese."
+    }
+  }
+}

@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Platform, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 import { Avatar, GlassCard } from '@/ui/components';
+import { formatNumber } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 
 const winnerShadow: ViewStyle =
@@ -47,7 +48,7 @@ export function PodiumCard({ entry, place }: { entry: LeaderboardEntry; place: 1
       <Text style={styles.podiumName} numberOfLines={1}>
         {entry.name}
       </Text>
-      <Text style={styles.podiumScore}>{entry.points.toLocaleString('hu-HU')} XP</Text>
+      <Text style={styles.podiumScore}>{formatNumber(entry.points)} XP</Text>
     </GlassCard>
   );
 }
@@ -65,7 +66,7 @@ export function RankRow({ entry, place }: { entry: LeaderboardEntry; place: numb
           {entry.detail}
         </Text>
       </View>
-      <Text style={styles.rankScore}>{entry.points.toLocaleString('hu-HU')} XP</Text>
+      <Text style={styles.rankScore}>{formatNumber(entry.points)} XP</Text>
     </View>
   );
 }

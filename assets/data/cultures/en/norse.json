@@ -1,0 +1,74 @@
+{
+  "name": "Norse sky (Edda)",
+  "summary": "Old Norse mythology in the sky, based on Snorri Sturluson’s Edda and the Rímtöl glossary: Thor, Freyja’s cart, the Midgard Serpent.",
+  "constellations": {
+    "Bif": {
+      "name": "Bifröst",
+      "description": "The rainbow bridge that connects Earth with the sky; the Æsir ride across it every day. Here a row of stars arching from Pegasus to Deneb marks it along the Milky Way."
+    },
+    "Heim": {
+      "name": "Heimdall’s Fortress",
+      "description": "The fortress on the Bifröst bridge, where Heimdall guards the bridge against the giants. The great square of Pegasus."
+    },
+    "Rat": {
+      "name": "Ratatoskr",
+      "description": "The squirrel that runs up and down the trunk of the world tree, Yggdrasil, carrying news between the eagle and the dragon. Cassiopeia, in the Milky Way."
+    },
+    "ThV": {
+      "name": "Thor’s Wain",
+      "description": "The cart of the god of thunder, drawn by goats: the seven stars of the Plough. The Rímtöl glossary calls it the “Man’s Wain” (Karlvagn)."
+    },
+    "FrV": {
+      "name": "Freyja’s Wain",
+      "description": "The cart of the goddess of fertility, drawn by cats: the stars of the Little Bear. The Rímtöl glossary calls it the “Woman’s Wain” (Kvennavagn)."
+    },
+    "Thi": {
+      "name": "Thiazi’s Eyes",
+      "description": "The eyes of the giant Thiazi, who abducted Idun, which Odin cast into the sky. The Edda explicitly names only two figures as stars: this one and Aurvandil’s toe. We do not know which stars these are; the two bright stars side by side, Castor and Pollux, are the obvious candidates."
+    },
+    "Ulf": {
+      "name": "The Wolf’s Jaw",
+      "description": "The V of the Hyades, like a wolf’s jaw snapping at the Moon: at Ragnarök the wolves will swallow the Sun and the Moon. A more securely identified figure from the Rímtöl glossary."
+    },
+    "Asr": {
+      "name": "The Battlefield of the Æsir",
+      "description": "The pentagon of the constellation Auriga. It is mentioned in the Rímtöl glossary; the Edda tells of several battles of the Æsir."
+    },
+    "Fis": {
+      "name": "The Fishermen",
+      "description": "The three stars of Orion’s Belt. The name probably refers to the legend in which Thor and the giant Hymir fish for the Midgard Serpent."
+    },
+    "OxH": {
+      "name": "The Ox’s Head",
+      "description": "The head of Hymir’s greatest ox, which Thor used as bait to catch the Midgard Serpent. Around the bright Procyon."
+    },
+    "Ser": {
+      "name": "The Midgard Serpent",
+      "description": "The serpent that encircles the world, Thor’s adversary. A long figure drawn from stars similar to Hydra, but visible from Iceland as well."
+    },
+    "Thor": {
+      "name": "Thor",
+      "description": "The god of thunder in the stars of Orion: the three stars of the belt may be Thor’s belt of strength, and the other stars his hammer, Mjölnir."
+    },
+    "FrS": {
+      "name": "Freyr’s Sickle",
+      "description": "The sickle of the god Freyr, giver of rain, sunshine and harvest, around Spica. In many cultures Spica was the calendar star of sowing and harvest."
+    },
+    "Van": {
+      "name": "The River Ván",
+      "description": "The river that springs from the mouth of the bound wolf Fenrir. It winds through the stars of Eridanus and Taurus, near Thor (Orion)."
+    },
+    "Urd": {
+      "name": "Urd’s Well",
+      "description": "The well beneath the root of Yggdrasil, where the Æsir hold council every day. At the end of Bifröst, in the region of Perseus."
+    },
+    "Hra": {
+      "name": "The Eagle Giant",
+      "description": "A giant in the shape of an eagle at the edge of the sky: the wind arises from the beating of his wings. The constellation Aquila; it is visible on autumn evenings, so it is a sign of autumn storms."
+    },
+    "Toe": {
+      "name": "Aurvandil’s Toe",
+      "description": "Thor carried the hero Aurvandil across the icy river Élivágar, and the hero’s toe froze. Thor broke it off and flung it into the sky. The Edda explicitly mentions it as a star; Jonas Persson identifies it with Corona Borealis: its shape resembles a toe, and as a spring constellation it can also symbolise victory over winter."
+    }
+  }
+}

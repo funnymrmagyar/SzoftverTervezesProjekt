@@ -13,6 +13,7 @@ játékot ad egyetlen felületen. A felület magyar nyelvű.
 - [Üzemmódok](#üzemmódok)
 - [Játékok](#játékok)
 - [Firebase adatmentés](#firebase-adatmentés)
+- [Nyelvek (magyar / angol)](#nyelvek-magyar--angol)
 - [Élő égbolt idővonala](#élő-égbolt-idővonala)
 - [Naplózás](#naplózás)
 - [Adatok és szkriptek](#adatok-és-szkriptek)
@@ -198,6 +199,19 @@ rekordból jönnek, ezért e-mail-cím nem látszik. A `firestore.rules` bővül
 szabállyal, ezért a szabályokat **újra kell telepíteni**
 (`npx firebase-tools@15 deploy --only firestore:rules --project <firebase-project-id>`).
 A barátság egyoldalú (követés jellegű): a másik félnek nem kell jóváhagynia.
+
+## Nyelvek (magyar / angol)
+
+Az app teljes felülete magyarul (`hu`) és angolul (`en`) érhető el; a váltó a Profil fül beállításai között van (HU / EN), és azonnal, újratöltés és állapotvesztés nélkül frissíti az egész felületet.
+
+- **Alapértelmezett nyelv:** az első indításkor a böngésző / készülék nyelve (`en*` → angol, minden más → magyar, a tartalék nyelv a magyar). A választást az `AsyncStorage` (`csillagnezo.locale.v1`) őrzi, így újraindítás után is megmarad – helyi és Firebase módban egyaránt.
+- **Szótárak:** `src/locales/hu.json` és `src/locales/en.json`. A kulcsok típusos `TranslationKey`-ek (`keyof typeof hu`), egy elírt kulcs fordítási hiba. Az `i18n.test.ts` ellenőrzi, hogy az angol szótár minden kulcsot tartalmaz, és a `{helyőrzők}` egyeznek.
+- **Használat:** `t('kulcs', { name })`; komponensben a `useLocale()` hívása gondoskodik az újrarajzolásról. Többes szám: ha van `<kulcs>.one` változat és `count === 1`, azt használja.
+- **Hibaüzenetek:** az űrlap-ellenőrzés és a Firebase-hibakódok fordítási kulcsokra képződnek le (`services/auth/validation.ts`, `authErrors.ts`).
+- **Formázás:** `formatNumber` és `formatDateTimeLocale` a `hu-HU` / `en-US` szabályok szerint; weben a `<html lang>` és az oldalcím a nyelvvel együtt változik (`src/app/_layout.tsx`).
+- **Játékadatok:** a `assets/data/cultures/<kultúra>.json` alapadat magyar; az angol fordítás a `assets/data/cultures/en/<kultúra>.json` fedvény (`name`, `summary`, alakzatonként `name`, `nativeName`, `description`). Ami hiányzik belőle, magyarul marad. Új kultúrához fedvényt is kell írni, és be kell kötni a `core/catalog/index.ts` `OVERLAYS` táblájába; a `localize.test.ts` teljességet ellenőriz.
+- **Új nyelv:** egy új JSON-szótár, a `LOCALES`/`LOCALE_TAGS` bővítése a `src/ui/locale.ts`-ben és egy fedvénymappa a játékadatokhoz.
+- A naplóüzenetek (`createLogger`) fejlesztőknek szólnak, ezért magyarok maradnak; a felhasználók által megadott tartalom (pl. felhasználónév) nincs fordítva.
 
 ## Élő égbolt idővonala
 

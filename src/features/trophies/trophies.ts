@@ -3,6 +3,7 @@ import type Ionicons from '@expo/vector-icons/Ionicons';
 
 import type { PlayerScores } from '@/core/models/PlayerProfile';
 import { GAME_IDS, type GameId } from '@/features/games/gameOptions';
+import type { TranslationKey, TranslationParams } from '@/ui/i18n';
 
 import { currentDayStreak, type PlayerStats } from './playerStats';
 
@@ -10,10 +11,10 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 
 export type TrophyTier = 'beginner' | 'advanced' | 'hard';
 
-export const TROPHY_TIER_LABELS: Record<TrophyTier, string> = {
-  beginner: 'Kezdő',
-  advanced: 'Haladó',
-  hard: 'Nehéz',
+export const TROPHY_TIER_KEYS: Record<TrophyTier, TranslationKey> = {
+  beginner: 'trophy.tier.beginner',
+  advanced: 'trophy.tier.advanced',
+  hard: 'trophy.tier.hard',
 };
 
 /** Egy lejátszott kör adatai, amelyekből a trófeafeltételek kiértékelhetők. */
@@ -38,8 +39,10 @@ export interface TrophyContext {
 export interface TrophyDefinition {
   id: string;
   icon: IconName;
-  title: string;
-  description: string;
+  titleKey: TranslationKey;
+  descriptionKey: TranslationKey;
+  /** A leírás `{score}` helyőrzőjének értéke, ha van. */
+  descriptionParams?: TranslationParams;
   tier: TrophyTier;
   isEarned(context: TrophyContext): boolean;
 }
@@ -65,24 +68,24 @@ export const TROPHIES: readonly TrophyDefinition[] = [
   {
     id: 'first-light',
     icon: 'star-outline',
-    title: 'Első fény',
-    description: 'Játssz végig egy játékot.',
+    titleKey: 'trophy.first-light.title',
+    descriptionKey: 'trophy.first-light.description',
     tier: 'beginner',
     isEarned: ({ stats }) => stats.gamesPlayed >= 1,
   },
   {
     id: 'explorer',
     icon: 'telescope-outline',
-    title: 'Felfedező',
-    description: 'Próbáld ki mindhárom játékot.',
+    titleKey: 'trophy.explorer.title',
+    descriptionKey: 'trophy.explorer.description',
     tier: 'beginner',
     isEarned: (context) => GAME_IDS.every((game) => triedGame(context, game)),
   },
   {
     id: 'sharp-eye',
     icon: 'eye-outline',
-    title: 'Éles szem',
-    description: 'Találd el a kérdések legalább felét egy játékban.',
+    titleKey: 'trophy.sharp-eye.title',
+    descriptionKey: 'trophy.sharp-eye.description',
     tier: 'beginner',
     isEarned: ({ run }) =>
       run.rounds !== undefined &&
@@ -93,8 +96,8 @@ export const TROPHIES: readonly TrophyDefinition[] = [
   {
     id: 'flawless',
     icon: 'checkmark-done-outline',
-    title: 'Hibátlan',
-    description: 'Válaszolj minden kérdésre helyesen egy játékban.',
+    titleKey: 'trophy.flawless.title',
+    descriptionKey: 'trophy.flawless.description',
     tier: 'advanced',
     isEarned: ({ run }) =>
       run.rounds !== undefined &&
@@ -105,64 +108,68 @@ export const TROPHIES: readonly TrophyDefinition[] = [
   {
     id: 'hard-terrain',
     icon: 'flame-outline',
-    title: 'Nehéz terep',
-    description: `Szerezz legalább ${HARD_RUN_SCORE} pontot egy nehéz fokozatú játékban.`,
+    titleKey: 'trophy.hard-terrain.title',
+    descriptionKey: 'trophy.hard-terrain.description',
+    descriptionParams: { score: HARD_RUN_SCORE },
     tier: 'advanced',
     isEarned: ({ run }) => run.difficulty === 'hard' && run.score >= HARD_RUN_SCORE,
   },
   {
     id: 'moon-walker',
     icon: 'moon-outline',
-    title: 'Holdjáró',
-    description: 'Játssz három különböző napon.',
+    titleKey: 'trophy.moon-walker.title',
+    descriptionKey: 'trophy.moon-walker.description',
     tier: 'advanced',
     isEarned: ({ stats }) => stats.days.length >= 3,
   },
   {
     id: 'stargazer',
     icon: 'ribbon-outline',
-    title: 'Csillagnéző',
-    description: 'Játssz végig tíz játékot.',
+    titleKey: 'trophy.stargazer.title',
+    descriptionKey: 'trophy.stargazer.description',
     tier: 'advanced',
     isEarned: ({ stats }) => stats.gamesPlayed >= 10,
   },
   {
     id: 'master-observer',
     icon: 'trophy-outline',
-    title: 'Mestermegfigyelő',
-    description: `Érj el legalább ${MASTER_SCORE} pontot egyetlen játékban.`,
+    titleKey: 'trophy.master-observer.title',
+    descriptionKey: 'trophy.master-observer.description',
+    descriptionParams: { score: MASTER_SCORE },
     tier: 'advanced',
     isEarned: ({ scores }) => GAME_IDS.some((game) => bestOf(scores, game) >= MASTER_SCORE),
   },
   {
     id: 'streak',
     icon: 'calendar-outline',
-    title: 'Sorozat',
-    description: 'Játssz hét egymást követő napon.',
+    titleKey: 'trophy.streak.title',
+    descriptionKey: 'trophy.streak.description',
     tier: 'hard',
     isEarned: ({ stats, today }) => currentDayStreak(stats.days, today) >= 7,
   },
   {
     id: 'regular',
     icon: 'planet-outline',
-    title: 'Állandó vendég',
-    description: 'Játssz végig harminc játékot.',
+    titleKey: 'trophy.regular.title',
+    descriptionKey: 'trophy.regular.description',
     tier: 'hard',
     isEarned: ({ stats }) => stats.gamesPlayed >= 30,
   },
   {
     id: 'all-rounder',
     icon: 'sparkles-outline',
-    title: 'Sokoldalú',
-    description: `Érj el legalább ${ALL_ROUNDER_SCORE} pontot mindhárom játékban.`,
+    titleKey: 'trophy.all-rounder.title',
+    descriptionKey: 'trophy.all-rounder.description',
+    descriptionParams: { score: ALL_ROUNDER_SCORE },
     tier: 'hard',
     isEarned: ({ scores }) => GAME_IDS.every((game) => bestOf(scores, game) >= ALL_ROUNDER_SCORE),
   },
   {
     id: 'astronomer',
     icon: 'rocket-outline',
-    title: 'Csillagász',
-    description: `Gyűjts össze legalább ${ASTRONOMER_TOTAL} pontot a játékok legjobb eredményeiből.`,
+    titleKey: 'trophy.astronomer.title',
+    descriptionKey: 'trophy.astronomer.description',
+    descriptionParams: { score: ASTRONOMER_TOTAL },
     tier: 'hard',
     isEarned: ({ scores }) =>
       GAME_IDS.reduce((total, game) => total + bestOf(scores, game), 0) >= ASTRONOMER_TOTAL,

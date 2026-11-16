@@ -7,11 +7,12 @@ import { GAME_OPTIONS } from '@/features/games/gameOptions';
 import { useBestScores } from '@/features/games/useBestScores';
 import { Screen } from '@/ui/layout/Screen';
 import { Badge } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
 export default function GamesScreen() {
+  useLocale();
   const best = useBestScores();
   const layout = useBreakpoint();
   const compactLandscape = layout.landscape && layout.height < 500;
@@ -22,7 +23,7 @@ export default function GamesScreen() {
         <View style={styles.header}>
           <View style={styles.headingCopy}>
             <Text style={styles.title}>{t('games.title')}</Text>
-            <Text style={styles.subtitle}>Fedezd fel az égbolt játékait.</Text>
+            <Text style={styles.subtitle}>{t('games.subtitle')}</Text>
           </View>
           <View style={styles.headerIcon}>
             <Ionicons

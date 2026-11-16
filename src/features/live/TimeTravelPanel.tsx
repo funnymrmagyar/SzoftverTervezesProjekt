@@ -11,14 +11,17 @@ import {
   type ViewInstance,
 } from 'react-native';
 
-import { formatYear, withTimeOfDay, withYear, YEAR_MAX, YEAR_MIN } from '@/core/time';
+import { withTimeOfDay, withYear, YEAR_MAX, YEAR_MIN } from '@/core/time';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Sheet } from '@/ui/layout/Sheet';
 import { GlassSurface } from '@/ui/GlassSurface';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, sizing, spacing } from '@/ui/theme';
 import {
   DAY_MINUTES,
   formatClock,
+  formatMonthDay,
+  formatYearText,
   minuteOfDay,
   sliderPositionForValue,
   sliderValueAtPosition,
@@ -40,6 +43,7 @@ export function TimeTravelPanel({
   visible: boolean;
   onClose: () => void;
 }) {
+  useLocale();
   const setYear = useSkyStore((state) => state.setYear);
   const setTimeOfDay = useSkyStore((state) => state.setTimeOfDay);
   const shiftDays = useSkyStore((state) => state.shiftDays);
@@ -141,7 +145,7 @@ export function TimeTravelPanel({
 
   return (
     <Sheet
-      title="Időutazás"
+      title={t('live.timeTravel.title')}
       visible={visible}
       onClose={closePanel}
       scrim={false}
@@ -159,41 +163,40 @@ export function TimeTravelPanel({
               onSubmitEditing={applyYearInput}
               onBlur={applyYearInput}
               keyboardType="numbers-and-punctuation"
-              accessibilityLabel="Év megadása"
+              accessibilityLabel={t('live.year.input')}
               testID="time-year-input"
               style={styles.yearInput}
             />
           ) : (
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={`Év: ${formatYear(shownYear)}. Koppintással átírható.`}
+              accessibilityLabel={t('live.year.edit', { year: formatYearText(shownYear) })}
               onPress={() => {
                 setYearText(String(shownYear));
                 setEditingYear(true);
               }}
               testID="time-year-edit"
             >
-              <Text style={styles.dateText}>{formatYear(shownYear)}</Text>
+              <Text style={styles.dateText}>{formatYearText(shownYear)}</Text>
             </Pressable>
           )}
           <Text style={styles.dateDetails} numberOfLines={1}>
-            {previewDate.toLocaleDateString('hu-HU', { month: 'short' })} {previewDate.getDate()}. ·{' '}
-            {formatClock(shownMinute)}
+            {formatMonthDay(previewDate)} · {formatClock(shownMinute)}
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Most"
+            accessibilityLabel={t('live.now')}
             onPress={resetToNow}
             testID="time-now"
             style={styles.nowButton}
           >
             <Ionicons name="refresh" size={sizing.iconSmall} color={colors.accent} />
-            <Text style={styles.nowText}>Most</Text>
+            <Text style={styles.nowText}>{t('live.now')}</Text>
           </Pressable>
         </View>
 
         <TimeSlider
-          label="Év"
+          label={t('live.slider.year')}
           value={shownYear}
           minimum={YEAR_MIN}
           maximum={YEAR_MAX}
@@ -207,10 +210,12 @@ export function TimeTravelPanel({
         />
 
         <View style={styles.timeHeading}>
-          <Text style={styles.sliderLabel}>Idő · {formatClock(shownMinute)}</Text>
+          <Text style={styles.sliderLabel}>
+            {t('live.slider.timeLabel', { time: formatClock(shownMinute) })}
+          </Text>
           <View style={styles.hourButtons}>
             <RepeatButton
-              label="Előző óra"
+              label={t('live.hour.prev')}
               onStep={() => shiftHours(-1)}
               testID="time-back"
               icon="play-back"
@@ -218,7 +223,7 @@ export function TimeTravelPanel({
               stopRepeat={stopRepeat}
             />
             <RepeatButton
-              label="Következő óra"
+              label={t('live.hour.next')}
               onStep={() => shiftHours(1)}
               testID="time-forward"
               icon="play-forward"
@@ -228,7 +233,7 @@ export function TimeTravelPanel({
           </View>
         </View>
         <TimeSlider
-          label="Időpont"
+          label={t('live.slider.time')}
           value={shownMinute}
           minimum={0}
           maximum={DAY_MINUTES}
@@ -243,29 +248,29 @@ export function TimeTravelPanel({
 
         <View style={styles.stepButtons}>
           <RepeatButton
-            label="Egy évvel korábban"
-            text="−1 év"
+            label={t('live.step.yearBack')}
+            text={t('live.step.yearBackText')}
             onStep={() => stepYear(-1)}
             startRepeat={startRepeat}
             stopRepeat={stopRepeat}
           />
           <RepeatButton
-            label="Egy évvel később"
-            text="+1 év"
+            label={t('live.step.yearForward')}
+            text={t('live.step.yearForwardText')}
             onStep={() => stepYear(1)}
             startRepeat={startRepeat}
             stopRepeat={stopRepeat}
           />
           <RepeatButton
-            label="Egy nappal korábban"
-            text="−1 nap"
+            label={t('live.step.dayBack')}
+            text={t('live.step.dayBackText')}
             onStep={() => shiftDays(-1)}
             startRepeat={startRepeat}
             stopRepeat={stopRepeat}
           />
           <RepeatButton
-            label="Egy nappal később"
-            text="+1 nap"
+            label={t('live.step.dayForward')}
+            text={t('live.step.dayForwardText')}
             onStep={() => shiftDays(1)}
             startRepeat={startRepeat}
             stopRepeat={stopRepeat}
@@ -365,8 +370,8 @@ function TimeSlider({
         tabIndex={Platform.OS === 'web' ? 0 : undefined}
         accessibilityValue={{ min: minimum, max: maximum, now: value }}
         accessibilityActions={[
-          { name: 'increment', label: 'Növelés' },
-          { name: 'decrement', label: 'Csökkentés' },
+          { name: 'increment', label: t('live.slider.increase') },
+          { name: 'decrement', label: t('live.slider.decrease') },
         ]}
         onAccessibilityAction={(event) => {
           const direction = event.nativeEvent.actionName === 'increment' ? 1 : -1;

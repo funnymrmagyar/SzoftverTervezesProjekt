@@ -3,7 +3,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LanguageSwitch } from './LanguageSwitch';
 import { StarryBackdrop } from './StarryBackdrop';
+import { t, useLocale } from './i18n';
 import { colors, font, radius, spacing } from './theme';
 
 interface AuthFormProps {
@@ -16,6 +18,7 @@ interface AuthFormProps {
 
 /** Közös keret a bejelentkezés és a regisztráció űrlapjához. */
 export function AuthForm({ title, subtitle, error, children }: AuthFormProps) {
+  useLocale();
   return (
     <SafeAreaView style={styles.safe}>
       <StarryBackdrop count={60} />
@@ -29,7 +32,9 @@ export function AuthForm({ title, subtitle, error, children }: AuthFormProps) {
               <View style={styles.brandIcon}>
                 <Ionicons name="sparkles" size={19} color={colors.accent} />
               </View>
-              <Text style={styles.brandName}>CSILLAGNÉZŐ</Text>
+              <Text style={styles.brandName}>{t('app.brand')}</Text>
+              <View style={styles.languageSpacer} />
+              <LanguageSwitch testID="auth-language" />
             </View>
             <Text style={styles.title}>{title}</Text>
             {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -70,6 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     backgroundColor: colors.cardHighlight,
   },
+  languageSpacer: { flex: 1 },
   brandName: { color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 1.5 },
   title: { ...font.heading, fontSize: 26, color: colors.text },
   subtitle: { color: colors.textMuted, fontSize: 15, marginTop: -spacing.sm },

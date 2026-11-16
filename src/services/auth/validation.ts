@@ -1,3 +1,5 @@
+import { t } from '@/ui/i18n';
+
 export const MIN_PASSWORD_LENGTH = 6;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -9,15 +11,15 @@ export interface CredentialErrors {
 }
 
 export function validateEmail(email: string): string | undefined {
-  if (!email.trim()) return 'Add meg az e-mail-címed.';
-  if (!EMAIL_PATTERN.test(email.trim())) return 'Érvénytelen e-mail-cím.';
+  if (!email.trim()) return t('validation.emailRequired');
+  if (!EMAIL_PATTERN.test(email.trim())) return t('validation.emailInvalid');
   return undefined;
 }
 
 export function validatePassword(password: string): string | undefined {
-  if (!password) return 'Add meg a jelszavad.';
+  if (!password) return t('validation.passwordRequired');
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return `A jelszó legalább ${MIN_PASSWORD_LENGTH} karakter legyen.`;
+    return t('validation.passwordShort', { min: MIN_PASSWORD_LENGTH });
   }
   return undefined;
 }
@@ -27,7 +29,7 @@ export function validateLogin(email: string, password: string): CredentialErrors
   const errors: CredentialErrors = {};
   const emailError = validateEmail(email);
   if (emailError) errors.email = emailError;
-  if (!password) errors.password = 'Add meg a jelszavad.';
+  if (!password) errors.password = t('validation.passwordRequired');
   return errors;
 }
 
@@ -42,7 +44,7 @@ export function validateRegistration(
   if (emailError) errors.email = emailError;
   const passwordError = validatePassword(password);
   if (passwordError) errors.password = passwordError;
-  if (password !== passwordConfirm) errors.passwordConfirm = 'A két jelszó nem egyezik.';
+  if (password !== passwordConfirm) errors.passwordConfirm = t('validation.passwordMismatch');
   return errors;
 }
 

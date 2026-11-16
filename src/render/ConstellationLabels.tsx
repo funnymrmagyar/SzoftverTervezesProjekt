@@ -12,6 +12,7 @@ import { skyRotationMatrix } from '@/core/astronomy';
 import { getSkyCultures } from '@/core/catalog';
 import type { GeoLocation } from '@/core/models';
 import { useViewStore } from '@/state/useViewStore';
+import { useLocale } from '@/ui/i18n';
 import { colors } from '@/ui/theme';
 
 import {
@@ -53,7 +54,8 @@ export function ConstellationLabels({ date, location, cultureId, selectedId = nu
   const altitude = useViewStore((s) => s.altitude);
   const fov = useViewStore((s) => s.fov);
 
-  const repo = getSkyCultures();
+  const locale = useLocale();
+  const repo = getSkyCultures(locale);
   const culture = repo.get(cultureId);
   const anchors = useMemo(
     () =>

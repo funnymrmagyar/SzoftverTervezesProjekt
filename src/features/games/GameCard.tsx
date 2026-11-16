@@ -4,7 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View, type ViewStyle } from 'rea
 
 import { Badge } from '@/ui/components';
 import { GlassSurface } from '@/ui/GlassSurface';
-import { t } from '@/ui/i18n';
+import { formatNumber, t } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import type { GAME_OPTIONS } from './gameOptions';
 
@@ -60,7 +60,7 @@ export function GameCard({
           </Text>
           {best ? (
             <Badge
-              label={`${t('games.best')}: ${best.toLocaleString('hu-HU')}`}
+              label={`${t('games.best')}: ${formatNumber(best)}`}
               icon="trophy"
               tone="gold"
             />
@@ -72,7 +72,7 @@ export function GameCard({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${title}: ranglista`}
-        accessibilityHint="Megnyitja ennek a játéknak a ranglistáját"
+        accessibilityHint={t('games.cardHint')}
         onPress={onLeaderboardPress}
         onFocus={() => setTrophyFocused(true)}
         onBlur={() => setTrophyFocused(false)}

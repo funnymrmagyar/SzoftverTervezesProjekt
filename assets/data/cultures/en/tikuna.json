@@ -1,0 +1,22 @@
+{
+  "name": "Tikuna (Amazonian) sky",
+  "summary": "Constellations of the Tikuna people along the upper Solimões: mythical animals whose rising and setting mark the rainy and dry seasons.",
+  "constellations": {
+    "001": {
+      "name": "The Group of Turtles",
+      "description": "The Pleiades and two stars of the foot of Perseus (these are the turtle’s eyes). It appears in the east at dusk at the end of November; “September is the month of the turtle”."
+    },
+    "002": {
+      "name": "Wücütcha’s Foot",
+      "description": "The stars of Orion and Lepus: the foot of a celestial beast, a relative of the jaguar family; its toes are Orion’s Belt. It disappears in the west at dusk at the end of May; its reappearance at the end of September marks the beginning of the rains."
+    },
+    "003": {
+      "name": "The Caiman’s Jaw",
+      "description": "The V of the Hyades and Aldebaran. It rises after the Pleiades; it sets around April–May, when caimans appear on the shore."
+    },
+    "004": {
+      "name": "The Anteater and the Jaguar",
+      "description": "In the southern sky from Scorpius to the Southern Cross: the summer fight of the anteater and the jaguar. The jaguar’s right foot is Antares, and the anteater’s eyes are in the Southern Triangle. From Hungary only part of Scorpius is visible."
+    }
+  }
+}

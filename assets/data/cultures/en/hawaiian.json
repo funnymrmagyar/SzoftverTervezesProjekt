@@ -1,0 +1,58 @@
+{
+  "name": "Hawaiian star lines",
+  "summary": "The star navigation of Polynesian seafarers: four great star lines that let them cross the ocean without instruments.",
+  "constellations": {
+    "KOM": {
+      "name": "Makaliʻi’s Bailer",
+      "description": "The first star line (November to April): Capella, Castor, Pollux, Procyon and Sirius form the water bailer of a canoe, which scoops Orion and the Pleiades into the night sky."
+    },
+    "KHK": {
+      "name": "The Children’s String Game",
+      "description": "The bright stars of Orion: the children’s string figure stretched on the fingers (cat’s cradle). The belt star Mintaka rises exactly in the east and sets exactly in the west, so it is a good directional guide."
+    },
+    "MAK": {
+      "name": "The Eyes of the Chief",
+      "description": "Two stars of the Pleiades."
+    },
+    "MEE": {
+      "name": "The Sound of Joy",
+      "description": "The four stars of the constellation Corvus, which form a box next to Spica."
+    },
+    "NAH": {
+      "name": "The Sevens",
+      "description": "The seven stars of the Plough; the name simply means “the seven”."
+    },
+    "IWI": {
+      "name": "The Backbone",
+      "description": "The second star line (April to July): the backbone of a lizard running from the Pole Star through the Plough, Arcturus (Hōkūleʻa, the zenith star of Hawaiʻi, “star of joy”) and Spica to the Southern Cross. It can also symbolise the backbone of generations of descent."
+    },
+    "MAN": {
+      "name": "The Chief’s Fishing Line",
+      "description": "The constellation Scorpius: the magic hook of the demigod Maui, with which, according to the legend, he pulled the islands out of the sea. Part of the third star line (May to October)."
+    },
+    "NAV": {
+      "name": "The Navigators’ Triangle",
+      "description": "The summer triangle (Deneb, Vega, Altair). The three stars can also symbolise the three corners of the Polynesian triangle, Hawaiʻi, Easter Island and New Zealand, which Maui’s hook pulls together."
+    },
+    "LUP": {
+      "name": "Kawelo’s Kite",
+      "description": "The fourth star line (September to February): the paper kite lost in childhood by Kawelo, the great chief of Kauaʻi and Oʻahu. Its centre is the great square of Pegasus, whose four stars are named after Kawelo’s famous ancestors."
+    },
+    "IWA": {
+      "name": "The Chief Frigatebird",
+      "description": "The W shape of Cassiopeia: the frigatebird that guides seafarers towards land."
+    },
+    "HAN": {
+      "name": "The Moon’s Foster Child",
+      "description": "The Southern Cross, the southern guide of the Backbone star line. Not visible from Hungary."
+    },
+    "NAK": {
+      "name": "The Pointers",
+      "description": "The two bright stars of Centaurus (Alpha and Beta Centauri), which point towards the Southern Cross. Not visible from Hungary."
+    },
+    "KAO": {
+      "name": "Kaʻōhiweliweli",
+      "description": "The Hawaiian name of the constellation Leo."
+    }
+  }
+}

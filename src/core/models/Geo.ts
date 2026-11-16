@@ -1,3 +1,5 @@
+import type { TranslationKey } from '@/ui/i18n';
+
 /** Megfigyelési hely a Földön. */
 export interface GeoLocation {
   /** Földrajzi szélesség fokban, északon pozitív. */
@@ -6,6 +8,8 @@ export interface GeoLocation {
   longitude: number;
   /** Megjelenítéshez: „GPS”, „Budapest” stb. */
   label?: string;
+  /** A név fordítási kulcsa; ha megvan, ez az aktuális nyelven felülírja a `label`-t. */
+  labelKey?: TranslationKey;
 }
 
 /** Horizontális (alt-azimutális) koordináták fokban. */

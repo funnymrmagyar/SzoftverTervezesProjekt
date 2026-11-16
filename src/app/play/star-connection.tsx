@@ -24,7 +24,7 @@ import { SkyChart, type ChartLine } from '@/features/games/SkyChart';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Button } from '@/ui/Button';
 import { Badge, GlassCard } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
@@ -64,8 +64,9 @@ function statusMessage(conn: ConnectState): { text: string; tone: 'muted' | 'goo
 }
 
 export default function StarConnectionScreen() {
+  const locale = useLocale();
   const layout = useBreakpoint();
-  const cultures = useMemo(() => getPlayableCultures(MAX_CONNECT_SEGMENTS), []);
+  const cultures = useMemo(() => getPlayableCultures(MAX_CONNECT_SEGMENTS, locale), [locale]);
   const skyCultureId = useSkyStore((state) => state.cultureId);
 
   const [phase, setPhase] = useState<Phase>('setup');

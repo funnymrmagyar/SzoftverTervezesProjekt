@@ -5,10 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getSkyCultures } from '@/core/catalog';
 import { Button } from '@/ui/Button';
+import { LanguageSwitch } from '@/ui/LanguageSwitch';
 import { StarryBackdrop } from '@/ui/StarryBackdrop';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, spacing } from '@/ui/theme';
 
 export default function WelcomeScreen() {
+  useLocale();
   const { width } = useWindowDimensions();
   const wide = width >= 760;
   const cultureCount = getSkyCultures().list().length;
@@ -16,6 +19,9 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <StarryBackdrop />
+      <View style={styles.language}>
+        <LanguageSwitch testID="welcome-language" />
+      </View>
       <View style={[styles.content, wide && styles.contentWide]}>
         <View style={[styles.hero, wide && styles.heroWide]}>
           <View style={styles.orbit}>
@@ -27,32 +33,31 @@ export default function WelcomeScreen() {
             <View style={styles.orbitDotOne} />
             <View style={styles.orbitDotTwo} />
           </View>
-          <Text style={[styles.kicker, wide && styles.textWide]}>✦ ÉGI KULTÚRÁK ✦</Text>
-          <Text style={[styles.title, wide && styles.textWide]}>Nézz fel.{'\n'}Lásd másként.</Text>
+          <Text style={[styles.kicker, wide && styles.textWide]}>{t('welcome.kicker')}</Text>
+          <Text style={[styles.title, wide && styles.textWide]}>{t('welcome.title')}</Text>
           <Text style={[styles.subtitle, wide && styles.textWide]}>
-            Fedezd fel az éjszakai égboltot úgy, ahogy különböző népek látták — történetekkel,
-            csillagképekkel és saját csillagtérképpel.
+            {t('welcome.subtitle')}
           </Text>
           <View style={[styles.stat, wide && styles.statWide]}>
             <Ionicons name="globe-outline" size={16} color={colors.info} />
-            <Text style={styles.statText}>{cultureCount} égbolt kultúrái egy helyen</Text>
+            <Text style={styles.statText}>{t('welcome.stat', { count: cultureCount })}</Text>
           </View>
         </View>
         <View style={styles.actions}>
-          <Text style={styles.actionTitle}>Indulhat a felfedezés?</Text>
-          <Text style={styles.actionSubtitle}>Jelentkezz be, vagy hozz létre egy fiókot.</Text>
+          <Text style={styles.actionTitle}>{t('welcome.actionTitle')}</Text>
+          <Text style={styles.actionSubtitle}>{t('welcome.actionSubtitle')}</Text>
           <Button
-            title="Bejelentkezés"
+            title={t('auth.signIn.title')}
             onPress={() => router.push('/login')}
             testID="welcome-login"
           />
           <Button
-            title="Új fiók létrehozása"
+            title={t('welcome.register')}
             variant="secondary"
             onPress={() => router.push('/register')}
             testID="welcome-register"
           />
-          <Text style={styles.terms}>A csillagok alatt mindenki otthon van.</Text>
+          <Text style={styles.terms}>{t('welcome.terms')}</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -61,6 +66,7 @@ export default function WelcomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
+  language: { position: 'absolute', top: spacing.xl, right: spacing.xl, zIndex: 2 },
   content: {
     flex: 1,
     width: '100%',

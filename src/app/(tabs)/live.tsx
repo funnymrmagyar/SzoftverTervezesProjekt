@@ -16,6 +16,8 @@ import { useSkyGestures, type SkyTapHandler } from '@/render/useSkyGestures';
 import { useWheelZoom } from '@/render/useWheelZoom';
 import { useSkyStore } from '@/state/useSkyStore';
 import { GlassSurface } from '@/ui/GlassSurface';
+import { useLocale } from '@/ui/i18n';
+import { getLocale } from '@/ui/locale';
 import { ThreeZoneBar } from '@/ui/layout/ThreeZoneBar';
 import { colors, navigation, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
@@ -23,6 +25,7 @@ import { useBreakpoint } from '@/ui/useBreakpoint';
 const MemoSkyScene = memo(SkyScene);
 
 export default function LiveScreen() {
+  useLocale();
   const [timeTravelOpen, setTimeTravelOpen] = useState(false);
   const [moreControlsOpen, setMoreControlsOpen] = useState(false);
   const date = useSkyTime();
@@ -46,6 +49,7 @@ export default function LiveScreen() {
           cultureId: sky.cultureId,
           includeLabels: sky.showLabels,
           selectedId: sky.selectedConstellationId,
+          locale: getLocale(),
         }),
       );
     },

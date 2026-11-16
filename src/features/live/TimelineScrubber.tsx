@@ -3,6 +3,7 @@ import { type LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 
 import { useSkyStore } from '@/state/useSkyStore';
 import { IconButton } from '@/ui/components';
+import { formatDateTimeLocale, t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { useTimelineScale } from './useTimelineScale';
 import { timelineEdgeLabels, timelineTimeAtPosition } from './timelineScale';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function TimelineScrubber({ date }: Props) {
+  useLocale();
   const setManualTime = useSkyStore((state) => state.setManualTime);
   const scale = useTimelineScale();
   const [width, setWidth] = useState(0);
@@ -101,21 +103,21 @@ export function TimelineScrubber({ date }: Props) {
     <View style={styles.container}>
       <IconButton
         icon="remove"
-        label="Nagyítás az idővonalon"
+        label={t('timeline.zoomIn')}
         disabled={!scale.canZoomIn}
         onPress={scale.zoomIn}
         testID="timeline-zoom-in"
         style={styles.zoomButton}
       />
       <View style={styles.timeline}>
-        <Text style={styles.rangeLabel}>{scale.span.label}</Text>
+        <Text style={styles.rangeLabel}>{t(scale.span.labelKey)}</Text>
         <View
           accessibilityRole="adjustable"
-          accessibilityLabel="Idővonal. Húzd az égbolt dátumának módosításához."
-          accessibilityValue={{ text: `${date.toLocaleString('hu-HU')}, ${scale.span.label}` }}
+          accessibilityLabel={t('timeline.label')}
+          accessibilityValue={{ text: `${formatDateTimeLocale(date)}, ${t(scale.span.labelKey)}` }}
           accessibilityActions={[
-            { name: 'increment', label: 'Ugrás előre' },
-            { name: 'decrement', label: 'Ugrás vissza' },
+            { name: 'increment', label: t('timeline.forward') },
+            { name: 'decrement', label: t('timeline.back') },
           ]}
           onAccessibilityAction={(event) =>
             adjustForAccessibility(event.nativeEvent.actionName === 'increment' ? 1 : -1)
@@ -153,7 +155,7 @@ export function TimelineScrubber({ date }: Props) {
       </View>
       <IconButton
         icon="add"
-        label="Kicsinyítés az idővonalon"
+        label={t('timeline.zoomOut')}
         disabled={!scale.canZoomOut}
         onPress={scale.zoomOut}
         testID="timeline-zoom-out"

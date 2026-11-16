@@ -1,17 +1,19 @@
+import { t, type TranslationKey } from '@/ui/i18n';
+
 export const HOUR_MS = 60 * 60 * 1000;
 export const DAY_MS = 24 * HOUR_MS;
 export const YEAR_MS = 365.2425 * DAY_MS;
 const MAX_YEARS_FROM_NOW = 500;
 
-export const TIMELINE_SPANS = [
-  { durationMs: 2 * HOUR_MS, label: '±1 óra' },
-  { durationMs: 2 * DAY_MS, label: '±1 nap' },
-  { durationMs: 30 * DAY_MS, label: '±15 nap' },
-  { durationMs: YEAR_MS, label: '±6 hónap' },
-  { durationMs: 10 * YEAR_MS, label: '±5 év' },
-  { durationMs: 100 * YEAR_MS, label: '±50 év' },
-  { durationMs: 1000 * YEAR_MS, label: '±500 év' },
-] as const;
+export const TIMELINE_SPANS: readonly { durationMs: number; labelKey: TranslationKey }[] = [
+  { durationMs: 2 * HOUR_MS, labelKey: 'timeline.span.hours' },
+  { durationMs: 2 * DAY_MS, labelKey: 'timeline.span.days' },
+  { durationMs: 30 * DAY_MS, labelKey: 'timeline.span.month' },
+  { durationMs: YEAR_MS, labelKey: 'timeline.span.halfYear' },
+  { durationMs: 10 * YEAR_MS, labelKey: 'timeline.span.years5' },
+  { durationMs: 100 * YEAR_MS, labelKey: 'timeline.span.years50' },
+  { durationMs: 1000 * YEAR_MS, labelKey: 'timeline.span.years500' },
+];
 
 export function clampTimelineTime(timestamp: number, now = Date.now()): number {
   const maximumOffset = MAX_YEARS_FROM_NOW * YEAR_MS;
@@ -33,14 +35,15 @@ export function timelineTimeAtPosition(
 export function timelineEdgeLabels(spanMs: number): { start: string; end: string } {
   const years = spanMs / 2 / YEAR_MS;
   if (years >= 1) {
-    const label = `${Math.round(years)} év`;
+    const label = t('timeline.edge.years', { count: Math.round(years) });
     return { start: `−${label}`, end: `+${label}` };
   }
   const days = spanMs / 2 / DAY_MS;
   if (days >= 1) {
-    const label = `${Math.round(days)} nap`;
+    const label = t('timeline.edge.days', { count: Math.round(days) });
     return { start: `−${label}`, end: `+${label}` };
   }
   const hours = spanMs / 2 / HOUR_MS;
-  return { start: `−${Math.round(hours)} óra`, end: `+${Math.round(hours)} óra` };
+  const label = t('timeline.edge.hours', { count: Math.round(hours) });
+  return { start: `−${label}`, end: `+${label}` };
 }

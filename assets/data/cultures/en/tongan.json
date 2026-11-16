@@ -1,0 +1,50 @@
+{
+  "name": "Tongan sky",
+  "summary": "The stars of Tongan seafarers: wild ducks, strings of fish and the names of islands in the sky. Some identifications are only conjecture.",
+  "constellations": {
+    "001": {
+      "name": "The Southern Wild Duck",
+      "description": "The Southern Cross. Not visible from Hungary."
+    },
+    "002": {
+      "name": "The Two Men",
+      "description": "The two bright stars of Gemini, Castor and Pollux."
+    },
+    "003": {
+      "name": "The Wild Duck",
+      "description": "The three stars of Orion’s Belt."
+    },
+    "004": {
+      "name": "The Pigeon Perch",
+      "description": "The V-shaped Hyades that form the head of Taurus, and Aldebaran: a branch on which pigeons perch."
+    },
+    "005": {
+      "name": "The Great Wild Duck",
+      "description": "The “False Cross” made of the stars of Carina and Vela. Not visible from Hungary."
+    },
+    "006": {
+      "name": "The Hilltop",
+      "description": "The two bright stars of Centaurus (Alpha and Beta Centauri). Not visible from Hungary."
+    },
+    "007": {
+      "name": "The String of Fish",
+      "description": "Orion’s Belt and Sword: fish threaded on a cord."
+    },
+    "008": {
+      "name": "The Wild Duck’s Spit of Land",
+      "description": "A long line from Orion’s Belt to the southern sky, joining the three wild duck figures (Toloa, Toloatonga, Toloalahi). Most of it is not visible from Hungary."
+    },
+    "009": {
+      "name": "The Two Carriers",
+      "description": "The stars of Coma Berenices. The identification is conjecture."
+    },
+    "010": {
+      "name": "The Cloud of ʻUvea",
+      "description": "The semicircle of Corona Borealis; ʻUvea (Wallis) is an island north of Tonga. The identification is conjecture."
+    },
+    "011": {
+      "name": "The Wing of Tafahi",
+      "description": "The W shape of Cassiopeia; Tafahi is a Tongan island. The identification is conjecture."
+    }
+  }
+}

@@ -3,7 +3,7 @@ import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/ui/Button';
 import { Badge, GlassCard, IconButton, SegmentedControl } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { formatNumber, t, type TranslationKey } from '@/ui/i18n';
 import { colors, font, spacing } from '@/ui/theme';
 import { Select } from '@/ui/Select';
 
@@ -127,7 +127,7 @@ export function GameSummary({
   isNewBest: boolean;
   rows: readonly { label: string; value: string }[];
   /** Az ebben a körben megszerzett trófeák. */
-  newTrophies?: readonly { id: string; title: string }[];
+  newTrophies?: readonly { id: string; titleKey: TranslationKey }[];
   onAgain: () => void;
   onLeaderboard: () => void;
   onExit: () => void;
@@ -138,21 +138,21 @@ export function GameSummary({
       <GlassCard style={[styles.summary, compact && styles.compactSummary]} testID="game-summary">
         <Text style={styles.sectionTitle}>{t('games.finished')}</Text>
         <Text style={[styles.bigScore, compact && styles.compactScore]}>
-          {score.toLocaleString('hu-HU')}
+          {formatNumber(score)}
         </Text>
         {!compact ? <Text style={styles.hint}>{t('games.finalScore')}</Text> : null}
         {isNewBest ? (
           <Badge label={t('games.newBest')} icon="trophy" tone="gold" />
         ) : (
           <Badge
-            label={`${t('games.best')}: ${best.toLocaleString('hu-HU')}`}
+            label={`${t('games.best')}: ${formatNumber(best)}`}
             icon="trophy-outline"
           />
         )}
         {newTrophies.map((trophy) => (
           <Badge
             key={trophy.id}
-            label={`${t('games.newTrophy')}: ${trophy.title}`}
+            label={`${t('games.newTrophy')}: ${t(trophy.titleKey)}`}
             icon="ribbon"
             tone="gold"
           />

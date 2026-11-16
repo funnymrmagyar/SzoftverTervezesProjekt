@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useSkyStore } from '@/state/useSkyStore';
 import { useViewStore } from '@/state/useViewStore';
 import { IconButton } from '@/ui/components';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, spacing } from '@/ui/theme';
 
 export function ViewControls({
@@ -16,6 +17,7 @@ export function ViewControls({
   moreOpen?: boolean;
   onToggleMore?: () => void;
 }) {
+  useLocale();
   const showLines = useSkyStore((state) => state.showLines);
   const toggleLines = useSkyStore((state) => state.toggleLines);
   const showLabels = useSkyStore((state) => state.showLabels);
@@ -30,14 +32,14 @@ export function ViewControls({
         <View style={[styles.row, compact && styles.column]}>
           <IconButton
             icon="git-network-outline"
-            label="Csillagképvonalak"
+            label={t('view.lines')}
             active={showLines}
             onPress={toggleLines}
             testID="toggle-lines"
           />
           <IconButton
             icon="text-outline"
-            label="Feliratok"
+            label={t('view.labels')}
             active={showLabels}
             onPress={toggleLabels}
             testID="toggle-labels"
@@ -45,7 +47,7 @@ export function ViewControls({
           {onToggleMore ? (
             <IconButton
               icon="ellipsis-horizontal"
-              label={moreOpen ? 'Kevesebb vezérlő' : 'További vezérlők'}
+              label={t(moreOpen ? 'view.fewer' : 'view.more')}
               active={moreOpen}
               onPress={onToggleMore}
               testID="more-view-controls"
@@ -55,18 +57,18 @@ export function ViewControls({
       ) : null}
       {side !== 'left' ? (
         <View style={styles.rightGroup}>
-          {moreOpen ? <Text style={styles.fov}>Látómező · {fov}°</Text> : null}
+          {moreOpen ? <Text style={styles.fov}>{t('view.fov', { fov })}</Text> : null}
           <View style={[styles.row, compact && styles.column]}>
             <IconButton
               icon="remove"
-              label="Kicsinyítés"
+              label={t('view.zoomOut')}
               onPress={() => zoom(1.25)}
               testID="zoom-out"
             />
-            <IconButton icon="add" label="Nagyítás" onPress={() => zoom(0.8)} testID="zoom-in" />
+            <IconButton icon="add" label={t('view.zoomIn')} onPress={() => zoom(0.8)} testID="zoom-in" />
             <IconButton
               icon="compass-outline"
-              label="Alaphelyzet"
+              label={t('view.reset')}
               onPress={reset}
               testID="view-reset"
             />

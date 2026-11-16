@@ -1,0 +1,71 @@
+{
+  "name": "Hungarian folk sky",
+  "summary": "Star names and figures from Hungarian folk tradition, based on ethnographic collections: the Wain of Göncöl, the Pleiades hen, the Reapers, the Cross and more.",
+  "constellations": {
+    "gonc": {
+      "name": "Wain of Göncöl",
+      "nativeName": "Part of the Great Bear (Ursa Major)",
+      "description": "The seven brightest stars of the Great Bear, the best-known figure of the Hungarian folk sky. Four stars form the body of the cart and three the shaft. It already appears in a word list from around 1405 and has many regional names: Göncöl’s Cart, Döncöl, the Great Cart, Elijah’s Cart, Saint Peter’s Cart, Saint Ladislaus’s Cart.\n\nNext to the middle star of the shaft (Mizar), sharp eyes can see a faint little star (Alcor). Tradition says it is the child who drives the cart.\n\nShepherds also used it as a clock: the cart circles the Pole Star once a day (about half a turn in one night), so the position of the shaft showed how much of the night had passed.\n\nOrientation tip: extend the distance between the two stars at the end of the cart (Merak and Dubhe) about five times and you reach the Pole Star."
+    },
+    "kisgonc": {
+      "name": "Little Wain of Göncöl",
+      "nativeName": "Little Bear (Ursa Minor)",
+      "description": "The smaller, fainter counterpart of the Wain of Göncöl. Its folk names include the Little Cart, Göncöl’s Copy and the Lady’s Wagon.\n\nThe Pole Star sits at the end of its shaft; it was also called the North Star, the Drill Star or the Navel of the Sky. The whole sky turns around it, so for centuries it was the fixed point for finding one’s way at night.\n\nIn city light almost nothing of it is visible apart from the Pole Star and the two brighter stars of the “wheel”."
+    },
+    "szentkut": {
+      "name": "Holy Well",
+      "nativeName": "Cassiopeia",
+      "description": "The characteristic W (or M) shaped row of stars in Cassiopeia. Its folk names mostly link it to a well: Holy Well, Witches’ Well, Well-Sweep Star; elsewhere it is called the Tavern.\n\nIt stands on the other side of the Pole Star, opposite the Wain of Göncöl, and never sets as seen from Hungary. When the Wain is low, the Holy Well is high, and vice versa."
+    },
+    "fiastyuk": {
+      "name": "Brood Hen",
+      "nativeName": "Pleiades (M45)",
+      "description": "An open cluster in the constellation Taurus. Folk imagination saw a broody hen with her chicks: Fiastik, Chick Hen, Hen with the Chickens; an old-fashioned name is Hetevény. Usually six or seven stars are visible to the naked eye.\n\nWe look for it in the evening sky from autumn to spring. Around Lake Balaton its appearance marked the time of sowing. After it rises the Reaper, then the bright Lame Kate (Sirius)."
+    },
+    "mehkas": {
+      "name": "Beehive",
+      "nativeName": "Hyades (the head of Taurus)",
+      "description": "The V-shaped star cluster that forms the head of Taurus, to the southeast of the Pleiades. Its folk names are the Beehive and the Herald of Spring.\n\nThe bright reddish star at the end of one arm of the V, Aldebaran, is in fact not a member of the cluster: it only lies in the same direction and is less than half as far from us."
+    },
+    "kecskes": {
+      "name": "Goatherd",
+      "nativeName": "Auriga",
+      "description": "The large pentagon of the constellation Auriga. The folk name of its brightest star, Capella, is Goat Kid or Goat Star; the Latin name also means a little goat. It was also called the Autumn Star: on autumn evenings it shines conspicuously in the northeastern sky.\n\nCapella never sets as seen from Hungary. The lowest star of the pentagon (Elnath) is at the same time the tip of the horn of Taurus."
+    },
+    "kaszas": {
+      "name": "Reapers’ Star",
+      "nativeName": "Orion’s Belt",
+      "description": "The three stars of Orion’s Belt, almost in a straight line, the easiest figure to recognise in the winter sky. Folk tradition saw reapers walking one behind the other in them: the Three Reapers, the Reapers. Other names: Jacob’s Staff, Saint Peter’s Staff, the Stars of the Three Kings, the Whole Loaf.\n\nAfter the reapers follows Lame Kate, the bright Sirius. Tradition says she carries them their lunch but, being lame, always falls behind. Extend the line of the belt downwards and to the left and you find her."
+    },
+    "felkenyer": {
+      "name": "Half Loaf",
+      "nativeName": "Orion’s Sword",
+      "description": "The three fainter stars hanging below Orion’s Belt. Folk tradition called the belt the Whole Loaf and this group the Half Loaf; elsewhere it is called the Gatherers.\n\nThe middle “star” is actually the Orion Nebula: in a dark sky it looks like a tiny misty patch, and in a telescope it is one of the most spectacular sights in the sky."
+    },
+    "kaszalo": {
+      "name": "Meadow",
+      "nativeName": "Orion’s quadrilateral",
+      "description": "The four corner stars of Orion. The folk name means the meadow that the Reapers (the three stars of the belt) walking through its middle mow down. The folk name of the whole of Orion is the Reaper, elsewhere Nimrod.\n\nThe two brightest corners show well that stars have colours: at the upper left the reddish Betelgeuse, at the lower right the bluish-white Rigel."
+    },
+    "kettos": {
+      "name": "The Pair",
+      "nativeName": "Gemini: Castor and Pollux",
+      "description": "The two brightest stars of Gemini, side by side. The folk name simply describes the couple; Pollux was also called the Watchman Star.\n\nIn winter and spring they stand high in the evening sky, to the left of Orion and upwards."
+    },
+    "kereszt": {
+      "name": "Cross",
+      "nativeName": "Swan (Cygnus)",
+      "description": "The great cross of the constellation Cygnus in the middle of the summer Milky Way. Its folk names are Cross, Cross Star and Hungarian Cross. Another tradition saw a wedding procession in it: the three stars of the crossbar are the Three Best Men (elsewhere the Three Lieutenants), and the bright Deneb at the top of the cross is the Master of Ceremonies or Commander. According to the shepherds of the Hortobágy, the Cross Star wanders along the Milky Way, the “Highway”.\n\nThe other two bright stars of the summer sky also shine nearby: Vega (in folk speech the Field Guard) and Altair (the Shepherd, the Heavenly Shepherd)."
+    },
+    "kiskereszt": {
+      "name": "Little Cross",
+      "nativeName": "Dolphin (Delphinus)",
+      "description": "A small but easily recognised figure in the constellation Delphinus: four stars in a rhombus with a fifth below it. Its folk names are Little Cross, Net and Net Star.\n\nWe look for it on summer and autumn evenings, south of the great Cross (Cygnus) and northeast of Altair."
+    },
+    "koldusszeker": {
+      "name": "Beggar’s Cart",
+      "nativeName": "Sagittarius",
+      "description": "The bright stars of Sagittarius, now known as the “teapot” asterism. Hungarian folk tradition saw a cart in them: the Beggar’s Cart, Talyiga, the Turkish Cart.\n\nFrom Hungary it is visible on summer evenings, low above the southern horizon. The centre of the Milky Way lies in this direction, so the Milky Way is brightest and densest here."
+    }
+  }
+}

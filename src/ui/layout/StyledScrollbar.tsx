@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
+import { t } from '../i18n';
 import { colors, radius, sizing } from '../theme';
 import { useReducedMotion } from '../useReducedMotion';
 import { calculateScrollbarMetrics, scrollOffsetForTrackPosition } from './geometry';
@@ -87,8 +88,8 @@ export function StyledScrollbar({
       accessibilityLabel={accessibilityLabel}
       accessibilityValue={{ min: 0, max: 100, now: Math.round(metrics.progress * 100) }}
       accessibilityActions={[
-        { name: 'increment', label: 'Tovább görgetés' },
-        { name: 'decrement', label: 'Visszagörgetés' },
+        { name: 'increment', label: t('scroll.forward') },
+        { name: 'decrement', label: t('scroll.back') },
       ]}
       onAccessibilityAction={(event) => onAccessibilityAction(event.nativeEvent.actionName)}
       onLayout={onLayout}

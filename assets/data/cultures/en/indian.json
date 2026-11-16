@@ -1,0 +1,202 @@
+{
+  "name": "Indian (Vedic) sky",
+  "summary": "The 28 lunar mansions (nakshatras) of the Vedic tradition, the 12 zodiac signs (rashis), and figures such as the Seven Sages or the Deer Hunter.",
+  "constellations": {
+    "Aśv": {
+      "name": "The Horsemen",
+      "description": "The name means “possessing horses”. Two stars of Aries (Sheratan and Mesarthim). Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Bhar": {
+      "name": "The Bearer",
+      "description": "Three faint stars of Aries. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Kṛt": {
+      "name": "The Cutters",
+      "description": "The Pleiades. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Roh": {
+      "name": "The Red One",
+      "description": "The reddish Aldebaran in Taurus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Mṛg": {
+      "name": "The Deer’s Head",
+      "description": "Three faint stars in the head of Orion. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "MṛVy": {
+      "name": "The Deer Hunter",
+      "description": "Sirius and the stars of Canis Major: the hunter who takes aim at the deer (the head of Orion)."
+    },
+    "Inv": {
+      "name": "The Arrow",
+      "description": "The three stars of Orion’s Belt: the arrow shot by the hunter, flying towards the deer."
+    },
+    "Śara": {
+      "name": "The Reed Thicket",
+      "description": "Two faint stars on the border of Orion and Gemini: a reed thicket, a reed grove."
+    },
+    "Ārd": {
+      "name": "The Moist One",
+      "description": "The reddish Betelgeuse in Orion. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "PVas": {
+      "name": "The Restorers of Goods",
+      "description": "The two bright stars of Gemini, Castor and Pollux. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Puṣ": {
+      "name": "The Nourisher",
+      "description": "Two faint stars of the constellation Cancer. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Aśl": {
+      "name": "The Embrace",
+      "description": "The head of Hydra. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Magh": {
+      "name": "The Bountiful One",
+      "description": "The bright star of Leo, Regulus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "PPhā": {
+      "name": "The First Fruitful One",
+      "description": "Two stars on the back of Leo (Zosma and Chertan). Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "UPhā": {
+      "name": "The Second Fruitful One",
+      "description": "Denebola at the tail of Leo and its neighbour. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Hasta": {
+      "name": "The Hand",
+      "description": "The five stars of the constellation Corvus: an outstretched hand. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Chitr": {
+      "name": "The Brilliant One",
+      "description": "The bright star of Virgo, Spica. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Svā": {
+      "name": "The Self-Moving One",
+      "description": "The bright star of Boötes, Arcturus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Viś": {
+      "name": "The Branching One",
+      "description": "The stars of the constellation Libra. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Anur": {
+      "name": "Follower of Radha",
+      "description": "Three stars in the head of Scorpius. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Jyeṣ": {
+      "name": "The Eldest",
+      "description": "The reddish Antares and its two neighbours in the heart of Scorpius. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Mūl": {
+      "name": "The Root",
+      "description": "The curving tail of Scorpius with the stinger. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "PAṣ": {
+      "name": "The First Invincible One",
+      "description": "Two stars of Sagittarius. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "UAṣ": {
+      "name": "The Second Invincible One",
+      "description": "Two stars of Sagittarius (Nunki and Ascella). Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "PBhā": {
+      "name": "The First Blessed Feet",
+      "description": "The two western stars of the Square of Pegasus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "UBhā": {
+      "name": "The Second Blessed Feet",
+      "description": "The two eastern stars of the Square of Pegasus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Abh": {
+      "name": "The Victorious One",
+      "description": "The bright Vega in Lyra. A member of the old list of 28 lunar mansions, dropped from the later list of 27."
+    },
+    "Śra": {
+      "name": "The Ear",
+      "description": "The bright star of Aquila, Altair, and its two neighbours. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Dhani": {
+      "name": "The Wealthiest One",
+      "description": "Two stars of Delphinus. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Śata": {
+      "name": "Hundred Healers",
+      "description": "One of the stars of Aquarius. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Rev": {
+      "name": "The Wealthy One",
+      "description": "One of the faint stars of Pisces. Nakshatra (lunar mansion): one of the 27 (formerly 28) divisions of the ecliptic, each crossed by the Moon in about a day."
+    },
+    "Meṣa": {
+      "name": "The Ram",
+      "description": "The constellation Aries. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Vṛṣa": {
+      "name": "The Bull",
+      "description": "The constellation Taurus. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Mith": {
+      "name": "The Pair",
+      "description": "The constellation Gemini. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Kark": {
+      "name": "The Crab",
+      "description": "The constellation Cancer. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Simh": {
+      "name": "The Lion",
+      "description": "The constellation Leo. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Kany": {
+      "name": "The Maiden",
+      "description": "The constellation Virgo. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Tulā": {
+      "name": "The Scales",
+      "description": "The constellation Libra. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Vṛśc": {
+      "name": "The Scorpion",
+      "description": "The constellation Scorpius. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Dhan": {
+      "name": "The Bow",
+      "description": "The constellation Sagittarius. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Makr": {
+      "name": "The Makara",
+      "description": "The constellation Capricornus, in Indian tradition a crocodile-like water creature. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Kumbh": {
+      "name": "The Pitcher",
+      "description": "The constellation Aquarius. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Mīna": {
+      "name": "The Fish",
+      "description": "The constellation Pisces. Rashi: one of the twelve 30-degree signs of the zodiac; the names of the months of the solar year come from them."
+    },
+    "Shim": {
+      "name": "The Celestial Dolphin",
+      "description": "The winding row of stars of Draco: a river dolphin around the celestial pole."
+    },
+    "R̥kṣa": {
+      "name": "The Bear",
+      "description": "The whole constellation of the Great Bear."
+    },
+    "Sapt": {
+      "name": "The Seven Sages",
+      "description": "The seven stars of the Plough, the seven Vedic sages (rishis), one of the best-known figures of Indian tradition."
+    },
+    "Sāra": {
+      "name": "The Charioteer",
+      "description": "The pentagon of the constellation Auriga with the bright Capella."
+    },
+    "Tri": {
+      "name": "Trishanku",
+      "description": "The Southern Cross: according to the legend, King Trishanku wanted to enter heaven in his own body and was left stranded halfway, in the sky. Not visible from Hungary."
+    },
+    "Yam": {
+      "name": "The Yamuna River",
+      "description": "The long winding row of stars of Eridanus: one of the sacred rivers of India."
+    }
+  }
+}

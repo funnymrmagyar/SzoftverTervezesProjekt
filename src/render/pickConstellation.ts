@@ -1,5 +1,5 @@
 import { skyRotationMatrix } from '@/core/astronomy';
-import { getSkyCultures } from '@/core/catalog';
+import { getSkyCultures, type CatalogLocale } from '@/core/catalog';
 import type { GeoLocation } from '@/core/models';
 import { useViewStore } from '@/state/useViewStore';
 
@@ -15,6 +15,8 @@ interface PickOptions {
   /** Látszanak-e a feliratok (ha igen, a névre koppintás is kiválaszt). */
   includeLabels: boolean;
   selectedId: string | null;
+  /** A feliratok nyelve (a hitbox a felirat szélességéből adódik); alapértelmezés: magyar. */
+  locale?: CatalogLocale;
 }
 
 /**
@@ -30,8 +32,9 @@ export function pickConstellation({
   cultureId,
   includeLabels,
   selectedId,
+  locale = 'hu',
 }: PickOptions): string | null {
-  const repo = getSkyCultures();
+  const repo = getSkyCultures(locale);
   const culture = repo.get(cultureId);
   if (!culture || viewport.width <= 0 || viewport.height <= 0) return null;
 

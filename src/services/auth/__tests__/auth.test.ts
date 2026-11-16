@@ -1,7 +1,9 @@
 import { useAuthStore } from '@/state/useAuthStore';
 
 import { setAuthService } from '..';
-import { authErrorMessage, toAuthError, UNKNOWN_ERROR_MESSAGE } from '../authErrors';
+import { useLocaleStore } from '@/ui/locale';
+
+import { authErrorMessage, toAuthError, unknownErrorMessage } from '../authErrors';
 import { InMemoryAuthService } from '../InMemoryAuthService';
 import { hasErrors, validateLogin, validateRegistration } from '../validation';
 
@@ -32,14 +34,41 @@ describe('Firebase-hibák magyarítása', () => {
   });
 
   it('ismeretlen hibára általános üzenetet ad', () => {
-    expect(authErrorMessage('valami/mas')).toBe(UNKNOWN_ERROR_MESSAGE);
-    expect(toAuthError(new Error('x')).message).toBe(UNKNOWN_ERROR_MESSAGE);
+    expect(authErrorMessage('valami/mas')).toBe(unknownErrorMessage());
+    expect(toAuthError(new Error('x')).message).toBe(unknownErrorMessage());
   });
 
   it('a Firebase-szerű hibaobjektum kódját megőrzi', () => {
     const err = toAuthError({ code: 'auth/invalid-credential' });
     expect(err.code).toBe('auth/invalid-credential');
     expect(err.message).toBe('Hibás e-mail-cím vagy jelszó.');
+  });
+});
+
+describe('angol nyelvű üzenetek', () => {
+  beforeEach(() => {
+    useLocaleStore.setState({ locale: 'en' });
+  });
+
+  it('az űrlap-ellenőrzés az aktív nyelven ad üzenetet', () => {
+    expect(validateLogin('', '')).toEqual({
+      email: 'Enter your email address.',
+      password: 'Enter your password.',
+    });
+    expect(validateRegistration('anna@example.com', '123', '1234')).toEqual({
+      password: 'The password must be at least 6 characters long.',
+      passwordConfirm: "The two passwords don't match.",
+    });
+  });
+
+  it('a hibakódokból angol üzenet lesz, az ismeretlenből általános', () => {
+    expect(authErrorMessage('auth/email-already-in-use')).toBe(
+      'This email address is already registered.',
+    );
+    expect(toAuthError({ code: 'auth/wrong-password' }).message).toBe(
+      'Wrong email address or password.',
+    );
+    expect(authErrorMessage('valami/mas')).toBe('An unexpected error occurred. Please try again.');
   });
 });
 

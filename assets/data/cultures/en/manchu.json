@@ -1,0 +1,102 @@
+{
+  "name": "Manchu sky",
+  "summary": "Shamanic constellations of the hunting and fishing people of northeast China: the Seven Maidens, the Divine Eagle, the shaman’s drum and drumstick.",
+  "constellations": {
+    "Narhu": {
+      "name": "The Seven Maidens",
+      "description": "The Pleiades. In Manchu myth they are helpers of the star-scattering goddess and the leaders of the stars: rising in the east at dusk, they lead the procession of winter stars towards the west. An important sign of the beginning of winter and of night-time keeping."
+    },
+    "Sengge": {
+      "name": "The God of Hedgehogs",
+      "description": "The constellation Cygnus in the middle of the Milky Way. It was also called the “Rafter Star” or the “Hedgehog Star”; a deity who guards the night and the home, and an important northern guide star."
+    },
+    "Taci": {
+      "name": "Grandmother Taci",
+      "description": "The W shape of Cassiopeia. The celestial goddess entrusted her with measuring time for the gods day and night: the hour was estimated from her position and tilt in the sky."
+    },
+    "Tobo": {
+      "name": "The Hut",
+      "description": "The stars of Perseus: a hut where the shaman’s soul rests while ascending to the sky."
+    },
+    "Tehe": {
+      "name": "The God of the Stand",
+      "description": "The great square of Pegasus and its surroundings. Shamans watched it for signs of wind and snowfall."
+    },
+    "Ilan": {
+      "name": "The Three Stars",
+      "description": "The three stars of Orion’s Belt. When they rise in the east at dusk, it is midwinter; from their course the hours of the second half of the night were estimated. The counterpart of the Hungarian Reapers’ Star."
+    },
+    "Nadan": {
+      "name": "The Seven Stars",
+      "description": "The Plough, the most important star group for night-time keeping and for the northern direction. “When its handle points north, winter rules the earth.”"
+    },
+    "Gasha": {
+      "name": "The Divine Eagle",
+      "description": "A huge eagle spreading its wings across the stars of Orion, Taurus, Auriga and Gemini. It dominates the midwinter sky; weather was predicted from its shape. Its right foot is led by the Seven Maidens, its left is tied by a celestial rope (Eridanus)."
+    },
+    "Singgeri": {
+      "name": "The Rat",
+      "description": "The stars of Leo: the rat goddess who greets the dawn, rising in the east before the winter dawn to receive the rays of the Sun."
+    },
+    "Morin": {
+      "name": "The Horse",
+      "description": "Not really a constellation but a seasonal collective name for four bright stars (Capella, Sirius, Arcturus, Spica); here Sirius stands for it."
+    },
+    "Wadan": {
+      "name": "The Celestial Altar",
+      "description": "The constellation Corvus: the heavenly place where ritual objects are kept. When someone was learning to be a shaman, or a shaman died, this star had to be honoured."
+    },
+    "Imcin": {
+      "name": "The Drum",
+      "description": "In the region of Aries, Triangulum and Andromeda: the shaman’s drum of the star-scattering goddess."
+    },
+    "Gisun": {
+      "name": "The Drumstick",
+      "description": "The faint row of stars next to the Drum: the stick that beats the shaman’s drum."
+    },
+    "Siri": {
+      "name": "Goddess of the Carp",
+      "description": "The faint stars of Lynx and Camelopardalis. According to the legend she turned into a carp to track down a demon that had fled into the river; the mistress of the fish of the icy rivers, from which the luck of winter fishing was foretold."
+    },
+    "Terkin": {
+      "name": "Goddess of the Stairs",
+      "description": "The stars of Virgo and Coma Berenices: a “stairway to the sky”, a seated goddess who helps the shaman’s soul to ascend."
+    },
+    "Buruhun": {
+      "name": "The Dawn Beast",
+      "description": "Boötes and its neighbours: the three-eared, six-eyed beast of dawn, sent by the celestial goddess to lead the Sun’s rays before the winter dawn."
+    },
+    "Fodoho": {
+      "name": "The Willow",
+      "description": "The head of Hydra, low in the southern sky: the divine star of the blessing of children; the harvest and epidemics were also foretold from it."
+    },
+    "Asu": {
+      "name": "The Net",
+      "description": "The stars of Hercules: the net of the god of hunting, a mirror of the fishing and hunting way of life."
+    },
+    "Nimaha": {
+      "name": "The Hook",
+      "description": "The constellation Scorpius: a fish hook. A summer deity called the “warm star”; from its appearance the time of farming and the harvest were foretold."
+    },
+    "Hadaha": {
+      "name": "The Nail",
+      "description": "The Pole Star, around which the sky turns."
+    },
+    "Juru": {
+      "name": "The Two Silver-Maned Steeds",
+      "description": "The two brighter stars of the Little Bear, Kochab and Pherkad."
+    },
+    "Ikiri": {
+      "name": "The Ox-Leading Stars",
+      "description": "The bright Altair and its two neighbours in the constellation Aquila."
+    },
+    "Ilmahu": {
+      "name": "The Supporting Pole",
+      "description": "The stars of Orion’s Sword, below the Three Stars."
+    },
+    "Borboho": {
+      "name": "The Coiled Strap",
+      "description": "The semicircle of Corona Borealis: a coiled leather strap."
+    }
+  }
+}

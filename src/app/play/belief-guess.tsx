@@ -23,7 +23,7 @@ import { SkyChart, type ChartLine } from '@/features/games/SkyChart';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Button } from '@/ui/Button';
 import { Badge, GlassCard } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 import { useReducedMotion } from '@/ui/useReducedMotion';
@@ -50,9 +50,10 @@ const CLUE_HEIGHT_SHARE = 0.42;
 const SMALL_TEXT_HEIGHT = 700;
 
 export default function BeliefGuessScreen() {
+  const locale = useLocale();
   const reducedMotion = useReducedMotion();
   const layout = useBreakpoint();
-  const cultures = useMemo(() => getBeliefCultures(), []);
+  const cultures = useMemo(() => getBeliefCultures(locale), [locale]);
   const skyCultureId = useSkyStore((state) => state.cultureId);
 
   const [phase, setPhase] = useState<Phase>('setup');
@@ -299,7 +300,7 @@ export default function BeliefGuessScreen() {
             ]}
             testID="belief-clue"
           >
-            {question.target.clueLang !== 'hu' ? (
+            {question.target.clueLang !== locale ? (
               <Badge label={t('games.belief.english')} icon="language-outline" />
             ) : null}
             <ScrollView style={styles.clueScroll}>

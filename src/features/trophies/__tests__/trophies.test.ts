@@ -1,3 +1,6 @@
+import { translate } from '@/ui/i18n';
+import { LOCALES } from '@/ui/locale';
+
 import {
   ALL_ROUNDER_SCORE,
   ASTRONOMER_TOTAL,
@@ -31,11 +34,15 @@ function ids(ctx: TrophyContext, earned: string[] = []): string[] {
 }
 
 describe('trófeakatalógus', () => {
-  it('egyedi azonosítókat és kitöltött leírásokat tartalmaz', () => {
+  it('egyedi azonosítókat tartalmaz, és minden nyelven van címe és leírása', () => {
     expect(new Set(TROPHY_IDS).size).toBe(TROPHIES.length);
     for (const trophy of TROPHIES) {
-      expect(trophy.title.length).toBeGreaterThan(0);
-      expect(trophy.description.length).toBeGreaterThan(0);
+      for (const locale of LOCALES) {
+        expect(translate(locale, trophy.titleKey).length).toBeGreaterThan(0);
+        const description = translate(locale, trophy.descriptionKey, trophy.descriptionParams);
+        expect(description.length).toBeGreaterThan(0);
+        expect(description).not.toMatch(/\{\w+\}/);
+      }
     }
   });
 });

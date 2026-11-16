@@ -12,9 +12,11 @@ import { useAuthStore } from '@/state/useAuthStore';
 import { AuthForm } from '@/ui/AuthForm';
 import { Button } from '@/ui/Button';
 import { TextField } from '@/ui/TextField';
+import { t, useLocale } from '@/ui/i18n';
 import { colors } from '@/ui/theme';
 
 export default function RegisterScreen() {
+  useLocale();
   const { register, busy, error, clearError } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,20 +33,20 @@ export default function RegisterScreen() {
   }
 
   return (
-    <AuthForm title="Regisztráció" subtitle="Hozz létre fiókot e-mail-címmel." error={error}>
+    <AuthForm title={t('auth.register.title')} subtitle={t('auth.register.subtitle')} error={error}>
       <TextField
-        label="E-mail"
+        label={t('auth.email')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
-        placeholder="nev@pelda.hu"
+        placeholder={t('auth.emailPlaceholder')}
         error={fieldErrors.email}
         testID="register-email"
       />
       <TextField
-        label={`Jelszó (legalább ${MIN_PASSWORD_LENGTH} karakter)`}
+        label={t('auth.register.password', { min: MIN_PASSWORD_LENGTH })}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -53,7 +55,7 @@ export default function RegisterScreen() {
         testID="register-password"
       />
       <TextField
-        label="Jelszó még egyszer"
+        label={t('auth.register.confirm')}
         value={passwordConfirm}
         onChangeText={setPasswordConfirm}
         secureTextEntry
@@ -62,11 +64,11 @@ export default function RegisterScreen() {
         onSubmitEditing={submit}
         testID="register-password-confirm"
       />
-      <Button title="Fiók létrehozása" onPress={submit} loading={busy} testID="register-submit" />
+      <Button title={t('auth.register.submit')} onPress={submit} loading={busy} testID="register-submit" />
       <Text style={styles.footer}>
-        Van már fiókod?{' '}
+        {t('auth.register.haveAccount')}{' '}
         <Link href="/login" replace style={styles.link}>
-          Jelentkezz be
+          {t('auth.register.signInLink')}
         </Link>
       </Text>
     </AuthForm>

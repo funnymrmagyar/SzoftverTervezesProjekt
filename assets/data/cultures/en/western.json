@@ -1,0 +1,270 @@
+{
+  "name": "Western (modern)",
+  "summary": "The 88 constellations of the International Astronomical Union, drawn with Stellarium’s “modern” line art.",
+  "constellations": {
+    "And": {
+      "name": "Andromeda"
+    },
+    "Dor": {
+      "name": "Dolphinfish"
+    },
+    "Cap": {
+      "name": "Sea-Goat"
+    },
+    "Com": {
+      "name": "Berenice's Hair"
+    },
+    "Tau": {
+      "name": "Bull"
+    },
+    "Cet": {
+      "name": "Sea Monster (Whale)"
+    },
+    "Equ": {
+      "name": "Little Horse"
+    },
+    "Gru": {
+      "name": "Crane"
+    },
+    "Del": {
+      "name": "Dolphin"
+    },
+    "Cru": {
+      "name": "Southern Cross"
+    },
+    "PsA": {
+      "name": "Southern Fish"
+    },
+    "TrA": {
+      "name": "Southern Triangle"
+    },
+    "CrA": {
+      "name": "Southern Crown"
+    },
+    "Hyi": {
+      "name": "Lesser Water Snake"
+    },
+    "Mon": {
+      "name": "Unicorn"
+    },
+    "Eri": {
+      "name": "River Eridanus"
+    },
+    "Lup": {
+      "name": "Wolf"
+    },
+    "Pic": {
+      "name": "Painter's Easel"
+    },
+    "Phe": {
+      "name": "Phoenix"
+    },
+    "Col": {
+      "name": "Dove"
+    },
+    "Lac": {
+      "name": "Lizard"
+    },
+    "Pup": {
+      "name": "Stern"
+    },
+    "Car": {
+      "name": "Keel"
+    },
+    "Psc": {
+      "name": "Fishes"
+    },
+    "Cyg": {
+      "name": "Swan"
+    },
+    "Her": {
+      "name": "Hercules"
+    },
+    "Lyn": {
+      "name": "Lynx"
+    },
+    "Crv": {
+      "name": "Crow"
+    },
+    "Ret": {
+      "name": "Reticle"
+    },
+    "Tri": {
+      "name": "Triangle"
+    },
+    "Gem": {
+      "name": "Twins"
+    },
+    "Ind": {
+      "name": "Indian"
+    },
+    "Hor": {
+      "name": "Pendulum Clock"
+    },
+    "Cha": {
+      "name": "Chameleon"
+    },
+    "Cas": {
+      "name": "Cassiopeia"
+    },
+    "Cep": {
+      "name": "Cepheus"
+    },
+    "For": {
+      "name": "Furnace"
+    },
+    "Cen": {
+      "name": "Centaur"
+    },
+    "CMi": {
+      "name": "Little Dog"
+    },
+    "UMi": {
+      "name": "Little Bear"
+    },
+    "LMi": {
+      "name": "Little Lion"
+    },
+    "Vul": {
+      "name": "Little Fox"
+    },
+    "Ari": {
+      "name": "Ram"
+    },
+    "Ser": {
+      "name": "Serpent"
+    },
+    "Oph": {
+      "name": "Serpent Bearer"
+    },
+    "Cir": {
+      "name": "Compasses"
+    },
+    "Lyr": {
+      "name": "Lyre"
+    },
+    "Ant": {
+      "name": "Air Pump"
+    },
+    "Mus": {
+      "name": "Fly"
+    },
+    "Mic": {
+      "name": "Microscope"
+    },
+    "Lib": {
+      "name": "Scales"
+    },
+    "CMa": {
+      "name": "Great Dog"
+    },
+    "UMa": {
+      "name": "Great Bear"
+    },
+    "Sgr": {
+      "name": "Archer"
+    },
+    "Sge": {
+      "name": "Arrow"
+    },
+    "Lep": {
+      "name": "Hare"
+    },
+    "Oct": {
+      "name": "Octant"
+    },
+    "Ara": {
+      "name": "Altar"
+    },
+    "Ori": {
+      "name": "Orion"
+    },
+    "Leo": {
+      "name": "Lion"
+    },
+    "Sct": {
+      "name": "Shield"
+    },
+    "Aps": {
+      "name": "Bird of Paradise"
+    },
+    "Peg": {
+      "name": "Pegasus"
+    },
+    "Per": {
+      "name": "Perseus"
+    },
+    "Pav": {
+      "name": "Peacock"
+    },
+    "Vol": {
+      "name": "Flying Fish"
+    },
+    "Cnc": {
+      "name": "Crab"
+    },
+    "Aql": {
+      "name": "Eagle"
+    },
+    "Crt": {
+      "name": "Cup"
+    },
+    "Sco": {
+      "name": "Scorpion"
+    },
+    "Aur": {
+      "name": "Charioteer"
+    },
+    "Sex": {
+      "name": "Sextant"
+    },
+    "Scl": {
+      "name": "Sculptor"
+    },
+    "Nor": {
+      "name": "Level (Square)"
+    },
+    "Vir": {
+      "name": "Virgin"
+    },
+    "Dra": {
+      "name": "Dragon"
+    },
+    "Tuc": {
+      "name": "Toucan"
+    },
+    "Men": {
+      "name": "Table Mountain"
+    },
+    "Pyx": {
+      "name": "Compass"
+    },
+    "Tel": {
+      "name": "Telescope"
+    },
+    "CVn": {
+      "name": "Hunting Dogs"
+    },
+    "Vel": {
+      "name": "Sails"
+    },
+    "Cae": {
+      "name": "Chisel"
+    },
+    "Aqr": {
+      "name": "Water Bearer"
+    },
+    "Cam": {
+      "name": "Giraffe"
+    },
+    "CrB": {
+      "name": "Northern Crown"
+    },
+    "Hya": {
+      "name": "Water Snake"
+    },
+    "Boo": {
+      "name": "Herdsman"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "name": "Seri (Comcáac) sky",
+  "summary": "The stars of the Seri people of the Sonoran coast of Mexico, which mark the calendar of the sea and the desert: crab gathering, cactus fruit, fishing.",
+  "constellations": {
+    "001": {
+      "name": "The Crab",
+      "description": "Orion’s Belt, Rigel and Betelgeuse. When they are seen above the western horizon in March, crabs gather in the shallow water of the marsh in groups of hundreds and are easy to collect. According to tradition, at this time one must not break a crab’s leg or claw, or there will be no more crabs the next day."
+    },
+    "002": {
+      "name": "The Wife and the Husband",
+      "description": "A row of stars from the Great Bear to Leo, in the dawn sky in mid-October. The northern star (Psi Ursae Majoris) is the husband, and six women follow behind him in pairs. A few days after it appears, violent rains and winds come, so the ancestors withdrew to mountain caves at this time."
+    },
+    "003": {
+      "name": "The Deer Hunter",
+      "description": "The most complex figure of the Seri sky: the tip of the spear is Aldebaran and the V of Taurus, its feathers are Castor and Pollux. The hunter’s spear wounded the deer, which fled bleeding across the sky; one drop of its blood fell on Tiburón Island, which is why this deer species lives there. It is visible in the dawn sky in September."
+    },
+    "004": {
+      "name": "The Hoop Game",
+      "description": "The shaft of the Plough and the stars of Canes Venatici: a game made of stones and coloured reed slats laid in a circle. In the past men played it with their lives at stake; today women play it at festivals."
+    },
+    "005": {
+      "name": "The Pitahaya Picker",
+      "description": "The W shape of Cassiopeia: the tool used to pick the cactus fruit (pitahaya). When it points towards the top of the sky in early September, it is time to gather pitahaya and mesquite seeds."
+    },
+    "006": {
+      "name": "The One Who Arrives at Dawn",
+      "description": "The brilliantly sparkling Sirius, which appears at dawn in early September and announces the new day."
+    },
+    "007": {
+      "name": "The Young Hunter",
+      "description": "Canopus. According to the legend, a boy who went hunting and was thought dead appeared to his parents one dawn: he had found a good place by the seashore. He became a star because of his quarrel with his elder brother. Not visible from Hungary."
+    },
+    "008": {
+      "name": "The Little Dove",
+      "description": "Arcturus. It appears in early October and marks the start of good fishing weather. According to the legend, once when it appeared the cacti burst into bloom, but the ripened fruit was enchanted and eaten by the dove in a single night."
+    },
+    "009": {
+      "name": "The Hunter",
+      "description": "Capella and its two neighbours: the head of the Deer Hunter figure. Its name means “the one who crosses over”."
+    },
+    "010": {
+      "name": "The Deer",
+      "description": "Three stars on the border of Auriga and Taurus: the white-tailed deer, the mule deer and the bighorn sheep, at which the Deer Hunter takes aim."
+    },
+    "011": {
+      "name": "The Hare",
+      "description": "The bright Vega and a neighbour in Lyra."
+    },
+    "012": {
+      "name": "The Man",
+      "description": "A figure of twelve stars through Scorpius, Ophiuchus and Hercules, including Antares. The man is fishing: according to the legend, the flesh of a cactus was used as bait."
+    },
+    "013": {
+      "name": "The Motionless Star",
+      "description": "The Pole Star: the star that does not move and around which everything turns."
+    }
+  }
+}

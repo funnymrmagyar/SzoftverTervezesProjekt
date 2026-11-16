@@ -1,13 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { PRESET_LOCATIONS } from '@/core/locations';
 import { getDeviceLocation } from '@/services/location/deviceLocation';
 import { createLogger } from '@/services/logger';
 import { useSkyStore } from '@/state/useSkyStore';
-import { compassPoint } from '@/core/astronomy';
+import { compassIndex } from '@/core/astronomy';
 import { useViewStore } from '@/state/useViewStore';
+import { t, useLocale, type TranslationKey } from '@/ui/i18n';
 import { Select } from '@/ui/Select';
 import type { SelectOption } from '@/ui/Select';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
@@ -16,22 +17,32 @@ import { useBreakpoint } from '@/ui/useBreakpoint';
 const log = createLogger('location');
 
 const GPS_LOCATION = 'gps';
-const locationOptions: SelectOption<string>[] = [
-  {
-    value: GPS_LOCATION,
-    label: 'Saját hely',
-    description: 'Helymeghatározás GPS-szel',
-    icon: 'navigate-outline',
-  },
-  ...PRESET_LOCATIONS.map((location, index) => ({
-    value: `city-${index}`,
-    label: location.label ?? 'Ismeretlen hely',
-    description: 'Kézi megfigyelési hely',
-    icon: 'location-outline' as const,
-  })),
-];
+function buildLocationOptions(): SelectOption<string>[] {
+  return [
+    {
+      value: GPS_LOCATION,
+      label: t('location.gps'),
+      description: t('location.gpsDescription'),
+      icon: 'navigate-outline',
+    },
+    ...PRESET_LOCATIONS.map((location, index) => ({
+      value: `city-${index}`,
+      label: location.labelKey ? t(location.labelKey) : (location.label ?? t('location.unknown')),
+      description: t('location.manualDescription'),
+      icon: 'location-outline' as const,
+    })),
+  ];
+}
+
+/** Az égtáj neve az aktuális nyelven (pl. „ÉK” / „NE”). */
+function compassLabel(azimuth: number): string {
+  return t(`compass.${compassIndex(azimuth)}` as TranslationKey);
+}
 
 export function LocationPicker({ compactTrigger = false }: { compactTrigger?: boolean }) {
+  const locale = useLocale();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- a nyelv változásakor újraépül
+  const locationOptions = useMemo(buildLocationOptions, [locale]);
   const location = useSkyStore((state) => state.location);
   const source = useSkyStore((state) => state.locationSource);
   const setLocation = useSkyStore((state) => state.setLocation);
@@ -50,7 +61,7 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
         const result = await getDeviceLocation();
         if (result.status === 'permission-denied') {
           log.info('A helymeghatározási engedélyt a felhasználó nem adta meg');
-          setGpsMessage('A helymeghatározási engedélyt nem adtad meg.');
+          setGpsMessage(t('location.denied'));
           return;
         }
         // A koordinátákat szándékosan nem naplózzuk: az személyes adat.
@@ -58,7 +69,7 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
         setLocation(result.location, 'gps');
       } catch (error) {
         log.warn('A GPS-hely meghatározása nem sikerült', { error });
-        setGpsMessage('Nem sikerült meghatározni a helyed. Próbáld újra, vagy válassz várost.');
+        setGpsMessage(t('location.failed'));
       }
       return;
     }
@@ -74,7 +85,7 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
         value={selectedLocation}
         options={locationOptions}
         onChange={chooseLocation}
-        label="Megfigyelési hely"
+        label={t('location.label')}
         triggerIcon="location-outline"
         compactTrigger={compactTrigger}
         testID="location-picker"
@@ -84,11 +95,11 @@ export function LocationPicker({ compactTrigger = false }: { compactTrigger?: bo
           style={styles.direction}
           accessible
           accessibilityRole="text"
-          accessibilityLabel={`${compassPoint(azimuth)}, ${azimuth} fok`}
+          accessibilityLabel={t('location.bearing', { point: compassLabel(azimuth), degrees: azimuth })}
         >
           <Ionicons name="compass-outline" size={sizing.iconSmall} color={colors.accent} />
           <Text style={styles.directionText}>
-            {compassPoint(azimuth)} · {azimuth}°
+            {compassLabel(azimuth)} · {azimuth}°
           </Text>
         </View>
       ) : null}

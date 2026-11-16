@@ -1,0 +1,54 @@
+{
+  "name": "Tibetan sky",
+  "summary": "The twelve zodiac signs of Tibetan astronomy, taken from India with the Kalachakra Tantra and mixed with Chinese influences.",
+  "constellations": {
+    "Ari": {
+      "name": "The Sheep",
+      "description": "The first sign of the zodiac (lug, “sheep”), the stars of the constellation Aries."
+    },
+    "Tau": {
+      "name": "The Ox",
+      "description": "The second sign of the zodiac (glang, “ox, bull”), the stars of Taurus with the Hyades and Aldebaran."
+    },
+    "Gem": {
+      "name": "The Pair",
+      "description": "The third sign of the zodiac (’khrig, “pair”), the constellation Gemini."
+    },
+    "Cnc": {
+      "name": "The Crab",
+      "description": "The fourth sign of the zodiac, with a name of Sanskrit origin. Surprisingly, the figure depicted on the stone floor of the Stag Phu observatory of the Lhasa calendar institute looks more like a frog."
+    },
+    "Leo": {
+      "name": "The Lion",
+      "description": "The fifth sign of the zodiac (seng ge, “lion”), the constellation Leo with the bright Regulus."
+    },
+    "Vir": {
+      "name": "The Maiden",
+      "description": "The sixth sign of the zodiac (bu mo, “girl”), the constellation Virgo with Spica."
+    },
+    "Lib": {
+      "name": "The Scales",
+      "description": "The seventh sign of the zodiac (srang, “scales”), the constellation Libra."
+    },
+    "Sco": {
+      "name": "The Scorpion",
+      "description": "The eighth sign of the zodiac (sdig pa, “scorpion”), the constellation Scorpius with the reddish Antares."
+    },
+    "Sgr": {
+      "name": "The Bow",
+      "description": "The ninth sign of the zodiac (gzhu, “bow”), the constellation Sagittarius."
+    },
+    "Cap": {
+      "name": "The Water Monster",
+      "description": "The tenth sign of the zodiac (chu srin), the counterpart of the Indian makara: a crocodile-like water creature. The constellation Capricornus."
+    },
+    "Aqr": {
+      "name": "The Vase",
+      "description": "The eleventh sign of the zodiac (bum pa, “vase, pitcher”), the constellation Aquarius."
+    },
+    "Psc": {
+      "name": "The Fish",
+      "description": "The twelfth sign of the zodiac (nya, “fish”), the constellation Pisces."
+    }
+  }
+}

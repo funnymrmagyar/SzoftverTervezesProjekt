@@ -1,0 +1,22 @@
+{
+  "name": "Mongolian sky",
+  "summary": "Constellations of the Mongolian oral tradition: the Seven Buddhas, the Three Deer and the Bow and Arrow, turning around the Golden Peg (the Pole Star).",
+  "constellations": {
+    "001": {
+      "name": "The Bow and Arrow",
+      "description": "The constellation Cygnus, in which the Mongols see a drawn bow and arrow."
+    },
+    "002": {
+      "name": "The Five Star Women",
+      "description": "The five stars of Cassiopeia are a symbol of unity and brotherhood. According to the legend they stand for the five quarrelling children of Genghis Khan’s wife: their mother had them tie five strong knots to test their unity."
+    },
+    "003": {
+      "name": "The Seven Buddhas",
+      "description": "The seven stars of the Plough. According to the legend, eight orphan brothers rescued the queen from a monster; the king threw into the sky the golden arrow he had promised as a reward. The youngest caught it, and it became the Pole Star (the Golden Peg), and his seven elder brothers circle around it every night. According to tradition Alcor is the protecting star: only someone who could see it separately from Mizar with the naked eye could be an archer of Genghis Khan."
+    },
+    "004": {
+      "name": "The Three Deer",
+      "description": "The three bright stars of the summer triangle, Vega, Deneb and Altair: three deer."
+    }
+  }
+}

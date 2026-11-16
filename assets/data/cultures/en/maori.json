@@ -1,0 +1,30 @@
+{
+  "name": "Māori sky",
+  "summary": "The seafaring figures of New Zealand’s indigenous people: canoes, sails and anchor ropes in the sky, used for navigation and to mark planting time.",
+  "constellations": {
+    "001": {
+      "name": "Taki-o-Autahi",
+      "description": "The Southern Cross; its other Māori name is Mahutonga. Not visible from Hungary."
+    },
+    "002": {
+      "name": "The Rope of Tama-rereti’s Canoe",
+      "description": "The two bright stars of Centaurus, the “Pointers” that point towards the Southern Cross: the rope of the canoe. Not visible from Hungary."
+    },
+    "003": {
+      "name": "Tau-toro",
+      "description": "The three stars of Orion’s Belt."
+    },
+    "004": {
+      "name": "Tama-rereti’s Great Canoe",
+      "description": "The curving tail of Scorpius: Tama-rereti’s long canoe. From Hungary it is visible only low, near the southern horizon."
+    },
+    "005": {
+      "name": "Matakarehu",
+      "description": "The V-shaped Hyades that form the head of Taurus, and the reddish Aldebaran (in Māori, Taumatakuku)."
+    },
+    "006": {
+      "name": "The Sail of Tainui",
+      "description": "A figure with no European counterpart: a seafaring double canoe. Orion’s Belt is the keel, the Hyades the claw-shaped sail, and the Pleiades (in Māori, Matariki) the prow. Tainui is one of the legendary migration canoes of the Māori."
+    }
+  }
+}

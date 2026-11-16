@@ -20,6 +20,7 @@ import {
   type LayoutChangeEvent,
 } from 'react-native';
 
+import { t } from '../i18n';
 import { colors, radius, sizing, spacing } from '../theme';
 import { useBreakpoint } from '../useBreakpoint';
 import { useReducedMotion } from '../useReducedMotion';
@@ -265,7 +266,7 @@ export function Sheet({
       {mobile && scrim && activeSnap !== 'closed' ? (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Bezárás"
+          accessibilityLabel={t('common.close')}
           onPress={() => animateToSnap('closed')}
           style={styles.backdrop}
         />
@@ -295,8 +296,8 @@ export function Sheet({
             accessible
             accessibilityRole="adjustable"
             accessibilityActions={[
-              { name: 'increment', label: 'Kinyitás' },
-              { name: 'decrement', label: 'Lehúzás' },
+              { name: 'increment', label: t('sheet.expand') },
+              { name: 'decrement', label: t('sheet.collapse') },
             ]}
             onAccessibilityAction={(event) =>
               adjustSnap(event.nativeEvent.actionName === 'increment' ? 1 : -1)
@@ -316,10 +317,10 @@ export function Sheet({
             accessible
             accessibilityRole="adjustable"
             accessibilityActions={[
-              { name: 'left', label: 'Mozgatás balra' },
-              { name: 'right', label: 'Mozgatás jobbra' },
-              { name: 'up', label: 'Mozgatás fel' },
-              { name: 'down', label: 'Mozgatás le' },
+              { name: 'left', label: t('sheet.moveLeft') },
+              { name: 'right', label: t('sheet.moveRight') },
+              { name: 'up', label: t('sheet.moveUp') },
+              { name: 'down', label: t('sheet.moveDown') },
             ]}
             onAccessibilityAction={(event) =>
               onRepositionAccessibilityAction(event.nativeEvent.actionName)
@@ -357,15 +358,15 @@ function Header({
       </Text>
       {onMove ? (
         <View style={styles.moveButtons}>
-          <MoveButton icon="arrow-back" label="Mozgatás balra" onPress={() => onMove(-24, 0)} />
-          <MoveButton icon="arrow-forward" label="Mozgatás jobbra" onPress={() => onMove(24, 0)} />
-          <MoveButton icon="arrow-up" label="Mozgatás fel" onPress={() => onMove(0, -24)} />
-          <MoveButton icon="arrow-down" label="Mozgatás le" onPress={() => onMove(0, 24)} />
+          <MoveButton icon="arrow-back" label={t('sheet.moveLeft')} onPress={() => onMove(-24, 0)} />
+          <MoveButton icon="arrow-forward" label={t('sheet.moveRight')} onPress={() => onMove(24, 0)} />
+          <MoveButton icon="arrow-up" label={t('sheet.moveUp')} onPress={() => onMove(0, -24)} />
+          <MoveButton icon="arrow-down" label={t('sheet.moveDown')} onPress={() => onMove(0, 24)} />
         </View>
       ) : null}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Bezárás"
+        accessibilityLabel={t('common.close')}
         onPress={onClose}
         hitSlop={spacing.xs}
         style={styles.closeButton}

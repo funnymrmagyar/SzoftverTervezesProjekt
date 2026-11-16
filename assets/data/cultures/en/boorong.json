@@ -1,0 +1,114 @@
+{
+  "name": "Boorong (Aboriginal Australian) sky",
+  "summary": "Stars of the Boorong people who lived by Lake Tyrrell in southeastern Australia: kangaroo, eagle, crow, cockatoo and boomerang in the sky.",
+  "constellations": {
+    "Wjl": {
+      "name": "The Long-Necked Turtle",
+      "description": "Pollux and the neighbouring stars of Gemini."
+    },
+    "Yur": {
+      "name": "The Fan-Tailed Cockatoo",
+      "description": "Castor and the neighbouring stars of Gemini."
+    },
+    "Kul": {
+      "name": "The Two Teenage Boys",
+      "description": "Orion’s Belt and Sword with the fainter surrounding stars."
+    },
+    "Lnk": {
+      "name": "The Girls",
+      "description": "The Pleiades: a group of young girls."
+    },
+    "Pur": {
+      "name": "The Red Kangaroo",
+      "description": "The bright Capella and the neighbouring stars of Auriga and Perseus."
+    },
+    "Bun": {
+      "name": "The Ringtail Possum",
+      "description": "The stars of the Southern Cross, with the star at the tip of the cross. Not visible from Hungary."
+    },
+    "Djt": {
+      "name": "The Red-Tailed Parrot",
+      "description": "The reddish Antares and the head of Scorpius."
+    },
+    "War": {
+      "name": "The Crow",
+      "description": "The bright Canopus and its surroundings. Not visible from Hungary."
+    },
+    "Cwr": {
+      "name": "The Female Crow, War’s Wife",
+      "description": "Eta Carinae and the stars of Carina. Not visible from Hungary."
+    },
+    "Ydk": {
+      "name": "The Australian Owlet-Nightjar",
+      "description": "Achernar and its surroundings. Not visible from Hungary."
+    },
+    "Tbg": {
+      "name": "The Hakea Bush and the Fan-Tailed Birds",
+      "description": "The stars of Coma Berenices."
+    },
+    "Bbg": {
+      "name": "The Red-Kneed Dotterel",
+      "description": "Alpha Centauri and the stars of Circinus. Not visible from Hungary."
+    },
+    "Krk": {
+      "name": "The Australian Kestrel",
+      "description": "The end of the tail of Scorpius; the name also means a spear-thrower. From Hungary it is visible only near the southern horizon."
+    },
+    "Nln": {
+      "name": "The Malleefowl",
+      "description": "The constellation Lyra with the bright Vega. The malleefowl builds a nest mound in which it incubates its eggs."
+    },
+    "Unu": {
+      "name": "The Lizard",
+      "description": "The stars of Canis Major below Sirius (the lizard is Sigma Canis Majoris)."
+    },
+    "Ktc": {
+      "name": "The Pair of Brolgas",
+      "description": "The stars around the Magellanic Clouds: a male and a female brolga. Not visible from Hungary."
+    },
+    "Otc": {
+      "name": "The Great Fish",
+      "description": "The constellation Delphinus."
+    },
+    "Wpl": {
+      "name": "The Wedge-Tailed Eagle",
+      "description": "The bright Sirius and its neighbours."
+    },
+    "Cwp": {
+      "name": "The Female Eagle, Warepil’s Wife",
+      "description": "The bright Rigel and Lepus, and the neighbouring stars of Eridanus."
+    },
+    "Tot": {
+      "name": "The Purple-Crowned Lorikeet",
+      "description": "The bright Altair and the stars of Aquila."
+    },
+    "Mar": {
+      "name": "The Meat Ant",
+      "description": "The bright Arcturus. According to tradition, it showed people the larvae of the wood ant (bittur), a favourite food; its appearance in the evening sky marked the time of gathering."
+    },
+    "Wrn": {
+      "name": "The Milky Way",
+      "description": "The name of the Milky Way; here it is marked by a star of Sagittarius where the Milky Way is brightest."
+    },
+    "Wkr": {
+      "name": "The Singing Bushlark",
+      "description": "A star in Boötes, west of Arcturus."
+    },
+    "Gel": {
+      "name": "The Galah",
+      "description": "The reddish Aldebaran."
+    },
+    "Col": {
+      "name": "The Ant",
+      "description": "The double star in the head of Capricornus."
+    },
+    "Won": {
+      "name": "The Boomerang",
+      "description": "The arc of Corona Australis. From Hungary it would be visible only at the very edge of the horizon, extremely low."
+    },
+    "Min": {
+      "name": "The Maned Snake",
+      "description": "Part of the Milky Way in the constellation Vela. Not visible from Hungary."
+    }
+  }
+}

@@ -15,6 +15,7 @@ import {
   saveFriendIds,
 } from '@/services/player/FirebaseFriendService';
 import { useAuthStore } from '@/state/useAuthStore';
+import type { TranslationKey } from '@/ui/i18n';
 
 const log = createLogger('friends');
 
@@ -29,13 +30,13 @@ export interface FriendEntry {
 
 export type FriendsStatus = 'idle' | 'loading' | 'ready' | 'error' | 'unavailable';
 
-export const ADD_FRIEND_MESSAGES: Record<AddFriendFailure | 'notFound' | 'network', string> = {
-  empty: 'Add meg a barátkódot.',
-  self: 'Ez a te saját kódod.',
-  duplicate: 'Ő már a barátaid között van.',
-  full: 'Elérted a barátok maximális számát.',
-  notFound: 'Nincs ilyen játékos. Ellenőrizd a kódot.',
-  network: 'A művelet nem sikerült. Ellenőrizd a kapcsolatot, majd próbáld újra.',
+export const ADD_FRIEND_MESSAGES: Record<AddFriendFailure | 'notFound' | 'network', TranslationKey> = {
+  empty: 'friends.error.empty',
+  self: 'friends.error.self',
+  duplicate: 'friends.error.duplicate',
+  full: 'friends.error.full',
+  notFound: 'friends.error.notFound',
+  network: 'friends.error.network',
 };
 
 interface FriendsState {
@@ -44,8 +45,8 @@ interface FriendsState {
   entries: FriendEntry[];
   status: FriendsStatus;
   lastLoadedAt: number | null;
-  /** Az utolsó barátfelvétel hibája, magyarul. */
-  addError: string | null;
+  /** Az utolsó barátfelvétel hibájának fordítási kulcsa (megjelenítéskor fordítjuk). */
+  addError: TranslationKey | null;
 
   refresh(options?: { force?: boolean }): Promise<void>;
   addFriend(code: string): Promise<boolean>;
@@ -59,7 +60,7 @@ const INITIAL = {
   entries: [] as FriendEntry[],
   status: 'idle' as FriendsStatus,
   lastLoadedAt: null as number | null,
-  addError: null as string | null,
+  addError: null as TranslationKey | null,
 };
 
 function sortEntries(entries: FriendEntry[]): FriendEntry[] {

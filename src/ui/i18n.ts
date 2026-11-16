@@ -1,108 +1,58 @@
-const messages = {
-  hu: {
-    'nav.sky': 'Égbolt',
-    'nav.games': 'Játékok',
-    'nav.leaderboard': 'Ranglista',
-    'nav.profile': 'Profil',
-    'games.title': 'Játékok',
-    'games.identify.title': 'Csillagkép-felismerő',
-    'games.identify.subtitle': 'Ismerd fel a csillagképeket',
-    'games.connect.title': 'Csillagról csillagra',
-    'games.connect.subtitle': 'Kösd össze a csillagokat',
-    'games.belief.title': 'Hiedelem-találó',
-    'games.belief.subtitle': 'Melyik csillagminta illik a leíráshoz?',
-    'games.soon': 'Hamarosan',
-    'games.play': 'Játék indítása',
-    'games.best': 'Rekord',
-    'games.note': 'A legjobb eredményeid felkerülnek a ranglistára.',
-    'games.culture': 'Égi kultúra',
-    'games.difficulty': 'Nehézség',
-    'games.easy': 'Könnyű',
-    'games.hard': 'Nehéz',
-    'games.start': 'Indítás',
-    'games.back': 'Vissza',
-    'games.round': 'Körök száma',
-    'games.next': 'Következő',
-    'games.results': 'Eredmény',
-    'games.again': 'Új játék',
-    'games.toLeaderboard': 'Ranglista',
-    'games.exit': 'Kilépés',
-    'games.newBest': 'Új rekord!',
-    'games.newTrophy': 'Új trófea',
-    'games.finished': 'Vége a játéknak',
-    'games.finalScore': 'Összpontszám',
-    'games.identify.intro':
-      'Egy csillagképet mutatunk, te pedig a négy lehetőség közül kiválasztod a helyes nevét. Minél gyorsabb vagy, és minél hosszabb a helyes válaszok sorozata, annál több pontot kapsz.',
-    'games.identify.easy': 'A csillagkép vonalai látszanak.',
-    'games.identify.hard': 'Csak a csillagok látszanak, a vonalak a válasz után tűnnek fel. Dupla pont.',
-    'games.identify.question': 'Melyik csillagkép ez?',
-    'games.identify.correct': 'Helyes!',
-    'games.identify.wrong': 'Nem ez volt. A helyes válasz:',
-    'games.identify.correctCount': 'Helyes válasz',
-    'games.connect.intro':
-      'Kösd össze a megadott csillagkép csillagait: koppints két csillagra egymás után, és köztük behúzódik a vonal. A hibás koppintás és a segítség pontba kerül.',
-    'games.connect.easy': 'Halvány segédvonal mutatja az alakzatot.',
-    'games.connect.hard': 'Segédvonal nélkül, csak a segítség gombbal. Dupla pont.',
-    'games.connect.prompt': 'Kösd össze:',
-    'games.connect.hintButton': 'Segítség',
-    'games.connect.lines': 'vonal',
-    'games.connect.mistakes': 'Hiba',
-    'games.connect.roundDone': 'Kész a csillagkép!',
-    'games.connect.pickFirst': 'Koppints az első csillagra.',
-    'games.connect.pickSecond': 'Koppints a második csillagra.',
-    'games.connect.good': 'Jó vonal!',
-    'games.connect.wrongLine': 'Ez a két csillag nincs összekötve ebben a csillagképben.',
-    'games.connect.wrongStar': 'Ez nem ennek a csillagképnek a csillaga.',
-    'games.connect.duplicate': 'Ezt a vonalat már behúztad.',
-    'games.connect.hintShown': 'A bekarikázott két csillagot kösd össze.',
-    'games.belief.intro':
-      'Rövid leírást olvasol egy csillagképhez fűződő hiedelemről vagy tudnivalóról, a csillagkép nevét kipontozzuk. Válaszd ki a négy csillagminta közül azt, amelyik a leíráshoz tartozik. A nyugati csillagképek leírása angol nyelvű.',
-    'games.belief.easy': 'Akár 5 mondatos leírás.',
-    'games.belief.hard': 'Csak az első 3 mondatot kapod meg. Dupla pont.',
-    'games.belief.question': 'Melyik csillagminta illik a leíráshoz?',
-    'games.belief.pattern': 'Csillagminta',
-    'games.belief.english': 'Angol nyelvű leírás',
-    'games.belief.answerIs': 'A leírás ehhez tartozott:',
-    'games.belief.wrong': 'Nem ez volt.',
-    'leaderboard.live': 'Élő',
-    'leaderboard.device': 'Ezen az eszközön',
-    'leaderboard.allGames': 'Mind',
-    'leaderboard.identify': 'Felismerő',
-    'leaderboard.connect': 'Csillagról',
-    'leaderboard.belief': 'Hiedelem',
-    'leaderboard.noResults': 'Még nincs eredmény.',
-    'leaderboard.loading': 'A ranglista betöltése…',
-    'leaderboard.error': 'A ranglista most nem tölthető be. Ellenőrizd a kapcsolatot.',
-    'leaderboard.personal': 'Saját helyed',
-    'leaderboard.place': 'hely',
-    'leaderboard.calculating': 'Helyezés számítása…',
-    'leaderboard.playToRank': 'Még nincs pontod. Játssz egy kört, és felkerülsz!',
-    'leaderboard.total': 'Összesen',
-    'leaderboard.trophies': 'trófea',
-    'leaderboard.games': 'játék',
-    'profile.language': 'Nyelv',
-    'profile.trophies': 'Trófeák',
-    'profile.signOut': 'Kijelentkezés',
-    'profile.languageTitle': 'Alkalmazás nyelve',
-    'profile.hungarian': 'Magyar',
-    'profile.english': 'English',
-    'profile.connected': 'Bejelentkezve',
-    'profile.account': 'Fiók',
-    'profile.firstLight': 'Első fény',
-    'profile.explorer': 'Felfedező',
-    'profile.moon': 'Holdjáró',
-    'profile.compass': 'Iránytű',
-    'profile.stargazer': 'Csillagnéző',
-    'profile.streak': 'Sorozat',
-    'profile.stargazerTitle': 'Csillagnéző',
-    'profile.appVersion': 'Verzió',
-    'profile.englishSoon': 'Az angol nyelvű felület részben készül.',
-    'profile.saveError': 'A nyelvi beállítás mentése nem sikerült.',
-  },
-} as const;
+import en from '@/locales/en.json';
+import hu from '@/locales/hu.json';
 
-export type TranslationKey = keyof (typeof messages)['hu'];
+import { LOCALE_TAGS, getLocale, useLocaleStore, type Locale } from './locale';
 
-export function t(key: TranslationKey): string {
-  return messages.hu[key];
+export { LOCALES, type Locale } from './locale';
+
+/** A fordítási kulcsok a magyar szótárból származnak; az angol szótárnak mindet tartalmaznia kell. */
+export type TranslationKey = keyof typeof hu;
+
+export type TranslationParams = Record<string, string | number>;
+
+const dictionaries: Record<Locale, Record<TranslationKey, string>> = { hu, en };
+
+/** Behelyettesíti a `{név}` helyőrzőket; az ismeretlen helyőrző változatlanul marad. */
+function interpolate(template: string, params?: TranslationParams): string {
+  if (!params) return template;
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    Object.hasOwn(params, name) ? String(params[name]) : match,
+  );
+}
+
+/** Ha a `count` paraméter 1, és van `<kulcs>.one` változat, azt használja (pl. „1 trophy”). */
+function pluralKey(locale: Locale, key: TranslationKey, params?: TranslationParams): TranslationKey {
+  if (params?.count !== 1) return key;
+  const one = `${key}.one`;
+  return one in dictionaries[locale] ? (one as TranslationKey) : key;
+}
+
+/** Fordítás adott nyelven; hiányzó angol szöveg esetén a magyar a tartalék. */
+export function translate(locale: Locale, key: TranslationKey, params?: TranslationParams): string {
+  const resolved = pluralKey(locale, key, params);
+  return interpolate(dictionaries[locale][resolved] ?? hu[resolved], params);
+}
+
+/** Fordítás az aktuális nyelven. Komponensben hívd mellé a `useLocale()`-t, hogy váltáskor frissüljön. */
+export function t(key: TranslationKey, params?: TranslationParams): string {
+  return translate(getLocale(), key, params);
+}
+
+/** Feliratkozik a nyelvre: a komponens nyelvváltáskor újrarenderelődik (az állapota megmarad). */
+export function useLocale(): Locale {
+  return useLocaleStore((state) => state.locale);
+}
+
+export function localeTag(): string {
+  return LOCALE_TAGS[getLocale()];
+}
+
+/** Szám az aktuális nyelv szerint (hu: „1 234”, en: „1,234”). */
+export function formatNumber(value: number): string {
+  return value.toLocaleString(localeTag());
+}
+
+/** Az aktuális nyelven megadott dátum és idő. */
+export function formatDateTimeLocale(date: Date): string {
+  return date.toLocaleString(localeTag());
 }

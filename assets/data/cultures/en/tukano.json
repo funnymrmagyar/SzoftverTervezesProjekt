@@ -1,0 +1,50 @@
+{
+  "name": "Tukano (Amazonian) sky",
+  "summary": "Constellations of the Tukano people living along the Tiquié River in northwestern Amazonia, whose setting marks the rainy and dry seasons, the flooding of the river and the migration of fish.",
+  "constellations": {
+    "001": {
+      "name": "The Lance Snake",
+      "description": "A large venomous snake (jararaca) across the stars of Scorpius, Sagittarius and Corona Australis. When it sets at sunset, the year of this Tukano group begins; the November setting of its head is connected with the rising and falling of the Tiquié River."
+    },
+    "002": {
+      "name": "The Armadillo",
+      "description": "The faint stars of Delphinus and part of Aquila, with the bright Altair."
+    },
+    "003": {
+      "name": "The River Shrimp",
+      "description": "Faint stars around Aquarius and Cetus. Together with the Jacundá fish it consists of few bright stars: finding it is a real challenge."
+    },
+    "004": {
+      "name": "The Jacundá Fish",
+      "description": "A few stars in Aquarius: a kind of Amazonian fish."
+    },
+    "005": {
+      "name": "The Jaguar",
+      "description": "One of the largest figures of the northern sky across the stars of Perseus, Cassiopeia and Camelopardalis: a puma or jaguar that prowls near the horizon all night."
+    },
+    "006": {
+      "name": "The Star Cluster",
+      "description": "The Pleiades; the name literally means “star group”. An important time marker of the complex Tukano calendar, a harbinger of the rainy season."
+    },
+    "007": {
+      "name": "The Fish-Smoking Grill",
+      "description": "The V of the Hyades and the bright Aldebaran, which follows the Pleiades: a fish-smoking grill (moquém)."
+    },
+    "008": {
+      "name": "The Handle of the Carving Axe",
+      "description": "Orion’s Belt, Betelgeuse and Bellatrix: the handle of the adze-shaped axe used for carving wood."
+    },
+    "009": {
+      "name": "The Egret",
+      "description": "The faint star cluster of Coma Berenices. The stars of Corvus may belong here too; the Tukano of São José II village pointed to Coma Berenices."
+    },
+    "010": {
+      "name": "The Turtle",
+      "description": "The Southern Cross; for some groups an otter. Not visible from Hungary."
+    },
+    "011": {
+      "name": "The Snake with the Large Anus",
+      "description": "The seven stars of the Plough. According to the legend, when it touches the horizon after sunset it swallows almost all the fish of the great river."
+    }
+  }
+}

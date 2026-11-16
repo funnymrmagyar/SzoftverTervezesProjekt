@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { reportUncaughtError } from '@/services/logger/globalErrorHandlers';
 
 import { Button } from './Button';
+import { t, useLocale } from './i18n';
 import { colors, font, spacing, sizing } from './theme';
 
 /** Egy renderelési hiba naplózása. Ugyanazt a hibát csak egyszer írja ki. */
@@ -19,6 +20,7 @@ export function reportRenderError(error: unknown): void {
  * Nem támaszkodik a navigációs témára, mert a hiba akár a layoutban is történhetett.
  */
 export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useLocale();
   useEffect(() => {
     reportRenderError(error);
   }, [error]);
@@ -26,17 +28,16 @@ export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return (
     <View style={styles.root} accessibilityRole="alert" testID="app-error-boundary">
       <View style={styles.card}>
-        <Text style={styles.title}>Valami elromlott</Text>
+        <Text style={styles.title}>{t('errorBoundary.title')}</Text>
         <Text style={styles.text}>
-          Ezt a képernyőt nem sikerült megjeleníteni. Próbáld újra; ha a hiba ismétlődik, indítsd
-          újra az alkalmazást.
+          {t('errorBoundary.text')}
         </Text>
         {__DEV__ ? (
           <Text style={styles.detail} selectable>
             {error.name}: {error.message}
           </Text>
         ) : null}
-        <Button title="Újrapróbálás" icon="refresh" onPress={() => void retry()} />
+        <Button title={t('errorBoundary.retry')} icon="refresh" onPress={() => void retry()} />
       </View>
     </View>
   );

@@ -11,15 +11,18 @@ import {
 
 import { getSkyCultures } from '@/core/catalog';
 import { useSkyStore } from '@/state/useSkyStore';
+import { t, useLocale } from '@/ui/i18n';
 import { Sheet } from '@/ui/layout/Sheet';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
 import { colors, font, spacing } from '@/ui/theme';
 
 import { parseDescription } from './richText';
 
-const LANGUAGE_NAMES: Record<string, string> = { en: 'angol' };
+/** A leírás nyelvének neve a fordítási kulcsokban (csak a támogatott nyelvekre). */
+const LANGUAGE_NAME_KEYS: Record<string, 'lang.en' | 'lang.hu'> = { en: 'lang.en', hu: 'lang.hu' };
 
 export function ConstellationInfo() {
+  const locale = useLocale();
   const cultureId = useSkyStore((state) => state.cultureId);
   const selectedId = useSkyStore((state) => state.selectedConstellationId);
   const select = useSkyStore((state) => state.selectConstellation);
@@ -28,13 +31,13 @@ export function ConstellationInfo() {
   const [viewportHeight, setViewportHeight] = useState(0);
   const [scrollOffset, setScrollOffset] = useState(0);
 
-  const repo = getSkyCultures();
+  const repo = getSkyCultures(locale);
   const culture = repo.get(cultureId);
   const constellation = selectedId ? repo.getConstellation(cultureId, selectedId) : undefined;
   if (!culture || !constellation) return null;
 
   const paragraphs = constellation.description ? parseDescription(constellation.description) : [];
-  const lang = constellation.descriptionLang;
+  const lang = constellation.descriptionLang ?? 'hu';
   const starCount = new Set(constellation.lines.flat()).size;
 
   function onScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -81,12 +84,14 @@ export function ConstellationInfo() {
                 </Text>
               ))
             ) : (
-              <Text style={styles.paragraph}>Ehhez a csillagképhez még nincs leírás.</Text>
+              <Text style={styles.paragraph}>{t('info.noDescription')}</Text>
             )}
             <Text style={styles.meta}>
-              {starCount} csillag
-              {lang && lang !== 'hu'
-                ? ` · eredeti, ${LANGUAGE_NAMES[lang] ?? lang} nyelvű leírás`
+              {t('info.starCount', { count: starCount })}
+              {lang !== locale
+                ? t('info.originalLang', {
+                    language: LANGUAGE_NAME_KEYS[lang] ? t(LANGUAGE_NAME_KEYS[lang]) : lang,
+                  })
                 : ''}
             </Text>
           </ScrollView>
@@ -96,7 +101,7 @@ export function ConstellationInfo() {
               contentSize={contentHeight}
               viewportSize={viewportHeight}
               offset={scrollOffset}
-              accessibilityLabel="Csillagkép leírásának görgetősávja"
+              accessibilityLabel={t('info.scrollbar')}
               onScrollTo={(offset) => {
                 const next = Math.max(0, Math.min(contentHeight - viewportHeight, offset));
                 scrollRef.current?.scrollTo({ y: next, animated: false });

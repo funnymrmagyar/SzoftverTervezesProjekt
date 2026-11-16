@@ -17,13 +17,14 @@ import {
 import { useAuthStore } from '@/state/useAuthStore';
 import { authMode } from '@/services/firebase/config';
 import { Button } from '@/ui/Button';
+import { LanguageSwitch } from '@/ui/LanguageSwitch';
 import { GlassSurface } from '@/ui/GlassSurface';
 import { ScreenContainer } from '@/ui/ScreenContainer';
 import { Avatar, SettingsRow, TrophyBadge } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
-import { TROPHIES, TROPHY_TIER_LABELS } from '@/features/trophies/trophies';
+import { TROPHIES, TROPHY_TIER_KEYS } from '@/features/trophies/trophies';
 import { FriendsSection } from '@/features/friends/FriendsSection';
 
 const TIER_COLORS = {
@@ -55,7 +56,7 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.trophyList}
-        accessibilityLabel="Trófeák, oldalra görgethető lista"
+        accessibilityLabel={t('profile.trophiesList')}
         onScroll={onScroll}
         onLayout={(event) => setViewportWidth(event.nativeEvent.layout.width)}
         onContentSizeChange={(width) => setContentWidth(width)}
@@ -65,9 +66,9 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
           <TrophyBadge
             key={trophy.id}
             icon={trophy.icon}
-            title={trophy.title}
-            description={trophy.description}
-            difficulty={TROPHY_TIER_LABELS[trophy.tier]}
+            title={t(trophy.titleKey)}
+            description={t(trophy.descriptionKey, trophy.descriptionParams)}
+            difficulty={t(TROPHY_TIER_KEYS[trophy.tier])}
             difficultyColor={TIER_COLORS[trophy.tier]}
             locked={!unlockedIds.includes(trophy.id)}
           />
@@ -79,7 +80,7 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
           contentSize={contentWidth}
           viewportSize={viewportWidth}
           offset={scrollOffset}
-          accessibilityLabel="Trófeák görgetősávja"
+          accessibilityLabel={t('profile.trophiesScrollbar')}
           onScrollTo={(offset) => {
             scrollRef.current?.scrollTo({ x: offset, animated: false });
             setScrollOffset(offset);
@@ -91,6 +92,7 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
 }
 
 export default function ProfileScreen() {
+  useLocale();
   const user = useAuthStore((state) => state.user);
   const syncError = useAuthStore((state) => state.syncError);
   const trophyIds = useAuthStore((state) => state.trophyIds);
@@ -141,12 +143,17 @@ export default function ProfileScreen() {
         </GlassSurface>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Beállítások</Text>
+          <Text style={styles.sectionTitle}>{t('profile.settings')}</Text>
           <GlassSurface style={styles.settingsGroup}>
-            <SettingsRow icon="language-outline" title="Nyelv" value="Magyar" />
+            <SettingsRow
+              icon="language-outline"
+              title={t('profile.language')}
+              value=""
+              accessory={<LanguageSwitch testID="profile-language" />}
+            />
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Adataim törlése"
+              accessibilityLabel={t('profile.deleteData')}
               onPress={() => {
                 clearAuthError();
                 setDeleteOpen(true);
@@ -155,7 +162,7 @@ export default function ProfileScreen() {
               style={styles.deleteRow}
             >
               <Ionicons name="trash-outline" size={sizing.icon} color={colors.danger} />
-              <Text style={styles.deleteRowText}>Adataim törlése</Text>
+              <Text style={styles.deleteRowText}>{t('profile.deleteData')}</Text>
             </Pressable>
           </GlassSurface>
         </View>
@@ -193,23 +200,22 @@ export default function ProfileScreen() {
         <View style={styles.deleteModal}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Párbeszéd bezárása"
+            accessibilityLabel={t('profile.dialogClose')}
             onPress={closeDeleteDialog}
             style={StyleSheet.absoluteFill}
           />
           <GlassSurface style={styles.deleteDialog} testID="profile-delete-dialog">
-            <Text style={styles.deleteTitle}>Adataim törlése</Text>
+            <Text style={styles.deleteTitle}>{t('profile.deleteData')}</Text>
             <Text style={styles.deleteDescription}>
-              A játékrekordjaid, trófeáid és fiókod véglegesen törlődnek. A folytatáshoz add meg a
-              jelszavad.
+              {t('profile.deleteDescription')}
             </Text>
             <TextInput
               value={deletePassword}
               onChangeText={setDeletePassword}
               secureTextEntry
               autoComplete="current-password"
-              accessibilityLabel="Jelszó a fiók törlésének megerősítéséhez"
-              placeholder="Jelszó"
+              accessibilityLabel={t('profile.deletePasswordLabel')}
+              placeholder={t('auth.password')}
               placeholderTextColor={colors.textMuted}
               onSubmitEditing={() => void confirmDeleteAccount()}
               style={styles.deletePassword}
@@ -218,13 +224,13 @@ export default function ProfileScreen() {
             {authError ? <Text style={styles.deleteError}>{authError}</Text> : null}
             <View style={styles.deleteActions}>
               <Button
-                title="Mégse"
+                title={t('common.cancel')}
                 variant="secondary"
                 onPress={closeDeleteDialog}
                 disabled={authBusy}
               />
               <Button
-                title="Végleges törlés"
+                title={t('profile.deleteConfirm')}
                 onPress={() => void confirmDeleteAccount()}
                 loading={authBusy}
                 disabled={!deletePassword}

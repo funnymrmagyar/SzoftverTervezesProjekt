@@ -17,7 +17,7 @@ import { authMode } from '@/services/firebase/config';
 import { useAuthStore } from '@/state/useAuthStore';
 import { Avatar, Badge, GlassCard, SegmentedControl } from '@/ui/components';
 import { ScreenContainer } from '@/ui/ScreenContainer';
-import { t } from '@/ui/i18n';
+import { formatNumber, t, useLocale } from '@/ui/i18n';
 import { colors, font, navigation, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 
@@ -37,10 +37,10 @@ function initialsOf(name: string): string {
 /** A név alatti statisztika: összesítettnél trófeák és játékok, játékonként az összpontszám. */
 function detailFor(player: LeaderboardPlayer, scope: GameFilter): string {
   if (scope !== 'all') {
-    return `${t('leaderboard.total')}: ${player.points.toLocaleString('hu-HU')} XP`;
+    return `${t('leaderboard.total')}: ${formatNumber(player.points)} XP`;
   }
   const games = Object.values(player.scores).filter((score) => (score ?? 0) > 0).length;
-  return `${player.trophyCount} ${t('leaderboard.trophies')} · ${games} ${t('leaderboard.games')}`;
+  return `${player.trophyCount} ${t('leaderboard.trophies', { count: player.trophyCount })} · ${games} ${t('leaderboard.games')}`;
 }
 
 function toEntry(
@@ -58,6 +58,7 @@ function toEntry(
 }
 
 export default function LeaderboardScreen() {
+  useLocale();
   const user = useAuthStore((state) => state.user);
   const { game: routeGame } = useLocalSearchParams<{ game?: string }>();
   const routeGameValue = Array.isArray(routeGame) ? routeGame[0] : routeGame;
@@ -132,7 +133,7 @@ export default function LeaderboardScreen() {
               options={gameOptions}
               value={selectedGame}
               onChange={selectGame}
-              accessibilityLabel="Játék szűrése"
+              accessibilityLabel={t('leaderboard.filterGames')}
               compactSelection
               testID="leaderboard-game-filter"
             />
@@ -210,7 +211,7 @@ export default function LeaderboardScreen() {
             </Text>
           </View>
           <Text style={[styles.pinnedScore, Boolean(me?.score) && styles.pinnedScoreActive]}>
-            {me?.score ? `${me.score.toLocaleString('hu-HU')} XP` : '— XP'}
+            {me?.score ? `${formatNumber(me.score)} XP` : '— XP'}
           </Text>
         </GlassCard>
       </View>

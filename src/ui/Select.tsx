@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { t } from './i18n';
 import { colors, motion, radius, sizing, spacing } from './theme';
 import { useReducedMotion } from './useReducedMotion';
 import { GlassSurface } from './GlassSurface';
@@ -159,7 +160,7 @@ export function Select<T extends string>({
           <Text style={styles.panelTitle}>{label}</Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Bezárás"
+            accessibilityLabel={t('common.close')}
             onPress={close}
             onFocus={() => setFocusedItem('close')}
             onBlur={() => setFocusedItem(null)}
@@ -173,9 +174,9 @@ export function Select<T extends string>({
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Keresés"
+            placeholder={t('select.search')}
             placeholderTextColor={colors.textMuted}
-            accessibilityLabel={`${label} keresése`}
+            accessibilityLabel={t('select.searchLabel', { label })}
             style={styles.search}
             testID={testID ? `${testID}-search` : undefined}
           />
@@ -195,7 +196,7 @@ export function Select<T extends string>({
                   key={option.value}
                   accessibilityRole="button"
                   accessibilityLabel={`${option.label}${option.description ? `, ${option.description}` : ''}`}
-                  accessibilityHint={`Kiválasztás: ${option.label}`}
+                  accessibilityHint={t('select.optionHint', { label: option.label })}
                   accessibilityState={{ selected: active, disabled: option.disabled }}
                   disabled={option.disabled}
                   onPress={() => selectOption(option)}
@@ -237,7 +238,7 @@ export function Select<T extends string>({
               );
             })
           ) : (
-            <Text style={styles.empty}>Nincs találat.</Text>
+            <Text style={styles.empty}>{t('select.empty')}</Text>
           )}
         </ScrollView>
       </GlassSurface>
@@ -249,8 +250,8 @@ export function Select<T extends string>({
       <View ref={triggerRef} collapsable={false}>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`${label}: ${selected?.label ?? 'választás'}`}
-          accessibilityHint="Megnyitja a választási lehetőségeket"
+          accessibilityLabel={`${label}: ${selected?.label ?? t('select.choose')}`}
+          accessibilityHint={t('select.openHint')}
           accessibilityState={{ expanded: open }}
           onPress={show}
           onFocus={() => setFocusedItem('trigger')}
@@ -290,7 +291,7 @@ export function Select<T extends string>({
             style={StyleSheet.absoluteFill}
             onPress={close}
             accessibilityRole="button"
-            accessibilityLabel="Bezárás"
+            accessibilityLabel={t('common.close')}
           />
           {panel}
         </View>

@@ -56,8 +56,12 @@ export function vectorToHorizontal(v: Vec3): HorizontalCoords {
 
 const COMPASS_POINTS = ['É', 'ÉK', 'K', 'DK', 'D', 'DNy', 'Ny', 'ÉNy'];
 
-/** Azimut → magyar égtáj-rövidítés (8 irány). */
+/** Azimut → az égtáj sorszáma (0 = észak, 1 = északkelet, … 7 = északnyugat). */
+export function compassIndex(azimuth: number): number {
+  return Math.round(normalizeDegrees(azimuth) / 45) % 8;
+}
+
+/** Azimut → magyar égtáj-rövidítés (8 irány); a felület a `compassIndex`-szel fordítja. */
 export function compassPoint(azimuth: number): string {
-  const index = Math.round(normalizeDegrees(azimuth) / 45) % 8;
-  return COMPASS_POINTS[index];
+  return COMPASS_POINTS[compassIndex(azimuth)];
 }

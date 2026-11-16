@@ -1,4 +1,5 @@
 import { formatYear } from '@/core/time';
+import { getLocale } from '@/ui/locale';
 
 export const DAY_MINUTES = 24 * 60;
 export const TIME_STEP_MINUTES = 5;
@@ -22,9 +23,20 @@ export function formatClock(minute: number): string {
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
+/** Évszám az aktuális nyelven (i. e. / BCE jelöléssel). */
+export function formatYearText(year: number): string {
+  return formatYear(year, getLocale());
+}
+
+/** Hónap és nap az aktuális nyelven: hu „okt. 7.”, en „Oct 7”. */
+export function formatMonthDay(date: Date): string {
+  const locale = getLocale();
+  const month = date.toLocaleDateString(locale === 'en' ? 'en-US' : 'hu-HU', { month: 'short' });
+  return locale === 'en' ? `${month} ${date.getDate()}` : `${month} ${date.getDate()}.`;
+}
+
 export function formatTravelDate(date: Date): string {
-  const month = date.toLocaleDateString('hu-HU', { month: 'short' });
-  return `${formatYear(date.getFullYear())} · ${month} ${date.getDate()}. · ${formatClock(minuteOfDay(date))}`;
+  return `${formatYearText(date.getFullYear())} · ${formatMonthDay(date)} · ${formatClock(minuteOfDay(date))}`;
 }
 
 export function sliderValueAtPosition(

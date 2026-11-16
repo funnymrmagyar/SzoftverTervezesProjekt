@@ -144,7 +144,7 @@ describe('useFriendsStore', () => {
 
     loadSummary.mockResolvedValueOnce(null);
     expect(await useFriendsStore.getState().addFriend('nincs')).toBe(false);
-    expect(useFriendsStore.getState().addError).toContain('Nincs ilyen játékos');
+    expect(useFriendsStore.getState().addError).toBe('friends.error.notFound');
     expect(saveIds).not.toHaveBeenCalled();
 
     loadSummary.mockResolvedValueOnce(summary('x', 40));

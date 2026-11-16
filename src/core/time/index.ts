@@ -68,6 +68,8 @@ export function shiftDays(date: Date, days: number): Date {
   return clampToRange(shifted);
 }
 
-export function formatYear(year: number): string {
-  return year <= 0 ? `i. e. ${1 - year}` : String(year);
+/** Évszám megjelenítése; az időszámításunk előtti évek: hu „i. e. 44”, en „44 BCE”. */
+export function formatYear(year: number, locale: 'hu' | 'en' = 'hu'): string {
+  if (year > 0) return String(year);
+  return locale === 'en' ? `${1 - year} BCE` : `i. e. ${1 - year}`;
 }

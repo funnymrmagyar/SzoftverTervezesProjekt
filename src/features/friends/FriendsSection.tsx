@@ -9,7 +9,7 @@ import { useAuthStore } from '@/state/useAuthStore';
 import { Button } from '@/ui/Button';
 import { GlassSurface } from '@/ui/GlassSurface';
 import { Avatar } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { formatNumber, t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 
 import { useFriendsStore, type FriendEntry } from './useFriendsStore';
@@ -22,13 +22,14 @@ function initialsOf(name: string): string {
 export function formatFriendScores(summary: FriendSummary): string {
   return GAME_OPTIONS.map((game) => {
     const score = summary.scores[game.id];
-    return `${t(game.leaderboardKey)} ${score ? score.toLocaleString('hu-HU') : '—'}`;
+    return `${t(game.leaderboardKey)} ${score ? formatNumber(score) : '—'}`;
   }).join(' · ');
 }
 
 function FriendRow({ entry, onRemove }: { entry: FriendEntry; onRemove: () => void }) {
+  useLocale();
   const { summary } = entry;
-  const name = summary?.displayName ?? 'Már nem elérhető';
+  const name = summary?.displayName ?? t('friends.unavailableName');
   return (
     <View style={styles.friendRow} testID={`friend-${entry.uid}`}>
       <Avatar initials={initialsOf(name)} size={sizing.touch} />
@@ -39,20 +40,20 @@ function FriendRow({ entry, onRemove }: { entry: FriendEntry; onRemove: () => vo
         {summary ? (
           <>
             <Text style={styles.friendMeta} numberOfLines={1}>
-              {summary.points.toLocaleString('hu-HU')} XP · {summary.trophyCount}{' '}
-              {t('leaderboard.trophies')}
+              {formatNumber(summary.points)} XP ·{' '}
+              {t('leaderboard.trophies', { count: summary.trophyCount })}
             </Text>
             <Text style={styles.friendScores} numberOfLines={2}>
               {formatFriendScores(summary)}
             </Text>
           </>
         ) : (
-          <Text style={styles.friendMeta}>A játékos fiókja törölve lett.</Text>
+          <Text style={styles.friendMeta}>{t('friends.deletedAccount')}</Text>
         )}
       </View>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${name} eltávolítása a barátok közül`}
+        accessibilityLabel={t('friends.removeLabel', { name })}
         onPress={onRemove}
         hitSlop={spacing.sm}
         style={styles.removeButton}
@@ -64,6 +65,7 @@ function FriendRow({ entry, onRemove }: { entry: FriendEntry; onRemove: () => vo
 }
 
 export function FriendsSection() {
+  useLocale();
   const uid = useAuthStore((state) => state.user?.uid);
   const status = useFriendsStore((state) => state.status);
   const entries = useFriendsStore((state) => state.entries);
@@ -96,11 +98,12 @@ export function FriendsSection() {
     <View style={styles.section} testID="friends-section">
       <View style={styles.heading}>
         <Text style={styles.sectionTitle}>
-          Barátok{status === 'ready' ? ` · ${entries.length}` : ''}
+          {t('friends.title')}
+          {status === 'ready' ? ` · ${entries.length}` : ''}
         </Text>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Barátlista frissítése"
+          accessibilityLabel={t('friends.refresh')}
           disabled={loading || status === 'unavailable'}
           onPress={() => void refresh({ force: true })}
           hitSlop={spacing.sm}
@@ -116,14 +119,12 @@ export function FriendsSection() {
 
       {status === 'unavailable' ? (
         <GlassSurface style={styles.card}>
-          <Text style={styles.hint}>
-            A barátlistához online fiók kell (Firebase). Helyi módban nem érhető el.
-          </Text>
+          <Text style={styles.hint}>{t('friends.unavailable')}</Text>
         </GlassSurface>
       ) : (
         <>
           <GlassSurface style={styles.card}>
-            <Text style={styles.label}>A te barátkódod (oszd meg a barátaiddal)</Text>
+            <Text style={styles.label}>{t('friends.ownCode')}</Text>
             <Text selectable style={styles.code} testID="friends-own-code">
               {uid ?? ''}
             </Text>
@@ -133,15 +134,15 @@ export function FriendsSection() {
                 onChangeText={setCode}
                 autoCapitalize="none"
                 autoCorrect={false}
-                accessibilityLabel="Barátkód"
-                placeholder="Barátkód beillesztése"
+                accessibilityLabel={t('friends.codeLabel')}
+                placeholder={t('friends.codePlaceholder')}
                 placeholderTextColor={colors.textMuted}
                 onSubmitEditing={() => void submit()}
                 style={styles.input}
                 testID="friends-code-input"
               />
               <Button
-                title="Hozzáadás"
+                title={t('friends.add')}
                 icon="person-add-outline"
                 onPress={() => void submit()}
                 loading={adding}
@@ -149,13 +150,11 @@ export function FriendsSection() {
                 testID="friends-add"
               />
             </View>
-            {addError ? <Text style={styles.error}>{addError}</Text> : null}
+            {addError ? <Text style={styles.error}>{t(addError)}</Text> : null}
           </GlassSurface>
 
           {status === 'error' ? (
-            <Text style={styles.error}>
-              A barátlista most nem tölthető be. Próbáld újra a frissítés gombbal.
-            </Text>
+            <Text style={styles.error}>{t('friends.loadError')}</Text>
           ) : null}
 
           {entries.length ? (
@@ -169,7 +168,7 @@ export function FriendsSection() {
               ))}
             </GlassSurface>
           ) : status === 'ready' ? (
-            <Text style={styles.hint}>Még nincs barátod. Add meg valaki barátkódját!</Text>
+            <Text style={styles.hint}>{t('friends.empty')}</Text>
           ) : null}
         </>
       )}

@@ -29,13 +29,17 @@ import {
   deleteLocalPlayerProfile,
   syncLocalPlayerProfile,
 } from '@/services/player/localPlayerProfiles';
+import { t } from '@/ui/i18n';
+import { useLocaleStore } from '@/ui/locale';
 import { useSkyStore } from './useSkyStore';
 import { useViewStore } from './useViewStore';
 
 export type AuthStatus = 'loading' | 'signedOut' | 'signedIn';
 
-const PLAYER_SYNC_ERROR =
-  'A felhasználói adatok szinkronizálása nem sikerült. Ellenőrizd a kapcsolatot, majd próbáld újra.';
+/** A szinkronhiba üzenete az aktuális nyelven. */
+function playerSyncError(): string {
+  return t('sync.error');
+}
 
 const log = createLogger('auth');
 
@@ -169,7 +173,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
             reportSyncError(error);
             if (revision === authRevision) {
               set((state) => ({
-                syncError: PLAYER_SYNC_ERROR,
+                syncError: playerSyncError(),
                 trophyIds: [],
                 profileRevision: state.profileRevision + 1,
               }));
@@ -190,7 +194,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         return true;
       } catch (error) {
         reportSyncError(error);
-        set({ syncError: PLAYER_SYNC_ERROR });
+        set({ syncError: playerSyncError() });
         return false;
       }
     },
@@ -205,7 +209,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         return await get().syncPlayerData();
       } catch (error) {
         log.error('A trófeák mentése nem sikerült', { error });
-        set({ syncError: PLAYER_SYNC_ERROR });
+        set({ syncError: playerSyncError() });
         return false;
       }
     },
@@ -270,4 +274,12 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
     clearError: () => set({ error: null }),
   };
+});
+
+// Nyelvváltáskor a már megjelenített hibaüzenet ne maradjon a régi nyelven.
+useLocaleStore.subscribe((state, previous) => {
+  if (state.locale === previous.locale) return;
+  const { error, syncError } = useAuthStore.getState();
+  if (error) useAuthStore.setState({ error: null });
+  if (syncError) useAuthStore.setState({ syncError: playerSyncError() });
 });

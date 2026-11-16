@@ -7,9 +7,11 @@ import { useAuthStore } from '@/state/useAuthStore';
 import { AuthForm } from '@/ui/AuthForm';
 import { Button } from '@/ui/Button';
 import { TextField } from '@/ui/TextField';
+import { t, useLocale } from '@/ui/i18n';
 import { colors } from '@/ui/theme';
 
 export default function LoginScreen() {
+  useLocale();
   const { signIn, busy, error, clearError } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,20 +28,20 @@ export default function LoginScreen() {
   }
 
   return (
-    <AuthForm title="Bejelentkezés" subtitle="Üdv újra az égbolt alatt!" error={error}>
+    <AuthForm title={t('auth.signIn.title')} subtitle={t('auth.signIn.subtitle')} error={error}>
       <TextField
-        label="E-mail"
+        label={t('auth.email')}
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"
-        placeholder="nev@pelda.hu"
+        placeholder={t('auth.emailPlaceholder')}
         error={fieldErrors.email}
         testID="login-email"
       />
       <TextField
-        label="Jelszó"
+        label={t('auth.password')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -48,11 +50,11 @@ export default function LoginScreen() {
         onSubmitEditing={submit}
         testID="login-password"
       />
-      <Button title="Bejelentkezés" onPress={submit} loading={busy} testID="login-submit" />
+      <Button title={t('auth.signIn.title')} onPress={submit} loading={busy} testID="login-submit" />
       <Text style={styles.footer}>
-        Még nincs fiókod?{' '}
+        {t('auth.signIn.noAccount')}{' '}
         <Link href="/register" replace style={styles.link}>
-          Regisztrálj
+          {t('auth.signIn.registerLink')}
         </Link>
       </Text>
     </AuthForm>

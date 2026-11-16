@@ -1,0 +1,62 @@
+{
+  "name": "Samoan sky",
+  "summary": "The stars of the “Navigator Islands”: hook, wild duck, kingfisher and sea monster, signs of Polynesian seafaring and of the farming calendar.",
+  "constellations": {
+    "001": {
+      "name": "The Cunning Fish",
+      "description": "The Southern Cross. According to the legend, Filo and Mea (Alpha and Beta Centauri) fish for this fish. Not visible from Hungary."
+    },
+    "002": {
+      "name": "The Two Men",
+      "description": "Alpha and Beta Centauri: Filo and Mea, the two fishermen hunting the Cunning Fish (Southern Cross). Not visible from Hungary."
+    },
+    "003": {
+      "name": "The Three Moons",
+      "description": "The three stars of Orion’s Belt, part of the Carrying Pole. It was the seafarers’ “star path” between Manuʻa and the island of Pukapuka."
+    },
+    "004": {
+      "name": "The Wild Duck",
+      "description": "The head of Scorpius: a flying duck which, according to the legend, two star groups (the globular clusters M4 and M80) hunt. The duck’s head, Antares, was also a guide star in navigation."
+    },
+    "005": {
+      "name": "The Baited Hook",
+      "description": "The whole hook shape of Scorpius: the magic hook of ʻAloʻalolelā."
+    },
+    "006": {
+      "name": "The Pigeon Perch",
+      "description": "The tip of the tail of Scorpius: a figure tied to the noble sport of pigeon catching."
+    },
+    "007": {
+      "name": "The Kingfisher",
+      "description": "The constellation Delphinus. According to the legend, the kingfisher ambushes the Grasshopper (the stars of Pegasus)."
+    },
+    "008": {
+      "name": "The Grasshopper",
+      "description": "The stars of Pegasus: the grasshopper that the Kingfisher (Delphinus) lies in wait for."
+    },
+    "009": {
+      "name": "The Carrying Pole",
+      "description": "A long figure from Orion to Monoceros, linked to the legend cycle of Tiʻitiʻiatalaga. The zenith star of the voyage between Samoa and Tonga."
+    },
+    "010": {
+      "name": "The Candlenut Torch",
+      "description": "The raised arm and club of Orion: a torch made from the oily nuts of the candlenut (kukui)."
+    },
+    "011": {
+      "name": "The Tongs",
+      "description": "The horns of Taurus and the Hyades: tongs, linked to the legend of Tiʻitiʻiatalaga (Maui)."
+    },
+    "012": {
+      "name": "The Sea Monster",
+      "description": "The constellation Cetus (the tail of Cetus is the monster’s head): the monster chases the canoe of the demigod Liʻi, whose face is marked by the Pleiades (Matāliʻi)."
+    },
+    "013": {
+      "name": "The Ancient War Club",
+      "description": "A long figure from Capella to the stars of the Great Bear."
+    },
+    "014": {
+      "name": "The Great Adze",
+      "description": "The “sickle” of Leo: the emblem of Toʻivā, the son of Tapuʻitea (Venus). Venus passes through Leo once or twice a year: this is how the mother visits her son."
+    }
+  }
+}

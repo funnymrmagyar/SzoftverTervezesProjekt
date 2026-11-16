@@ -22,7 +22,7 @@ import { SkyChart, type ChartLine } from '@/features/games/SkyChart';
 import { useSkyStore } from '@/state/useSkyStore';
 import { Button } from '@/ui/Button';
 import { Badge, GlassCard } from '@/ui/components';
-import { t } from '@/ui/i18n';
+import { t, useLocale } from '@/ui/i18n';
 import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { useReducedMotion } from '@/ui/useReducedMotion';
 import { useBreakpoint } from '@/ui/useBreakpoint';
@@ -42,9 +42,10 @@ interface Run {
 }
 
 export default function ConstellationFinderScreen() {
+  const locale = useLocale();
   const reducedMotion = useReducedMotion();
   const layout = useBreakpoint();
-  const cultures = useMemo(() => getPlayableCultures(), []);
+  const cultures = useMemo(() => getPlayableCultures(undefined, locale), [locale]);
   const skyCultureId = useSkyStore((state) => state.cultureId);
 
   const [phase, setPhase] = useState<Phase>('setup');

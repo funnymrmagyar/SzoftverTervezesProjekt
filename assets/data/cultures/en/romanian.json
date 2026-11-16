@@ -1,0 +1,162 @@
+{
+  "name": "Romanian folk sky",
+  "summary": "39 figures of the Romanian peasant tradition: farm tools, pastoral life and Christian images in the sky.",
+  "constellations": {
+    "UMa": {
+      "name": "Great Cart",
+      "description": "The stars of the Great Bear, which in Romanian tradition form a great cart. It corresponds to the Hungarian Wain of Göncöl, but here the cart also includes further stars of the Great Bear."
+    },
+    "C3i": {
+      "name": "Goat with Three Kids",
+      "description": "In the constellation Auriga: the bright Capella is the mother goat, and the three fainter stars next to it are her kids. Hungarian tradition also calls Capella the Goat Kid."
+    },
+    "Csa": {
+      "name": "Scythe",
+      "description": "A scythe drawn from the stars of Cepheus. Romanian folk tradition also saw the sky as an “exhibition” of peasant tools."
+    },
+    "Cio": {
+      "name": "Shepherd with His Sheep",
+      "description": "In the constellation Lyra: the bright Vega is the shepherd, and the fainter stars around it are his sheep."
+    },
+    "Hra": {
+      "name": "Round Dance",
+      "description": "The semicircle of stars of Corona Borealis are the dancers of a hora, a round dance."
+    },
+    "Jgb": {
+      "name": "Well and Trough",
+      "description": "The great square of Pegasus and the row of stars of Andromeda together form a well and its trough."
+    },
+    "Tdz": {
+      "name": "God’s Throne",
+      "description": "The W-shaped row of stars of Cassiopeia, in which tradition saw the throne of God. In Hungarian tradition the same figure is the Holy Well."
+    },
+    "Fap": {
+      "name": "Emperor’s Daughter with the Water Yoke",
+      "description": "In the constellation Aquila: the bright Altair is the emperor’s daughter, and the two neighbouring stars (Tarazed and Alshain) are the two buckets of the water yoke she carries on her shoulder."
+    },
+    "Ccp": {
+      "name": "Hen with Her Chicks",
+      "description": "The Pleiades are, in Romanian tradition too, a hen with her chicks, just as in Hungarian."
+    },
+    "UMi": {
+      "name": "Little Cart",
+      "description": "The stars of the Little Bear, the smaller counterpart of the Great Cart; the Pole Star is at the end of its shaft."
+    },
+    "Gem": {
+      "name": "The Brothers",
+      "description": "The two bright stars of Gemini (Castor and Pollux) and the rows of stars belonging to them: two brothers."
+    },
+    "Pma": {
+      "name": "Great Cross",
+      "description": "The great cross of the constellation Cygnus in the summer Milky Way. Hungarian tradition also calls it the Cross."
+    },
+    "Pmi": {
+      "name": "Little Cross",
+      "description": "The tiny rhombus-shaped group of stars of Delphinus. In Hungarian tradition the same figure is the Little Cross."
+    },
+    "Cap": {
+      "name": "The Billy Goat",
+      "description": "The stars of Capricornus, a billy goat in Romanian tradition."
+    },
+    "Rac": {
+      "name": "The River Crab",
+      "description": "The faint stars of the constellation Cancer."
+    },
+    "Cal": {
+      "name": "The Horse",
+      "description": "In the constellation Leo, Romanian tradition saw a horse; the sickle-shaped head and the body follow the stars of the western Lion."
+    },
+    "Dra": {
+      "name": "The Dragon",
+      "description": "The long winding row of stars of Draco, the dragon (balaur) of Romanian folk tales."
+    },
+    "Crb": {
+      "name": "The Raven",
+      "description": "A figure made of the four bright stars of the constellation Corvus."
+    },
+    "Cat": {
+      "name": "The Scales",
+      "description": "The stars of Libra, a hand-held steelyard (cântar) in Romanian tradition."
+    },
+    "Vir": {
+      "name": "The Maiden",
+      "description": "The stars of Virgo, with the bright Spica."
+    },
+    "Psc": {
+      "name": "The Carps",
+      "description": "The two strings of fish of Pisces, carps in Romanian tradition."
+    },
+    "Ber": {
+      "name": "The Ram",
+      "description": "The stars of the constellation Aries."
+    },
+    "Cma": {
+      "name": "The Hound",
+      "description": "The constellation Canis Major, with Sirius in it: in Romanian tradition a large guard dog (dulău)."
+    },
+    "Ctl": {
+      "name": "The Puppy",
+      "description": "The two stars of Canis Minor, the bright Procyon and Gomeisa."
+    },
+    "Vca": {
+      "name": "The Cowherd",
+      "description": "The constellation Boötes, in Romanian tradition a cowherd grazing the cows. The folk name of the bright Arcturus in Hungarian (Ökörhajcsár, the Oxherd) is also linked to a herdsman."
+    },
+    "Prb": {
+      "name": "The Little Dove",
+      "description": "The stars of the constellation Columba."
+    },
+    "Var": {
+      "name": "The One Who Pours Out Water",
+      "description": "The stars of Aquarius: a figure pouring water from a jug."
+    },
+    "Chi": {
+      "name": "The Whale",
+      "description": "The stars of the constellation Cetus."
+    },
+    "Rar": {
+      "name": "The Little Plough",
+      "description": "A small plough (rariță) drawn from the stars of Orion (the shoulders, the belt and the legs). Romanian folk tradition also saw the sky as an “exhibition” of peasant tools. Four Romanian figures overlap in Orion."
+    },
+    "Sec": {
+      "name": "The Sickle",
+      "description": "A sickle drawn from the fainter stars around Orion’s Sword. Romanian folk tradition also saw the sky as an “exhibition” of peasant tools."
+    },
+    "Sfm": {
+      "name": "The Great Auger",
+      "description": "The three stars of Orion’s Belt and Rigel: a large carpenter’s auger. Romanian folk tradition also saw the sky as an “exhibition” of peasant tools."
+    },
+    "Tau": {
+      "name": "The Bull",
+      "description": "The V-shaped Hyades that form the head of Taurus, and the reddish Aldebaran."
+    },
+    "Omu": {
+      "name": "The Man",
+      "description": "The stars of Hercules, simply a human figure in Romanian tradition."
+    },
+    "Sar": {
+      "name": "The Serpent",
+      "description": "The stars of Ophiuchus and Serpens together form a single great serpent."
+    },
+    "Sco": {
+      "name": "The Scorpion",
+      "description": "The stars of Scorpius with the reddish Antares."
+    },
+    "Bar": {
+      "name": "The Broadaxe",
+      "description": "A broad axe (barda) drawn from the stars of Perseus. Romanian folk tradition also saw the sky as an “exhibition” of peasant tools."
+    },
+    "Arc": {
+      "name": "The Archer",
+      "description": "The bright stars of Sagittarius: an archer."
+    },
+    "Trf": {
+      "name": "The Three Saints",
+      "description": "The three stars of Orion’s Belt, in Romanian tradition the three holy church fathers whose common feast day is on 30 January. In Hungarian tradition the same figure is the Reapers’ Star."
+    },
+    "Vri": {
+      "name": "The Wild Boars",
+      "description": "The stars of the Hyades and Aldebaran, the same as in The Bull figure: another tradition saw wild boars in them."
+    }
+  }
+}

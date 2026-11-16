@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 import { ActivityIndicator, StyleSheet, View, type ColorValue } from 'react-native';
 
 import { AppTabBar } from '@/ui/AppTabBar';
+import { t, useLocale } from '@/ui/i18n';
 import { motion, colors, sizing, spacing } from '@/ui/theme';
 import { useBreakpoint } from '@/ui/useBreakpoint';
 import { useReducedMotion } from '@/ui/useReducedMotion';
@@ -25,6 +26,7 @@ function tabIcon(name: IconName) {
 }
 
 export default function TabsLayout() {
+  useLocale();
   const loading = useAuthStore((state) => state.status === 'loading');
   const reduceMotion = useReducedMotion();
   const { expanded } = useBreakpoint();
@@ -75,7 +77,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="live"
           options={{
-            title: 'Égbolt',
+            title: t('nav.sky'),
             tabBarButtonTestID: 'tab-live',
             tabBarIcon: tabIcon('sparkles-outline'),
           }}
@@ -83,7 +85,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="games"
           options={{
-            title: 'Játékok',
+            title: t('nav.games'),
             tabBarButtonTestID: 'tab-games',
             tabBarIcon: tabIcon('game-controller-outline'),
           }}
@@ -91,7 +93,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="leaderboard"
           options={{
-            title: 'Ranglista',
+            title: t('nav.leaderboard'),
             tabBarButtonTestID: 'tab-leaderboard',
             tabBarIcon: tabIcon('trophy-outline'),
           }}
@@ -99,7 +101,7 @@ export default function TabsLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: 'Profil',
+            title: t('nav.profile'),
             tabBarButtonTestID: 'tab-profile',
             tabBarIcon: tabIcon('person-circle-outline'),
           }}

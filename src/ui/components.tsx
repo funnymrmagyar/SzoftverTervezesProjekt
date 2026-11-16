@@ -12,6 +12,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { t } from './i18n';
 import { colors, font, radius, sizing, spacing } from './theme';
 import { GlassSurface } from './GlassSurface';
 
@@ -212,7 +213,7 @@ export function Avatar({
     <View
       accessible
       accessibilityRole="image"
-      accessibilityLabel={`Profilkép: ${initials}`}
+      accessibilityLabel={t('profile.avatar', { initials })}
       style={[
         styles.avatar,
         { width: size, height: size, borderRadius: size / 2 },
@@ -307,8 +308,8 @@ export function TrophyBadge({
     <>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${title}${locked ? ', zárolva' : ', megszerezve'}`}
-        accessibilityHint="Megmutatja a trófea feltételeit és nehézségét"
+        accessibilityLabel={`${title}, ${t(locked ? 'trophy.lockedState' : 'trophy.earnedState')}`}
+        accessibilityHint={t('trophy.hint')}
         onPress={() => setDetailsOpen(true)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
@@ -340,7 +341,7 @@ export function TrophyBadge({
         <View style={styles.trophyModal}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Trófea részleteinek bezárása"
+            accessibilityLabel={t('trophy.closeDetails')}
             onPress={() => setDetailsOpen(false)}
             style={StyleSheet.absoluteFill}
           />
@@ -355,15 +356,15 @@ export function TrophyBadge({
               <Text style={[styles.difficultyText, { color: difficultyColor }]}>{difficulty}</Text>
             </View>
             <Text style={styles.trophyStatus}>
-              {locked ? 'Még nem szerezted meg' : 'Megszerzett trófea'}
+              {t(locked ? 'trophy.locked' : 'trophy.earned')}
             </Text>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel="Bezárás"
+              accessibilityLabel={t('common.close')}
               onPress={() => setDetailsOpen(false)}
               style={({ pressed }) => [styles.trophyClose, pressed && styles.pressed, cursorStyle]}
             >
-              <Text style={styles.trophyCloseText}>Bezárás</Text>
+              <Text style={styles.trophyCloseText}>{t('common.close')}</Text>
             </Pressable>
           </GlassSurface>
         </View>

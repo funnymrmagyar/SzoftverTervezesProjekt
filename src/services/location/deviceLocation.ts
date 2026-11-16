@@ -22,6 +22,7 @@ export async function getDeviceLocation(): Promise<DeviceLocationResult> {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
       label: 'Saját hely (GPS)',
+      labelKey: 'location.gpsLabel',
     },
   };
 }

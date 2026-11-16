@@ -1,0 +1,46 @@
+{
+  "name": "Sámi sky",
+  "summary": "The sky of the indigenous people of northern Scandinavia: the great elk Sarva and the archers hunting it.",
+  "constellations": {
+    "001": {
+      "name": "Sarva, the Elk",
+      "description": "The ruling figure of the sky: a huge elk made of Cassiopeia, Perseus and part of Auriga. The stars around it are all figures hunting it. It probably dates from a hunting culture that predates the domestication of the reindeer."
+    },
+    "002": {
+      "name": "Favdna’s Bow and Arrow",
+      "description": "The stars of the Plough: the hunter’s bow, with which he takes aim at the elk."
+    },
+    "003": {
+      "name": "Galla’s Sons",
+      "description": "The three stars of Orion’s Belt, Galla’s sons, the hunter’s helpers."
+    },
+    "004": {
+      "name": "The Pillar of the Sky",
+      "description": "The Pole Star holds up the sky. According to the legend, if Favdna’s arrow hits it, the world will end."
+    },
+    "005": {
+      "name": "Favdna, the Hunter",
+      "description": "Arcturus: the hunter who takes aim at the elk with his bow."
+    },
+    "006": {
+      "name": "The Runner",
+      "description": "Vega, one of the hunt’s helpers."
+    },
+    "007": {
+      "name": "The Morning Star",
+      "description": "The star that announces the approach of morning on Johan Turi’s sky map. It may also be Venus; here it is linked to Altair."
+    },
+    "008": {
+      "name": "The Pack of Dogs",
+      "description": "The Pleiades: a pack of hunting dogs. Another name is the “calf herd” (Miese-cora)."
+    },
+    "009": {
+      "name": "Galla",
+      "description": "Procyon, one of the hunter’s helpers. The identification is uncertain: it could also be Rigel or Sirius, but the latter is barely visible in the northern lands inhabited by the Sámi."
+    },
+    "010": {
+      "name": "The Skiers",
+      "description": "The two bright stars of Gemini, Castor and Pollux: two skiing hunters."
+    }
+  }
+}
