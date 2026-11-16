@@ -3,6 +3,7 @@ import {
   createPlayerProfile,
   type PlayerScores,
 } from '@/core/models/PlayerProfile';
+import { isValidUsernameFormat } from '@/core/username';
 import { useAuthStore } from '@/state/useAuthStore';
 import { authMode } from '@/services/firebase/config';
 import { loadPlayerProfile } from '@/services/player/FirebasePlayerDataService';
@@ -14,10 +15,12 @@ import {
 } from '@/services/player/localPlayerData';
 import { dayKey, recordRunInStats } from '@/features/trophies/playerStats';
 import { evaluateNewTrophies, type TrophyDefinition } from '@/features/trophies/trophies';
+import { createLogger } from '@/services/logger';
+
+import { useUsernamePromptStore } from './usernamePromptStore';
 import { enqueueGameResult, flushQueuedResults, type ResultMeta } from './resultQueue';
 import { loadBestScores, saveBestScores, type BestScores } from './scoreStorage';
 import type { GameId } from './gameOptions';
-import { createLogger } from '@/services/logger';
 
 const log = createLogger('games');
 
@@ -52,14 +55,18 @@ export async function loadMergedBestScores(uid?: string): Promise<BestScores> {
 export interface RecordedGameResult {
   best: number;
   isNewBest: boolean;
-  /** Az ebben a körben először megszerzett trófeák. */
   newTrophies: TrophyDefinition[];
 }
 
-/**
- * Frissíti a játékstatisztikát, kiértékeli a trófeákat, és elmenti az újonnan megszerzetteket
- * (helyben azonnal, a felhőbe a háttérben). Hibája nem akadályozhatja az eredmény rögzítését.
- */
+async function ensureUsernameForSave(): Promise<string | null> {
+  const store = useAuthStore.getState();
+  if (!store.user) return null;
+  if (store.displayName && isValidUsernameFormat(store.displayName)) {
+    return store.displayName;
+  }
+  return useUsernamePromptStore.getState().requestUsername();
+}
+
 async function awardTrophies(
   uid: string,
   game: GameId,
@@ -72,8 +79,8 @@ async function awardTrophies(
     const stats = recordRunInStats(await loadPlayerStats(uid), game, today);
     await savePlayerStats(uid, stats);
 
-    const store = useAuthStore.getState();
-    const earned = [...new Set([...(await loadTrophyIds(uid)), ...store.trophyIds])];
+    const authStore = useAuthStore.getState();
+    const earned = [...new Set([...(await loadTrophyIds(uid)), ...authStore.trophyIds])];
     const newTrophies = evaluateNewTrophies(
       {
         stats,
@@ -93,8 +100,7 @@ async function awardTrophies(
 
     const all = [...earned, ...newTrophies.map((trophy) => trophy.id)];
     await saveTrophyIds(uid, all);
-    // A mentés és a szinkron a háttérben fut; a hibát a store naplózza és jelzi a profilon.
-    void store.saveTrophyIds(all);
+    void authStore.saveTrophyIds(all);
     return newTrophies;
   } catch (error) {
     log.warn('A trófeák kiértékelése nem sikerült', { error });
@@ -110,6 +116,16 @@ export async function recordGameResult(
   const normalizedScore = Number.isSafeInteger(score) ? Math.max(0, score) : 0;
   const authUser = useAuthStore.getState().user;
   const uid = authUser?.uid;
+
+  let displayName: string | undefined = meta.displayName;
+  if (uid) {
+    const ensured = await ensureUsernameForSave();
+    if (!ensured) {
+      return { best: normalizedScore, isNewBest: false, newTrophies: [] };
+    }
+    displayName = ensured;
+  }
+
   const local = await loadBestScores(uid);
   const merged = uid ? await loadMergedBestScores(uid) : local;
   const previous = merged[game] ?? 0;
@@ -122,15 +138,13 @@ export async function recordGameResult(
 
   if (uid && authMode !== 'local') {
     if (isNewBest) {
-      const emailName = authUser.email?.split('@')[0]?.slice(0, 24) || 'Csillagnéző';
       await enqueueGameResult(uid, game, normalizedScore, {
         ...meta,
-        displayName: meta.displayName ?? emailName,
+        displayName: displayName ?? 'Csillagnéző',
       });
     }
     void flushQueuedResults(uid, () => useAuthStore.getState().user?.uid === uid);
   } else if (uid && isNewBest) {
-    // Helyi mód: az új rekord a helyi profilba (és így a helyi ranglistára) is bekerül.
     await useAuthStore.getState().syncPlayerData();
   }
 
