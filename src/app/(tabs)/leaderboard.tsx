@@ -21,6 +21,7 @@ import {
 } from '@/features/leaderboard/LeaderboardComponents';
 import type { RankedPlayer } from '@/features/leaderboard/ranking';
 import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
+import { useAccountName } from '@/features/leaderboard/useAccountName';
 import { useAuthStore } from '@/state/useAuthStore';
 import { GlassCard, SegmentedControl } from '@/ui/components';
 import { PageHeader } from '@/ui/layout/PageHeader';
@@ -50,10 +51,12 @@ function toEntry(
   player: RankedPlayer,
   scope: GameFilter,
   uid: string | undefined,
+  nameOverride: string,
 ): LeaderboardEntry {
+  const name = uid && player.uid === uid && nameOverride ? nameOverride : player.displayName;
   return {
-    name: player.displayName,
-    initials: initialsOf(player.displayName),
+    name,
+    initials: initialsOf(name),
     points: player.score,
     detail: detailFor(player, scope),
     isMe: player.uid === uid,
@@ -63,6 +66,7 @@ function toEntry(
 export default function LeaderboardScreen() {
   useLocale();
   const user = useAuthStore((state) => state.user);
+  const myName = useAccountName();
   const { game: routeGame } = useLocalSearchParams<{ game?: string }>();
   const routeGameValue = Array.isArray(routeGame) ? routeGame[0] : routeGame;
   const selectedGame: GameFilter = isGameFilter(routeGameValue) ? routeGameValue : 'all';
@@ -109,12 +113,11 @@ export default function LeaderboardScreen() {
 
   const leaderboard = useLeaderboard(selectedGame, user?.uid);
   const rankings = useMemo(
-    () => leaderboard.players.map((player) => toEntry(player, selectedGame, user?.uid)),
-    [leaderboard.players, selectedGame, user?.uid],
+    () => leaderboard.players.map((player) => toEntry(player, selectedGame, user?.uid, myName)),
+    [leaderboard.players, selectedGame, user?.uid, myName],
   );
   const ranked = leaderboard.players;
   const me = leaderboard.me;
-  const myName = me?.player?.displayName ?? user?.email?.split('@')[0] ?? '';
 
   const gameOptions = [
     {
@@ -230,7 +233,7 @@ export default function LeaderboardScreen() {
           subtitle={
             me?.score
               ? me.rank
-                ? myName
+                ? myName || t('leaderboard.calculating')
                 : t('leaderboard.calculating')
               : t('leaderboard.playToRank')
           }

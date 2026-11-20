@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef, useState } from 'react';
 import {
@@ -16,7 +15,6 @@ import {
 } from 'react-native';
 
 import { useAuthStore } from '@/state/useAuthStore';
-import { authMode } from '@/services/firebase/config';
 import { Button } from '@/ui/Button';
 import { LanguageSwitch } from '@/ui/LanguageSwitch';
 import { GlassSurface } from '@/ui/GlassSurface';
@@ -27,18 +25,13 @@ import { colors, font, radius, sizing, spacing } from '@/ui/theme';
 import { StyledScrollbar } from '@/ui/layout/StyledScrollbar';
 import { TROPHIES, TROPHY_TIER_KEYS } from '@/features/trophies/trophies';
 import { FriendsSection } from '@/features/friends/FriendsSection';
+import { useAccountName } from '@/features/leaderboard/useAccountName';
 import { PageHeader } from '@/ui/layout/PageHeader';
 
 const TIER_COLORS = {
   beginner: colors.success,
   advanced: colors.info,
   hard: colors.bronze,
-} as const;
-
-const AUTH_LABELS = {
-  local: 'Helyi mód',
-  emulator: 'Emulátor',
-  firebase: 'Firebase',
 } as const;
 
 function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
@@ -149,7 +142,6 @@ function TrophyCarousel({ unlockedIds }: { unlockedIds: string[] }) {
 
 export default function ProfileScreen() {
   useLocale();
-  const user = useAuthStore((state) => state.user);
   const syncError = useAuthStore((state) => state.syncError);
   const trophyIds = useAuthStore((state) => state.trophyIds);
   const signOut = useAuthStore((state) => state.signOut);
@@ -157,7 +149,8 @@ export default function ProfileScreen() {
   const authBusy = useAuthStore((state) => state.busy);
   const authError = useAuthStore((state) => state.error);
   const clearAuthError = useAuthStore((state) => state.clearError);
-  const initials = user?.email?.slice(0, 1) ?? '?';
+  const accountName = useAccountName();
+  const initials = accountName.trim().slice(0, 1).toUpperCase() || '?';
   const earnedCount = TROPHIES.filter((trophy) => trophyIds.includes(trophy.id)).length;
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
@@ -185,9 +178,9 @@ export default function ProfileScreen() {
               style={styles.email}
               numberOfLines={1}
               ellipsizeMode="tail"
-              testID="profile-email"
+              testID="profile-display-name"
             >
-              {user?.email ?? t('profile.connected')}
+              {accountName || t('profile.connected')}
             </Text>
           </View>
           <View
@@ -243,9 +236,6 @@ export default function ProfileScreen() {
           testID="profile-signout"
         />
         {syncError ? <Text style={styles.syncError}>{syncError}</Text> : null}
-        <Text style={styles.meta}>
-          {t('profile.appVersion')} {Constants.expoConfig?.version} · {AUTH_LABELS[authMode]}
-        </Text>
       </View>
       <Modal
         visible={deleteOpen}
@@ -262,9 +252,7 @@ export default function ProfileScreen() {
           />
           <GlassSurface style={styles.deleteDialog} testID="profile-delete-dialog">
             <Text style={styles.deleteTitle}>{t('profile.deleteData')}</Text>
-            <Text style={styles.deleteDescription}>
-              {t('profile.deleteDescription')}
-            </Text>
+            <Text style={styles.deleteDescription}>{t('profile.deleteDescription')}</Text>
             <TextInput
               value={deletePassword}
               onChangeText={setDeletePassword}
@@ -373,11 +361,5 @@ const styles = StyleSheet.create({
     flexGrow: 0,
   },
   scrollbar: { marginTop: spacing.xs },
-  meta: {
-    ...font.caption,
-    color: colors.textMuted,
-    textAlign: 'center',
-    paddingBottom: spacing.sm,
-  },
   syncError: { ...font.caption, color: colors.danger, textAlign: 'center' },
 });

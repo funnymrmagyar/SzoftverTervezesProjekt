@@ -7,6 +7,7 @@ import {
   type LeaderboardPlayer,
   type PlayerProfile,
 } from '@/core/models/PlayerProfile';
+import { isValidUsernameFormat } from '@/core/username';
 import { createLogger } from '@/services/logger';
 
 /*
@@ -51,11 +52,32 @@ async function writeAll(profiles: Record<string, PlayerProfile>): Promise<void> 
 }
 
 /** Ugyanaz, mint a syncPlayerProfile Firestore-ban: összefésüli, elmenti, és visszaadja. */
-export async function syncLocalPlayerProfile(profile: PlayerProfile): Promise<PlayerProfile> {
+let localWriteQueue: Promise<void> = Promise.resolve();
+
+async function writeLocalPlayerProfile(
+  profile: PlayerProfile,
+  options?: { overwriteDisplayName?: boolean },
+): Promise<PlayerProfile> {
   const profiles = await readAll();
   const merged = mergePlayerProfiles(profile, profiles[profile.uid] ?? null);
+  // A frissen megadott felhasználónév felülírja a korábbit; pontszámnál továbbra is a jobb marad.
+  if (options?.overwriteDisplayName && isValidUsernameFormat(profile.displayName)) {
+    merged.displayName = profile.displayName;
+  }
   await writeAll({ ...profiles, [profile.uid]: merged });
   return merged;
+}
+
+export function syncLocalPlayerProfile(
+  profile: PlayerProfile,
+  options?: { overwriteDisplayName?: boolean },
+): Promise<PlayerProfile> {
+  const run = localWriteQueue.then(() => writeLocalPlayerProfile(profile, options));
+  localWriteQueue = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
 }
 
 export async function deleteLocalPlayerProfile(uid: string): Promise<void> {
