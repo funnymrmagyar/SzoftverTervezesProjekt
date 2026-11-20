@@ -47,6 +47,42 @@ export function withYear(date: Date, year: number): Date {
   );
 }
 
+/** Hónap 1–12. A napot a hónap hosszához igazítja, az időt megtartja. */
+export function withMonth(date: Date, month: number): Date {
+  const boundedMonth = Math.min(12, Math.max(1, Math.trunc(month))) - 1;
+  const year = date.getFullYear();
+  const day = Math.min(date.getDate(), daysInMonth(year, boundedMonth));
+  return clampToRange(
+    createLocalDate(
+      year,
+      boundedMonth,
+      day,
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds(),
+    ),
+  );
+}
+
+/** Nap a jelenlegi hónapon belül. Az időt megtartja. */
+export function withDay(date: Date, day: number): Date {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const boundedDay = Math.min(daysInMonth(year, month), Math.max(1, Math.trunc(day)));
+  return clampToRange(
+    createLocalDate(
+      year,
+      month,
+      boundedDay,
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds(),
+    ),
+  );
+}
+
 export function withTimeOfDay(date: Date, minuteOfDay: number): Date {
   const boundedMinute = Math.min(1440, Math.max(0, Math.trunc(minuteOfDay)));
   return clampToRange(

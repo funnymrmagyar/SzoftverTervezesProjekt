@@ -306,5 +306,13 @@
   "username.prompt.label": "Username",
   "username.prompt.placeholder": "e.g. Csillagnezo42",
   "username.prompt.hint": "3–24 characters · letters, numbers, _ and - · no spaces",
-  "username.prompt.submit": "Save and continue"
+  "username.prompt.submit": "Save and continue",
+  "live.month.input": "Enter month",
+  "live.month.edit": "Month: {month}. Tap to edit.",
+  "live.day.input": "Enter day",
+  "live.day.edit": "Day: {day}. Tap to edit.",
+  "live.hour.input": "Enter hour",
+  "live.hour.edit": "Hour: {hour}. Tap to edit.",
+  "live.minute.input": "Enter minute",
+  "live.minute.edit": "Minute: {minute}. Tap to edit."
 }

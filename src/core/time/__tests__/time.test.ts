@@ -1,4 +1,12 @@
-import { clampToRange, formatYear, shiftDays, withTimeOfDay, withYear } from '..';
+import {
+  clampToRange,
+  formatYear,
+  shiftDays,
+  withDay,
+  withMonth,
+  withTimeOfDay,
+  withYear,
+} from '..';
 
 function localDate(year: number, month: number, day: number, hour = 0, minute = 0): Date {
   const date = new Date(0);
@@ -29,6 +37,17 @@ describe('astronomical time helpers', () => {
     expect(withYear(localDate(2000, 0, 1), 99).getFullYear()).toBe(99);
     expect(formatYear(-44)).toBe('i. e. 45');
     expect(formatYear(0)).toBe('i. e. 1');
+  });
+
+  it('sets the month and shortens the day when the month is shorter', () => {
+    expect(fields(withMonth(localDate(2026, 0, 31, 18, 2), 2))).toEqual([2026, 2, 28, 18, 2]);
+    expect(fields(withMonth(localDate(2024, 0, 31, 18, 2), 2))).toEqual([2024, 2, 29, 18, 2]);
+    expect(fields(withMonth(localDate(2026, 5, 14), 13))[1]).toBe(12);
+  });
+
+  it('sets the day inside the current month', () => {
+    expect(fields(withDay(localDate(2026, 10, 18, 18, 2), 3))).toEqual([2026, 11, 3, 18, 2]);
+    expect(fields(withDay(localDate(2026, 1, 10, 8, 0), 31))).toEqual([2026, 2, 28, 8, 0]);
   });
 
   it('sets minute-of-day without changing the local calendar day', () => {

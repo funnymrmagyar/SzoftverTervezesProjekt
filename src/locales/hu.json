@@ -306,5 +306,13 @@
   "username.prompt.label": "Felhasználónév",
   "username.prompt.placeholder": "pl. Csillagnezo42",
   "username.prompt.hint": "3–24 karakter · betű, szám, _ és - · szóköz nélkül",
-  "username.prompt.submit": "Mentés és folytatás"
+  "username.prompt.submit": "Mentés és folytatás",
+  "live.month.input": "Hónap megadása",
+  "live.month.edit": "Hónap: {month}. Koppintással átírható.",
+  "live.day.input": "Nap megadása",
+  "live.day.edit": "Nap: {day}. Koppintással átírható.",
+  "live.hour.input": "Óra megadása",
+  "live.hour.edit": "Óra: {hour}. Koppintással átírható.",
+  "live.minute.input": "Perc megadása",
+  "live.minute.edit": "Perc: {minute}. Koppintással átírható."
 }
