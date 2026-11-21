@@ -2,7 +2,6 @@ import { formatYear } from '@/core/time';
 import { getLocale } from '@/ui/locale';
 
 export const DAY_MINUTES = 24 * 60;
-export const TIME_STEP_MINUTES = 5;
 
 export function minuteOfDay(date: Date): number {
   if (

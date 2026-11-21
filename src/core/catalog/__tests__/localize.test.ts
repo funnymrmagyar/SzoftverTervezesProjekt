@@ -22,16 +22,22 @@ describe('angol katalógus', () => {
     }
   });
 
-  it('minden alakzat neve és (a nyugatin kívül) leírása angol', () => {
+  it('minden alakzat neve és leírása angol', () => {
     for (const culture of en) {
       const base = hu.find((c) => c.id === culture.id)!;
       for (const constellation of culture.constellations) {
         const original = base.constellations.find((c) => c.id === constellation.id)!;
-        if (culture.id !== 'western') {
-          expect(constellation.descriptionLang).toBe('en');
-          expect(constellation.description).not.toBe(original.description);
-        }
+        expect(constellation.descriptionLang).toBe('en');
+        expect(constellation.description).not.toBe(original.description);
         expect(constellation.name.trim()).not.toBe('');
+      }
+    }
+  });
+
+  it('a magyar katalógusban minden leírás magyar (a nyugati kultúrában is)', () => {
+    for (const culture of hu) {
+      for (const constellation of culture.constellations) {
+        expect(constellation.descriptionLang ?? 'hu').toBe('hu');
       }
     }
   });

@@ -178,10 +178,6 @@ export const TROPHIES: readonly TrophyDefinition[] = [
 
 export const TROPHY_IDS: readonly string[] = TROPHIES.map((trophy) => trophy.id);
 
-export function getTrophy(id: string): TrophyDefinition | undefined {
-  return TROPHIES.find((trophy) => trophy.id === id);
-}
-
 /**
  * Azoknak a trófeáknak a listája, amelyeket a játékos ebben a körben szerzett meg először.
  * A már megszerzett trófea nem kerül újra a listába, és a megszerzett trófea sosem vész el.
