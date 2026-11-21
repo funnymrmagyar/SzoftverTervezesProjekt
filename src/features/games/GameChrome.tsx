@@ -1,34 +1,12 @@
-import type { ReactNode } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { Button } from '@/ui/Button';
-import { Badge, GlassCard, IconButton, SegmentedControl } from '@/ui/components';
+import { Badge, GlassCard, SegmentedControl } from '@/ui/components';
 import { formatNumber, t, type TranslationKey } from '@/ui/i18n';
 import { colors, font, spacing } from '@/ui/theme';
 import { Select } from '@/ui/Select';
 
 import type { Difficulty } from './gameOptions';
-
-/** Felső sáv: vissza gomb, a játék címe és jobbra pár állapotjelző. */
-export function GameHeader({
-  title,
-  onBack,
-  children,
-}: {
-  title: string;
-  onBack: () => void;
-  children?: ReactNode;
-}) {
-  return (
-    <View style={styles.header}>
-      <IconButton icon="arrow-back" label={t('games.back')} onPress={onBack} testID="game-back" />
-      <Text style={styles.headerTitle} numberOfLines={1}>
-        {title}
-      </Text>
-      <View style={styles.headerRight}>{children}</View>
-    </View>
-  );
-}
 
 export interface SetupCulture {
   id: string;
@@ -196,9 +174,6 @@ export function GameSummary({
 const styles = StyleSheet.create({
   stack: { gap: spacing.lg },
   compactStack: { gap: spacing.xs },
-  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  headerTitle: { flex: 1, ...font.heading, color: colors.text },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   body: { ...font.body, color: colors.textMuted, lineHeight: spacing.xl },
   section: { gap: spacing.sm },
   sectionTitle: { ...font.heading, color: colors.text },

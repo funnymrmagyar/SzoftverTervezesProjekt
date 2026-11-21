@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
+import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 
 import { normalizeUsernameKey, sanitizeUsername } from '@/core/username';
 import { authMode } from '@/services/firebase/config';
@@ -150,22 +150,4 @@ export async function releaseUsernameForUser(uid: string): Promise<void> {
   } catch (error) {
     log.warn('Felhasználónév felszabadítása sikertelen', { error });
   }
-}
-
-export async function loadUsernameForUser(uid: string): Promise<string | null> {
-  if (authMode === 'local') {
-    const registry = await readLocalRegistry();
-    for (const [key, owner] of Object.entries(registry)) {
-      if (owner === uid) {
-        // Nincs tárolva az eredeti írásmód a local registryben — a profilból jön.
-        return key;
-      }
-    }
-    return null;
-  }
-
-  const snap = await getDoc(doc(getFirebaseFirestore(), 'users', uid));
-  if (!snap.exists()) return null;
-  const name = snap.data()?.displayName;
-  return typeof name === 'string' && name.trim() ? name.trim() : null;
 }
