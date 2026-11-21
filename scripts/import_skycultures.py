@@ -79,23 +79,45 @@ def parse_descriptions(path: Path) -> dict[str, str]:
     return result
 
 
+def existing_hungarian_descriptions() -> dict[str, str]:
+    """A western.json már lefordított (magyar) leírásai: az újragenerálás ezeket megtartja.
+
+    A Stellarium csak angol leírásokat ad; ezek az assets/data/cultures/en/western.json
+    fordításfájlban vannak, a magyar alapadatba pedig a fordításuk került.
+    """
+    path = OUT_DIR / "western.json"
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        con["id"]: con["description"]
+        for con in data["constellations"]
+        if con.get("description") and con.get("descriptionLang", "hu") == "hu"
+    }
+
+
 def build_western() -> dict:
     index = json.loads((RAW_DIR / "modern_index.json").read_text(encoding="utf-8"))
     hu = parse_po(RAW_DIR / "hu.po")
     descriptions = parse_descriptions(RAW_DIR / "modern_description.md")
+    hu_descriptions = existing_hungarian_descriptions()
 
     constellations = []
     for con in index["constellations"]:
         common = con["common_name"]
         english = common["english"]
         name_hu = hu.get((common.get("context"), english)) or hu.get((None, english)) or english
+        con_id = con["id"].split()[-1]
         item = {
-            "id": con["id"].split()[-1],
+            "id": con_id,
             "name": name_hu,
             "nativeName": common.get("native", english),
             "lines": [[int(h) for h in line] for line in con["lines"]],
         }
-        if english in descriptions:
+        if con_id in hu_descriptions:
+            item["description"] = hu_descriptions[con_id]
+        elif english in descriptions:
+            # Még nincs magyar fordítás: az angol eredeti marad (a felület jelzi, hogy angol).
             item["description"] = descriptions[english]
             item["descriptionLang"] = "en"
         constellations.append(item)

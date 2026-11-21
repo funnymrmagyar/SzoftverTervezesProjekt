@@ -132,11 +132,16 @@ describe('hiedelem-találó a valódi adatokkal', () => {
     expect(clue).toHaveLength(3);
   });
 
-  it('a magyar támpontok magyarul, a nyugatiak angolul jelölve vannak', () => {
-    const hungarian = cultures.find((c) => c.id === 'hungarian')!.beliefs;
-    const western = cultures.find((c) => c.id === 'western')!.beliefs;
-    expect(hungarian.every((b) => b.clueLang === 'hu')).toBe(true);
-    expect(western.every((b) => b.clueLang === 'en')).toBe(true);
+  it('a támpontok a felület nyelvén jönnek (a nyugati kultúránál is)', () => {
+    const english = getBeliefCultures('en');
+    for (const id of ['hungarian', 'western']) {
+      expect(cultures.find((c) => c.id === id)!.beliefs.every((b) => b.clueLang === 'hu')).toBe(
+        true,
+      );
+      expect(english.find((c) => c.id === id)!.beliefs.every((b) => b.clueLang === 'en')).toBe(
+        true,
+      );
+    }
   });
 
   it('a kérdésben a 4 minta egyedi, tartalmazza a helyeset, és a vonalszámuk különbözik', () => {
