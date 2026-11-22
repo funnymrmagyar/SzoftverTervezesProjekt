@@ -306,5 +306,19 @@
   "username.prompt.label": "Username",
   "username.prompt.placeholder": "e.g. Csillagnezo42",
   "username.prompt.hint": "3–24 characters · letters, numbers, _ and - · no spaces",
-  "username.prompt.submit": "Save and continue"
+  "username.prompt.submit": "Save and continue",
+  "city.bukarest": "Bucharest",
+  "city.becs": "Vienna",
+  "city.pozsony": "Bratislava",
+  "city.belgrad": "Belgrade",
+  "city.zagrab": "Zagreb",
+  "city.praga": "Prague",
+  "city.varso": "Warsaw",
+  "city.berlin": "Berlin",
+  "city.roma": "Rome",
+  "city.london": "London",
+  "city.parizs": "Paris",
+  "city.washington": "Washington, D.C.",
+  "city.tokio": "Tokyo",
+  "city.canberra": "Canberra"
 }

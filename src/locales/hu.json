@@ -306,5 +306,19 @@
   "username.prompt.label": "Felhasználónév",
   "username.prompt.placeholder": "pl. Csillagnezo42",
   "username.prompt.hint": "3–24 karakter · betű, szám, _ és - · szóköz nélkül",
-  "username.prompt.submit": "Mentés és folytatás"
+  "username.prompt.submit": "Mentés és folytatás",
+  "city.bukarest": "Bukarest",
+  "city.becs": "Bécs",
+  "city.pozsony": "Pozsony",
+  "city.belgrad": "Belgrád",
+  "city.zagrab": "Zágráb",
+  "city.praga": "Prága",
+  "city.varso": "Varsó",
+  "city.berlin": "Berlin",
+  "city.roma": "Róma",
+  "city.london": "London",
+  "city.parizs": "Párizs",
+  "city.washington": "Washington",
+  "city.tokio": "Tokió",
+  "city.canberra": "Canberra"
 }
