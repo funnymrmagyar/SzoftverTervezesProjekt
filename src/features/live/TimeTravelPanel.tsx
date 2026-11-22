@@ -8,7 +8,10 @@ import {
   TextInput,
   View,
   type PointerEvent,
+  type StyleProp,
+  type TextStyle,
   type ViewInstance,
+  type ViewStyle,
 } from 'react-native';
 
 import { withTimeOfDay, withYear, YEAR_MAX, YEAR_MIN } from '@/core/time';
@@ -22,7 +25,8 @@ import { useBreakpoint } from '@/ui/useBreakpoint';
 import {
   DAY_MINUTES,
   formatClock,
-  formatMonthDay,
+  formatDayText,
+  formatMonthName,
   formatYearText,
   minuteOfDay,
   sliderPositionForValue,
@@ -36,6 +40,11 @@ type SliderAxis = 'year' | 'time';
 const THUMB_SIZE = 24;
 /** A sín függőleges közepe a csúszka 44 pontos megfogható sávjában. */
 const RAIL_CENTER = 22;
+
+function pad2(value: number): string {
+  return String(value).padStart(2, '0');
+}
+
 interface PendingValue {
   axis: SliderAxis;
   value: number;
@@ -52,6 +61,8 @@ export function TimeTravelPanel({
 }) {
   useLocale();
   const setYear = useSkyStore((state) => state.setYear);
+  const setMonth = useSkyStore((state) => state.setMonth);
+  const setDay = useSkyStore((state) => state.setDay);
   const setTimeOfDay = useSkyStore((state) => state.setTimeOfDay);
   const shiftDays = useSkyStore((state) => state.shiftDays);
   const shiftHours = useSkyStore((state) => state.shiftHours);
@@ -59,7 +70,15 @@ export function TimeTravelPanel({
   const { compact } = useBreakpoint();
   const [preview, setPreview] = useState<PendingValue | null>(null);
   const [editingYear, setEditingYear] = useState(false);
+  const [editingMonth, setEditingMonth] = useState(false);
+  const [editingDay, setEditingDay] = useState(false);
+  const [editingHour, setEditingHour] = useState(false);
+  const [editingMinute, setEditingMinute] = useState(false);
   const [yearText, setYearText] = useState(String(date.getFullYear()));
+  const [monthText, setMonthText] = useState(String(date.getMonth() + 1));
+  const [dayText, setDayText] = useState(String(date.getDate()));
+  const [hourText, setHourText] = useState(pad2(date.getHours()));
+  const [minuteText, setMinuteText] = useState(pad2(date.getMinutes()));
   const pending = useRef<PendingValue | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastCommit = useRef(0);
@@ -98,6 +117,42 @@ export function TimeTravelPanel({
     const value = Number(text);
     if (text && Number.isFinite(value)) setYear(Math.trunc(value));
     setEditingYear(false);
+  }
+
+  function applyMonthInput() {
+    const text = monthText.trim();
+    const value = Number(text);
+    if (text && Number.isFinite(value)) setMonth(Math.trunc(value));
+    setEditingMonth(false);
+  }
+
+  function applyDayInput() {
+    const text = dayText.trim();
+    const value = Number(text);
+    if (text && Number.isFinite(value)) setDay(Math.trunc(value));
+    setEditingDay(false);
+  }
+
+  function applyHourInput() {
+    const text = hourText.trim();
+    const value = Number(text);
+    if (text && Number.isFinite(value)) {
+      const hour = Math.min(24, Math.max(0, Math.trunc(value)));
+      if (hour === 24) setTimeOfDay(DAY_MINUTES);
+      else setTimeOfDay(hour * 60 + shownClockMinute);
+    }
+    setEditingHour(false);
+  }
+
+  function applyMinuteInput() {
+    const text = minuteText.trim();
+    const value = Number(text);
+    if (text && Number.isFinite(value)) {
+      const minute = Math.min(59, Math.max(0, Math.trunc(value)));
+      const hour = shownHour >= 24 ? 0 : shownHour;
+      setTimeOfDay(hour * 60 + minute);
+    }
+    setEditingMinute(false);
   }
 
   function clearPendingPreview() {
@@ -149,33 +204,144 @@ export function TimeTravelPanel({
         ? withTimeOfDay(date, preview.value)
         : date;
   const shownYear = previewDate.getFullYear();
+  const shownMonth = previewDate.getMonth() + 1;
+  const shownDay = previewDate.getDate();
   const shownMinute = minuteOfDay(previewDate);
+  const shownHour = shownMinute >= DAY_MINUTES ? 24 : Math.floor(shownMinute / 60);
+  const shownClockMinute = shownMinute >= DAY_MINUTES ? 0 : shownMinute % 60;
 
-  const yearControl = editingYear ? (
-    <TextInput
-      autoFocus
+  function startYearEdit() {
+    if (editingMonth) applyMonthInput();
+    if (editingDay) applyDayInput();
+    if (editingHour) applyHourInput();
+    if (editingMinute) applyMinuteInput();
+    setYearText(String(shownYear));
+    setEditingYear(true);
+  }
+
+  function startMonthEdit() {
+    if (editingYear) applyYearInput();
+    if (editingDay) applyDayInput();
+    if (editingHour) applyHourInput();
+    if (editingMinute) applyMinuteInput();
+    setMonthText(String(shownMonth));
+    setEditingMonth(true);
+  }
+
+  function startDayEdit() {
+    if (editingYear) applyYearInput();
+    if (editingMonth) applyMonthInput();
+    if (editingHour) applyHourInput();
+    if (editingMinute) applyMinuteInput();
+    setDayText(String(shownDay));
+    setEditingDay(true);
+  }
+
+  function startHourEdit() {
+    if (editingYear) applyYearInput();
+    if (editingMonth) applyMonthInput();
+    if (editingDay) applyDayInput();
+    if (editingMinute) applyMinuteInput();
+    setHourText(pad2(shownHour));
+    setEditingHour(true);
+  }
+
+  function startMinuteEdit() {
+    if (editingYear) applyYearInput();
+    if (editingMonth) applyMonthInput();
+    if (editingDay) applyDayInput();
+    if (editingHour) applyHourInput();
+    setMinuteText(pad2(shownClockMinute));
+    setEditingMinute(true);
+  }
+
+  const datePartStyle = compact ? styles.yearCompact : styles.dateText;
+  const dateInputStyle = [styles.yearInput, compact && styles.yearInputCompact];
+  const datePressStyle = compact ? styles.yearPressCompact : undefined;
+
+  const yearControl = (
+    <EditableValue
+      editing={editingYear}
       value={yearText}
       onChangeText={setYearText}
-      onSubmitEditing={applyYearInput}
-      onBlur={applyYearInput}
-      keyboardType="numbers-and-punctuation"
-      accessibilityLabel={t('live.year.input')}
-      testID="time-year-input"
-      style={[styles.yearInput, compact && styles.yearInputCompact]}
+      onApply={applyYearInput}
+      onEdit={startYearEdit}
+      display={formatYearText(shownYear)}
+      editLabel={t('live.year.edit', { year: formatYearText(shownYear) })}
+      inputLabel={t('live.year.input')}
+      testID={editingYear ? 'time-year-input' : 'time-year-edit'}
+      displayStyle={datePartStyle}
+      inputStyle={dateInputStyle}
+      pressStyle={datePressStyle}
     />
-  ) : (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={t('live.year.edit', { year: formatYearText(shownYear) })}
-      onPress={() => {
-        setYearText(String(shownYear));
-        setEditingYear(true);
-      }}
-      testID="time-year-edit"
-      style={compact ? styles.yearPressCompact : undefined}
-    >
-      <Text style={compact ? styles.yearCompact : styles.dateText}>{formatYearText(shownYear)}</Text>
-    </Pressable>
+  );
+
+  const monthControl = (
+    <EditableValue
+      editing={editingMonth}
+      value={monthText}
+      onChangeText={setMonthText}
+      onApply={applyMonthInput}
+      onEdit={startMonthEdit}
+      display={formatMonthName(previewDate)}
+      editLabel={t('live.month.edit', { month: shownMonth })}
+      inputLabel={t('live.month.input')}
+      testID={editingMonth ? 'time-month-input' : 'time-month-edit'}
+      displayStyle={datePartStyle}
+      inputStyle={dateInputStyle}
+      pressStyle={datePressStyle}
+    />
+  );
+
+  const dayControl = (
+    <EditableValue
+      editing={editingDay}
+      value={dayText}
+      onChangeText={setDayText}
+      onApply={applyDayInput}
+      onEdit={startDayEdit}
+      display={formatDayText(previewDate)}
+      editLabel={t('live.day.edit', { day: shownDay })}
+      inputLabel={t('live.day.input')}
+      testID={editingDay ? 'time-day-input' : 'time-day-edit'}
+      displayStyle={datePartStyle}
+      inputStyle={dateInputStyle}
+      pressStyle={datePressStyle}
+    />
+  );
+
+  const timeControl = (
+    <View style={styles.timeGroup}>
+      <EditableValue
+        editing={editingHour}
+        value={hourText}
+        onChangeText={setHourText}
+        onApply={applyHourInput}
+        onEdit={startHourEdit}
+        display={pad2(shownHour)}
+        editLabel={t('live.hour.edit', { hour: pad2(shownHour) })}
+        inputLabel={t('live.hour.input')}
+        testID={editingHour ? 'time-hour-input' : 'time-hour-edit'}
+        displayStyle={datePartStyle}
+        inputStyle={[dateInputStyle, styles.timePartInput]}
+        pressStyle={datePressStyle}
+      />
+      <Text style={datePartStyle}>:</Text>
+      <EditableValue
+        editing={editingMinute}
+        value={minuteText}
+        onChangeText={setMinuteText}
+        onApply={applyMinuteInput}
+        onEdit={startMinuteEdit}
+        display={pad2(shownClockMinute)}
+        editLabel={t('live.minute.edit', { minute: pad2(shownClockMinute) })}
+        inputLabel={t('live.minute.input')}
+        testID={editingMinute ? 'time-minute-input' : 'time-minute-edit'}
+        displayStyle={datePartStyle}
+        inputStyle={[dateInputStyle, styles.timePartInput]}
+        pressStyle={datePressStyle}
+      />
+    </View>
   );
 
   const nowButton = (
@@ -227,9 +393,10 @@ export function TimeTravelPanel({
 
   if (compact) {
     /*
-     * Telefonos, tömör elrendezés: egy sorban a dátum (az év átírható, a nap két nyíllal
-     * léptethető), alatta a két csúszka; mindkettő két végén egy-egy nyíl lépteti egy évvel,
-     * illetve egy órával (nyomva tartva folyamatosan). A lap csak akkora, amekkora a tartalma.
+     * Telefonos, tömör elrendezés: egy sorban a dátum (az év, a hónap és a nap átírható,
+     * a nap két nyíllal léptethető), alatta a két csúszka; mindkettő két végén egy-egy nyíl
+     * lépteti egy évvel, illetve egy órával (nyomva tartva folyamatosan). A lap csak akkora,
+     * amekkora a tartalma.
      */
     return (
       <Sheet
@@ -252,9 +419,10 @@ export function TimeTravelPanel({
               startRepeat={startRepeat}
               stopRepeat={stopRepeat}
             />
-            <Text style={styles.compactDate} numberOfLines={1}>
-              {previewDate.toLocaleDateString('hu-HU', { month: 'short' })} {previewDate.getDate()}.
-            </Text>
+            <View style={styles.compactDateGroup}>
+              {monthControl}
+              {dayControl}
+            </View>
             <RepeatButton
               label={t('live.step.dayForward')}
               icon="chevron-forward"
@@ -263,7 +431,7 @@ export function TimeTravelPanel({
               startRepeat={startRepeat}
               stopRepeat={stopRepeat}
             />
-            <Text style={styles.compactClock}>{formatClock(shownMinute)}</Text>
+            {timeControl}
             <View style={styles.spacer} />
             {nowButton}
           </View>
@@ -329,9 +497,11 @@ export function TimeTravelPanel({
       <GlassSurface style={styles.card} testID="time-travel-card">
         <View style={styles.readout}>
           {yearControl}
-          <Text style={styles.dateDetails} numberOfLines={1}>
-            {formatMonthDay(previewDate)} · {formatClock(shownMinute)}
-          </Text>
+          {monthControl}
+          {dayControl}
+          <Text style={datePartStyle}>·</Text>
+          {timeControl}
+          <View style={styles.spacer} />
           {nowButton}
         </View>
 
@@ -394,6 +564,63 @@ export function TimeTravelPanel({
         </View>
       </GlassSurface>
     </Sheet>
+  );
+}
+
+function EditableValue({
+  editing,
+  value,
+  onChangeText,
+  onApply,
+  onEdit,
+  display,
+  editLabel,
+  inputLabel,
+  testID,
+  displayStyle,
+  inputStyle,
+  pressStyle,
+}: {
+  editing: boolean;
+  value: string;
+  onChangeText: (text: string) => void;
+  onApply: () => void;
+  onEdit: () => void;
+  display: string;
+  editLabel: string;
+  inputLabel: string;
+  testID: string;
+  displayStyle: StyleProp<TextStyle>;
+  inputStyle: StyleProp<TextStyle>;
+  pressStyle?: StyleProp<ViewStyle>;
+}) {
+  if (editing) {
+    return (
+      <TextInput
+        autoFocus
+        value={value}
+        onChangeText={onChangeText}
+        onSubmitEditing={onApply}
+        onBlur={onApply}
+        keyboardType="numbers-and-punctuation"
+        accessibilityLabel={inputLabel}
+        testID={testID}
+        style={inputStyle}
+      />
+    );
+  }
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={editLabel}
+      onPress={onEdit}
+      testID={testID}
+      style={pressStyle}
+    >
+      <Text style={displayStyle} numberOfLines={1}>
+        {display}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -578,7 +805,6 @@ const styles = StyleSheet.create({
   card: { flex: 1, minHeight: 0, padding: spacing.sm, gap: spacing.xs },
   readout: { minHeight: sizing.touch, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   dateText: { color: colors.text, fontSize: 14, fontWeight: '600' },
-  dateDetails: { flex: 1, color: colors.textMuted, fontSize: 12 },
   yearInput: {
     flex: 1,
     minHeight: sizing.touch,
@@ -629,13 +855,14 @@ const styles = StyleSheet.create({
   yearPressCompact: { minHeight: sizing.touch, justifyContent: 'center', paddingRight: spacing.xs },
   yearCompact: { ...font.body, color: colors.text, fontWeight: '700' },
   yearInputCompact: { flex: 0, width: 88 },
-  compactDate: { ...font.small, minWidth: 56, color: colors.textMuted, textAlign: 'center' },
-  compactClock: {
-    ...font.body,
-    ...font.mono,
-    marginLeft: spacing.sm,
-    color: colors.accent,
-    fontWeight: '700',
+  timeGroup: { flexDirection: 'row', alignItems: 'center' },
+  timePartInput: { flex: 0, width: 52 },
+  compactDateGroup: {
+    minWidth: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
   },
   spacer: { flex: 1 },
   compactRow: { flexDirection: 'row', alignItems: 'center' },

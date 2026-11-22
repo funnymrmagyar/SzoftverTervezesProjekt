@@ -6,6 +6,7 @@ import {
   totalPlayerPoints,
   type PlayerProfile,
 } from '@/core/models/PlayerProfile';
+import { isValidUsernameFormat } from '@/core/username';
 import { getFirebaseFirestore } from '@/services/firebase/firestore';
 import { createLogger } from '@/services/logger';
 
@@ -28,7 +29,10 @@ function readRemoteProfile(data: unknown, uid: string): PlayerProfile {
 }
 
 /** Egyéni adatok mentése és a nyilvános, összesített ranglistarekord frissítése. */
-export async function syncPlayerProfile(profile: PlayerProfile): Promise<PlayerProfile> {
+export async function syncPlayerProfile(
+  profile: PlayerProfile,
+  options?: { overwriteDisplayName?: boolean },
+): Promise<PlayerProfile> {
   const db = getFirebaseFirestore();
   const userRef = doc(db, 'users', profile.uid);
   const leaderboardRef = doc(db, 'leaderboard', profile.uid);
@@ -39,6 +43,9 @@ export async function syncPlayerProfile(profile: PlayerProfile): Promise<PlayerP
       ? readRemoteProfile(existing.data(), profile.uid)
       : null;
     const mergedProfile = mergePlayerProfiles(profile, remoteProfile);
+    if (options?.overwriteDisplayName && isValidUsernameFormat(profile.displayName)) {
+      mergedProfile.displayName = profile.displayName;
+    }
     const updatedAt = serverTimestamp();
 
     transaction.set(userRef, { ...mergedProfile, updatedAt });

@@ -78,59 +78,6 @@ export function IconButton({
   );
 }
 
-export function Chip({
-  label,
-  selected = false,
-  onPress,
-  icon,
-  accessibilityLabel,
-  testID,
-}: {
-  label: string;
-  selected?: boolean;
-  onPress: () => void;
-  icon?: IconName;
-  accessibilityLabel?: string;
-  testID?: string;
-}) {
-  const [focusedValue, setFocusedValue] = useState<string | null>(null);
-  const [hovered, setHovered] = useState(false);
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ selected }}
-      accessibilityHint={label}
-      onPress={onPress}
-      onFocus={() => setFocusedValue(label)}
-      onBlur={() => setFocusedValue(null)}
-      onHoverIn={() => setHovered(true)}
-      onHoverOut={() => setHovered(false)}
-      testID={testID}
-      style={({ pressed }) => [
-        styles.chip,
-        hoverTransition,
-        hovered && !selected && styles.hovered,
-        selected && styles.chipSelected,
-        focusedValue === label && styles.focused,
-        pressed && styles.pressed,
-        cursorStyle,
-      ]}
-    >
-      {icon ? (
-        <Ionicons
-          name={icon}
-          size={sizing.iconSmall}
-          color={selected ? colors.accent : colors.textMuted}
-        />
-      ) : null}
-      <Text style={[styles.chipText, selected && styles.chipTextSelected]} numberOfLines={1}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 export function SegmentedControl<T extends string>({
   options,
   value,
@@ -442,21 +389,6 @@ const styles = StyleSheet.create({
   },
   iconButtonActive: { borderColor: colors.accent, backgroundColor: colors.cardHighlight },
   hovered: { backgroundColor: colors.surfaceRaised, borderColor: colors.borderStrong },
-  chip: {
-    minHeight: sizing.touch,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.glass,
-  },
-  chipSelected: { borderColor: colors.accent, backgroundColor: colors.cardHighlight },
-  chipText: { ...font.small, color: colors.textMuted },
-  chipTextSelected: { color: colors.accent, fontWeight: '600' },
   segmented: {
     flexDirection: 'row',
     alignSelf: 'flex-start',

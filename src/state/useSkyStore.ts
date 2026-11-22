@@ -2,7 +2,14 @@ import { create } from 'zustand';
 
 import type { GeoLocation } from '@/core/models';
 import { DEFAULT_LOCATION } from '@/core/locations';
-import { clampToRange, shiftDays as shiftDateByDays, withTimeOfDay, withYear } from '@/core/time';
+import {
+  clampToRange,
+  shiftDays as shiftDateByDays,
+  withDay,
+  withMonth,
+  withTimeOfDay,
+  withYear,
+} from '@/core/time';
 import { createLogger } from '@/services/logger';
 
 const log = createLogger('sky');
@@ -32,6 +39,10 @@ interface SkyState {
   shiftHours(hours: number, now?: number): void;
   /** Év beállítása a jelenleg mutatott időpont hónapjának, napjának és órájának megtartásával. */
   setYear(year: number, now?: number): void;
+  /** Hónap beállítása 1–12 között. A nap a hónap hosszához igazodik, az óra megmarad. */
+  setMonth(month: number, now?: number): void;
+  /** Nap beállítása a jelenlegi hónapon belül. */
+  setDay(day: number, now?: number): void;
   /** UTC nap kezdetétől számított perc beállítása. */
   setTimeOfDay(minuteOfDay: number, now?: number): void;
   /** Naptári napokkal léptetés a jelenleg mutatott időponthoz képest. */
@@ -65,6 +76,10 @@ export const useSkyStore = create<SkyState>((set, get) => ({
     }),
   setYear: (year, now = Date.now()) =>
     set({ manualTime: withYear(new Date(get().manualTime ?? now), year).getTime() }),
+  setMonth: (month, now = Date.now()) =>
+    set({ manualTime: withMonth(new Date(get().manualTime ?? now), month).getTime() }),
+  setDay: (day, now = Date.now()) =>
+    set({ manualTime: withDay(new Date(get().manualTime ?? now), day).getTime() }),
   setTimeOfDay: (minuteOfDay, now = Date.now()) =>
     set({
       manualTime: withTimeOfDay(new Date(get().manualTime ?? now), minuteOfDay).getTime(),

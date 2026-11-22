@@ -2,7 +2,6 @@ import { formatYear } from '@/core/time';
 import { getLocale } from '@/ui/locale';
 
 export const DAY_MINUTES = 24 * 60;
-export const TIME_STEP_MINUTES = 5;
 
 export function minuteOfDay(date: Date): number {
   if (
@@ -28,11 +27,20 @@ export function formatYearText(year: number): string {
   return formatYear(year, getLocale());
 }
 
+/** Rövid hónapnév: hu „nov.”, en „Nov”. */
+export function formatMonthName(date: Date): string {
+  const locale = getLocale();
+  return date.toLocaleDateString(locale === 'en' ? 'en-US' : 'hu-HU', { month: 'short' });
+}
+
+/** Nap: hu „18.”, en „18”. */
+export function formatDayText(date: Date): string {
+  return getLocale() === 'en' ? String(date.getDate()) : `${date.getDate()}.`;
+}
+
 /** Hónap és nap az aktuális nyelven: hu „okt. 7.”, en „Oct 7”. */
 export function formatMonthDay(date: Date): string {
-  const locale = getLocale();
-  const month = date.toLocaleDateString(locale === 'en' ? 'en-US' : 'hu-HU', { month: 'short' });
-  return locale === 'en' ? `${month} ${date.getDate()}` : `${month} ${date.getDate()}.`;
+  return `${formatMonthName(date)} ${formatDayText(date)}`;
 }
 
 export function formatTravelDate(date: Date): string {

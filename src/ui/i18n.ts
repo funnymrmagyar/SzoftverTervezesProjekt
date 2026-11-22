@@ -51,8 +51,3 @@ export function localeTag(): string {
 export function formatNumber(value: number): string {
   return value.toLocaleString(localeTag());
 }
-
-/** Az aktuális nyelven megadott dátum és idő. */
-export function formatDateTimeLocale(date: Date): string {
-  return date.toLocaleString(localeTag());
-}

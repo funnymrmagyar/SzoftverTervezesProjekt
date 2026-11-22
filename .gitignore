@@ -50,7 +50,6 @@ __pycache__/
 # Firebase emulátor naplók
 firebase-debug.log
 *-debug.log
-package-lock.json
 
 # test output
 coverage/

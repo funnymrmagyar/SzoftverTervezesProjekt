@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { createPlayerProfile } from '@/core/models/PlayerProfile';
+import { createPlayerProfile, type PlayerProfile } from '@/core/models/PlayerProfile';
 import { isValidUsernameFormat } from '@/core/username';
 import {
   migrateLegacyBestScores,
@@ -8,12 +8,7 @@ import {
   saveBestScores,
 } from '@/features/games/scoreStorage';
 import { flushQueuedResults, removeQueuedResults } from '@/features/games/resultQueue';
-import {
-  getAuthService,
-  isKnownAuthErrorCode,
-  toAuthError,
-  type AuthUser,
-} from '@/services/auth';
+import { getAuthService, isKnownAuthErrorCode, toAuthError, type AuthUser } from '@/services/auth';
 import { authMode } from '@/services/firebase/config';
 import { createLogger } from '@/services/logger';
 import {
@@ -66,6 +61,8 @@ interface AuthState {
   user: AuthUser | null;
   /** Ranglista megjelenő név; null, ha még nem választott. */
   displayName: string | null;
+  /** Igaz, ha a bejelentkezett fiók nevét már eldöntöttük (betöltve vagy most megadva). */
+  nameResolved: boolean;
   busy: boolean;
   error: string | null;
   syncError: string | null;
@@ -73,7 +70,7 @@ interface AuthState {
   trophyIds: string[];
 
   startListening(): () => void;
-  syncPlayerData(): Promise<boolean>;
+  syncPlayerData(options?: { overwriteDisplayName?: boolean }): Promise<boolean>;
   saveTrophyIds(trophyIds: string[]): Promise<boolean>;
   claimUsername(raw: string): Promise<string | null>;
   signIn(email: string, password: string): Promise<boolean>;
@@ -85,6 +82,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => {
   let authRevision = 0;
+  let playerSyncGeneration = 0;
 
   function resetAccountStores() {
     useSkyStore.setState({ manualTime: null, selectedConstellationId: null });
@@ -95,7 +93,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
     await Promise.all([removeBestScores(uid), removeTrophyIds(uid), removePlayerStats(uid)]);
   }
 
-  async function synchronizePlayerData(user: AuthUser) {
+  async function synchronizePlayerData(
+    user: AuthUser,
+    options?: { overwriteDisplayName?: boolean },
+  ): Promise<PlayerProfile | null> {
+    const generation = ++playerSyncGeneration;
     if (authMode !== 'local') {
       await flushQueuedResults(user.uid, () => get().user?.uid === user.uid);
     }
@@ -120,16 +122,24 @@ export const useAuthStore = create<AuthState>((set, get) => {
       displayName = fromStore;
     }
 
+    // Egy régebbi szinkron ne írja felül a frissen megadott nevet, és kijelentkezés után se mentsen.
+    if (generation !== playerSyncGeneration || get().user?.uid !== user.uid) return null;
+
     const profile = createPlayerProfile(user.uid, displayName, scores, trophyIds);
+    const syncOptions = options?.overwriteDisplayName ? { overwriteDisplayName: true } : undefined;
     const synced =
       authMode === 'local'
-        ? await syncLocalPlayerProfile(profile)
-        : await syncPlayerProfile(profile);
+        ? await syncLocalPlayerProfile(profile, syncOptions)
+        : await syncPlayerProfile(profile, syncOptions);
+
+    if (generation !== playerSyncGeneration || get().user?.uid !== user.uid) return null;
 
     await Promise.all([
       saveBestScores(synced.scores, user.uid),
       saveLocalTrophyIds(user.uid, synced.trophyIds),
     ]);
+
+    if (generation !== playerSyncGeneration || get().user?.uid !== user.uid) return null;
     return synced;
   }
 
@@ -155,6 +165,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     status: 'loading',
     user: null,
     displayName: null,
+    nameResolved: false,
     busy: false,
     error: null,
     syncError: null,
@@ -171,6 +182,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
           syncError: null,
           trophyIds: [],
           displayName: accountChanged ? null : get().displayName,
+          nameResolved: accountChanged ? false : get().nameResolved,
           profileRevision: accountChanged ? get().profileRevision + 1 : get().profileRevision,
         });
         if (accountChanged) {
@@ -182,48 +194,57 @@ export const useAuthStore = create<AuthState>((set, get) => {
 
         void synchronizePlayerData(user)
           .then((profile) => {
-            if (revision === authRevision) {
-              set((state) => ({
-                trophyIds: profile.trophyIds,
-                displayName:
-                  profile.displayName && isValidUsernameFormat(profile.displayName)
-                    ? profile.displayName
+            if (revision !== authRevision || !profile) return;
+            set((state) => ({
+              trophyIds: profile.trophyIds,
+              displayName:
+                profile.displayName && isValidUsernameFormat(profile.displayName)
+                  ? profile.displayName
+                  : state.displayName && isValidUsernameFormat(state.displayName)
+                    ? state.displayName
                     : null,
-                profileRevision: state.profileRevision + 1,
-              }));
-            }
+              nameResolved: true,
+              profileRevision: state.profileRevision + 1,
+            }));
           })
           .catch((error: unknown) => {
             reportSyncError(error);
-            if (revision === authRevision) {
-              set((state) => ({
-                syncError: playerSyncError(),
-                trophyIds: [],
-                displayName: null,
-                profileRevision: state.profileRevision + 1,
-              }));
-            }
+            if (revision !== authRevision) return;
+            set((state) => ({
+              syncError: playerSyncError(),
+              trophyIds: [],
+              displayName:
+                state.displayName && isValidUsernameFormat(state.displayName)
+                  ? state.displayName
+                  : null,
+              nameResolved: true,
+              profileRevision: state.profileRevision + 1,
+            }));
           });
       }),
 
-    syncPlayerData: async () => {
+    syncPlayerData: async (options) => {
       const user = get().user;
       if (!user) return true;
       set({ syncError: null });
       try {
-        const profile = await synchronizePlayerData(user);
+        const profile = await synchronizePlayerData(user, options);
+        if (!profile) return true;
         set((state) => ({
           trophyIds: profile.trophyIds,
           displayName:
             profile.displayName && isValidUsernameFormat(profile.displayName)
               ? profile.displayName
-              : state.displayName,
+              : state.displayName && isValidUsernameFormat(state.displayName)
+                ? state.displayName
+                : null,
+          nameResolved: true,
           profileRevision: state.profileRevision + 1,
         }));
         return true;
       } catch (error) {
         reportSyncError(error);
-        set({ syncError: playerSyncError() });
+        set({ syncError: playerSyncError(), nameResolved: true });
         return false;
       }
     },
@@ -249,12 +270,14 @@ export const useAuthStore = create<AuthState>((set, get) => {
       set({ busy: true, error: null });
       try {
         const name = await claimUsernameService(user.uid, raw);
-        set({ displayName: name });
-        await get().syncPlayerData();
+        set({ displayName: name, nameResolved: true });
+        await get().syncPlayerData({ overwriteDisplayName: true });
+        if (get().user?.uid === user.uid && get().displayName !== name) {
+          set({ displayName: name, nameResolved: true });
+        }
         return name;
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : t('username.error.saveFailed');
+        const message = error instanceof Error ? error.message : t('username.error.saveFailed');
         set({ error: message });
         throw error;
       } finally {
@@ -289,6 +312,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         status: 'signedOut',
         trophyIds: [],
         displayName: null,
+        nameResolved: false,
         syncError: null,
         profileRevision: state.profileRevision + 1,
       }));
@@ -316,6 +340,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
           status: 'signedOut',
           trophyIds: [],
           displayName: null,
+          nameResolved: false,
           syncError: null,
           profileRevision: state.profileRevision + 1,
         }));
