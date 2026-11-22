@@ -18,6 +18,8 @@ interface SkySceneProps {
   location: GeoLocation;
   cultureId: string;
   showLines: boolean;
+  /** A földfelület és a horizont fölötti derengés látszik-e (alapból igen). */
+  showGround?: boolean;
   /** A kiválasztott csillagkép vonalai kiemelve látszanak (kikapcsolt vonalaknál is). */
   selectedId?: string | null;
 }
@@ -46,15 +48,17 @@ function CameraRig() {
 function InvalidateOnLinesChange({
   showLines,
   selectedId,
+  showGround,
 }: {
   showLines: boolean;
   selectedId: string | null;
+  showGround: boolean;
 }) {
   const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => {
     invalidate();
-  }, [invalidate, showLines, selectedId]);
+  }, [invalidate, showLines, selectedId, showGround]);
 
   return null;
 }
@@ -89,6 +93,7 @@ export function SkyScene({
   location,
   cultureId,
   showLines,
+  showGround = true,
   selectedId = null,
 }: SkySceneProps) {
   const stars = getStarCatalog().all();
@@ -111,7 +116,11 @@ export function SkyScene({
     >
       <color attach="background" args={[colors.sky]} />
       <CameraRig />
-      <InvalidateOnLinesChange showLines={showLines} selectedId={selectedId} />
+      <InvalidateOnLinesChange
+        showLines={showLines}
+        selectedId={selectedId}
+        showGround={showGround}
+      />
       <SkyDome matrix={matrix}>
         {showLines && culture ? (
           <ConstellationLines segments={segments} color={colors.constellationLine} />
@@ -126,7 +135,7 @@ export function SkyScene({
         ) : null}
         <StarField stars={stars} />
       </SkyDome>
-      <Ground />
+      <Ground showGround={showGround} />
     </Canvas>
   );
 }

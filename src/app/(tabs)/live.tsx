@@ -9,6 +9,7 @@ import { TimeControls } from '@/features/live/TimeControls';
 import { TimeTravelPanel } from '@/features/live/TimeTravelPanel';
 import { useSkyTime } from '@/features/live/useSkyTime';
 import { ViewControls } from '@/features/live/ViewControls';
+import { CompassLabels } from '@/render/CompassLabels';
 import { ConstellationLabels } from '@/render/ConstellationLabels';
 import { pickConstellation } from '@/render/pickConstellation';
 import { SkyScene } from '@/render/SkyScene';
@@ -37,6 +38,7 @@ export default function LiveScreen() {
   const cultureId = useSkyStore((state) => state.cultureId);
   const showLines = useSkyStore((state) => state.showLines);
   const showLabels = useSkyStore((state) => state.showLabels);
+  const showGround = useSkyStore((state) => state.showGround);
   const selectedId = useSkyStore((state) => state.selectedConstellationId);
   const layout = useBreakpoint();
 
@@ -78,9 +80,12 @@ export default function LiveScreen() {
           location={location}
           cultureId={cultureId}
           showLines={showLines}
+          showGround={showGround}
           selectedId={selectedId}
         />
       </View>
+
+      <CompassLabels />
 
       {showLabels ? (
         <ConstellationLabels

@@ -23,6 +23,8 @@ interface SkyState {
   showLines: boolean;
   /** Látszanak-e a csillagképnevek. */
   showLabels: boolean;
+  /** Látszik-e a földfelület és a horizont fölötti derengés. */
+  showGround: boolean;
   /** A koppintással kiválasztott csillagkép azonosítója (a kiválasztott kultúrán belül). */
   selectedConstellationId: string | null;
   /** Kézzel beállított időpont (ms); null = élő, aktuális idő. */
@@ -33,6 +35,7 @@ interface SkyState {
   setCulture(id: string): void;
   toggleLines(): void;
   toggleLabels(): void;
+  toggleGround(): void;
   /** Csillagkép kiválasztása; null = a kiválasztás megszüntetése. */
   selectConstellation(id: string | null): void;
   /** Időugrás órákban a jelenleg mutatott időponthoz képest. */
@@ -57,6 +60,7 @@ export const useSkyStore = create<SkyState>((set, get) => ({
   cultureId: 'hungarian',
   showLines: true,
   showLabels: true,
+  showGround: true,
   selectedConstellationId: null,
   manualTime: null,
   location: DEFAULT_LOCATION,
@@ -69,6 +73,7 @@ export const useSkyStore = create<SkyState>((set, get) => ({
   },
   toggleLines: () => set({ showLines: !get().showLines }),
   toggleLabels: () => set({ showLabels: !get().showLabels }),
+  toggleGround: () => set({ showGround: !get().showGround }),
   selectConstellation: (selectedConstellationId) => set({ selectedConstellationId }),
   shiftHours: (hours, now = Date.now()) =>
     set({

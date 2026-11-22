@@ -301,5 +301,6 @@
   "live.hour.input": "Óra megadása",
   "live.hour.edit": "Óra: {hour}. Koppintással átírható.",
   "live.minute.input": "Perc megadása",
-  "live.minute.edit": "Perc: {minute}. Koppintással átírható."
+  "live.minute.edit": "Perc: {minute}. Koppintással átírható.",
+  "view.ground": "Föld és horizont"
 }

@@ -25,6 +25,8 @@ export function ViewControls({
   const toggleLines = useSkyStore((state) => state.toggleLines);
   const showLabels = useSkyStore((state) => state.showLabels);
   const toggleLabels = useSkyStore((state) => state.toggleLabels);
+  const showGround = useSkyStore((state) => state.showGround);
+  const toggleGround = useSkyStore((state) => state.toggleGround);
   const zoom = useViewStore((state) => state.zoom);
   const reset = useViewStore((state) => state.reset);
   const fov = useViewStore((state) => Math.round(state.fov));
@@ -46,6 +48,13 @@ export function ViewControls({
             active={showLabels}
             onPress={toggleLabels}
             testID="toggle-labels"
+          />
+          <IconButton
+            icon="image-outline"
+            label={t('view.ground')}
+            active={showGround}
+            onPress={toggleGround}
+            testID="toggle-ground"
           />
         </View>
       ) : null}

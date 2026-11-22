@@ -301,5 +301,6 @@
   "live.hour.input": "Enter hour",
   "live.hour.edit": "Hour: {hour}. Tap to edit.",
   "live.minute.input": "Enter minute",
-  "live.minute.edit": "Minute: {minute}. Tap to edit."
+  "live.minute.edit": "Minute: {minute}. Tap to edit.",
+  "view.ground": "Ground and horizon glow"
 }
