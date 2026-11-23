@@ -31,6 +31,17 @@ export function ViewControls({
   const reset = useViewStore((state) => state.reset);
   const fov = useViewStore((state) => Math.round(state.fov));
 
+  // Telefonon a bal oldali sávba csak két gomb fér, ezért ott a földkapcsoló a jobb oldalra kerül.
+  const groundButton = (
+    <IconButton
+      icon="image-outline"
+      label={t('view.ground')}
+      active={showGround}
+      onPress={toggleGround}
+      testID="toggle-ground"
+    />
+  );
+
   return (
     <View style={styles.wrap}>
       {side !== 'right' ? (
@@ -49,13 +60,7 @@ export function ViewControls({
             onPress={toggleLabels}
             testID="toggle-labels"
           />
-          <IconButton
-            icon="image-outline"
-            label={t('view.ground')}
-            active={showGround}
-            onPress={toggleGround}
-            testID="toggle-ground"
-          />
+          {compact ? null : groundButton}
         </View>
       ) : null}
       {side !== 'left' ? (
@@ -78,6 +83,7 @@ export function ViewControls({
                 />
               </>
             )}
+            {compact ? groundButton : null}
             <IconButton
               icon="compass-outline"
               label={t('view.reset')}
